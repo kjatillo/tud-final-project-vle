@@ -1,0 +1,36 @@
+******************************************
+
+	VLE Project - Meeting Logs       
+
+******************************************
+
+Project Title: Virtual Learning Environment (VLE)
+Project Supervisor: Ben Walsh
+Meeting Schedule: Tuesdays, 12-2pm (Room 220)
+
+
+
+=========================
+	Meeting 1
+=========================
+Date: 22/10/2024
+
+Discussion(s):
+- Project overview
+- Implement prototype that demonstrates sending/retrieving data to/from Azure SQL cloud database
+- Update project status (Excel sharepoint)
+
+
+=========================
+	Meeting 2
+=========================
+Date: 05/11/2024
+
+Note(s):
+- Updated project status (Excel sharepoint)
+- Coded sample prototype but is not committed to assigned repo yet
+- Data is stored locally for the mean time using SQL Server Management Studio
+
+Discussion(s):
+- Commit coded prototype to assigned GitHub repo by due date 10/11/2024
+- Upload features log by due date 10/11/2024
