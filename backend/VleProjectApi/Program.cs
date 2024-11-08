@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using VleProjectApi.DbContexts;
+using VleProjectApi.Services.Implementations;
+using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi;
 
@@ -15,7 +17,10 @@ public class Program
                     .GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddAuthorization();
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
         }
@@ -30,10 +35,15 @@ public class Program
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+            app.MapControllers();
 
             app.Run();
         }
-
     }
 }
