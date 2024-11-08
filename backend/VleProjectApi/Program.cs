@@ -1,20 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+using VleProjectApi.DbContexts;
 
-namespace VleProjectApi
+namespace VleProjectApi;
+
+public class Program
 {
-    public class Program
+    public static void Main()
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder();
         {
-            var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<VleDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration
+                    .GetConnectionString("DefaultConnection"));
+            });
 
-            // Services
             builder.Services.AddAuthorization();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+        }
 
-            var app = builder.Build();
-
-            // HTTP request pipeline.
+        var app = builder.Build();
+        {
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -27,5 +34,6 @@ namespace VleProjectApi
 
             app.Run();
         }
+
     }
 }
