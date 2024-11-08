@@ -1,0 +1,6 @@
+@VleProjectApi_HostAddress = http://localhost:5111
+
+GET {{VleProjectApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
