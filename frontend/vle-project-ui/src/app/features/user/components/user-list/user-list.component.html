@@ -1,0 +1,34 @@
+<div>
+    <ng-container *ngIf="users.length > 0; else noUsers">
+        <div class="list-container">
+            <h2>User List</h2>
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.lastName }}</td>
+                        <td>{{ user.firstName }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+    
+    <ng-template #loading>
+        <div>Loading students...</div>
+    </ng-template>
+    
+    <ng-template #noUsers>
+        <div>No students found.</div>
+    </ng-template>
+</div>
