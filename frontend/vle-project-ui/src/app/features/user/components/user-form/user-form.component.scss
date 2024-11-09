@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin: auto;
+}
+
+.form-container input {
+    width: 100%;
+}
+
+.form-container label {
+    margin-right: 0.5em;
+}
+
+.error-message {
+    color: red;
+}
+
+.mb-1 {
+    margin-bottom: 1em;
+}
