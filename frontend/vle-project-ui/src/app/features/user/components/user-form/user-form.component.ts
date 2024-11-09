@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
@@ -6,19 +6,18 @@ import { UserService } from '../../services/user.service';
 @Component({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
-  styleUrls: ['./user-form.component.scss']
+  styleUrls: ['./user-form.component.scss'],
 })
 export class UserFormComponent {
   userForm!: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private userService: UserService
-  ) {
+  @Output() userAdded = new EventEmitter<void>();
+
+  constructor(private fb: FormBuilder, private userService: UserService) {
     this.userForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -29,10 +28,11 @@ export class UserFormComponent {
       this.userService.addUser(newUser).subscribe({
         next: () => {
           this.userForm.reset();
+          this.userAdded.emit();
         },
         error: (error) => {
           console.error('Error adding new user', error);
-        }
+        },
       });
     }
   }
