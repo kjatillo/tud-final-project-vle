@@ -17,6 +17,17 @@ public class Program
                     .GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularApp",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
+
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddAuthorization();
@@ -32,6 +43,8 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("AllowAngularApp");
 
             app.UseHttpsRedirection();
 
