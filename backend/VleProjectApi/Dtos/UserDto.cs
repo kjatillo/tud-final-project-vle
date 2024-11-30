@@ -1,9 +1,11 @@
-﻿namespace VleProjectApi.Models;
+﻿namespace VleProjectApi.Dtos;
 
 public class UserDto
 {
-    public int Id { get; set; }
-    public string? FirstName { get; set; } = string.Empty;
-    public string? LastName { get; set; } = string.Empty;
-    public string? Email { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public Guid RoleId { get; set; }
+    public string? RoleName { get; set; }
 }
