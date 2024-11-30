@@ -8,6 +8,11 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
+        CreateMap<RegisterDto, ApplicationUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
         CreateMap<ApplicationUser, UserDto>()
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
