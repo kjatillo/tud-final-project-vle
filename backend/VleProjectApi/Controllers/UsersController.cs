@@ -12,15 +12,18 @@ public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IMapper _mapper;
 
     public UsersController(
         UserManager<ApplicationUser> userManager, 
-        RoleManager<IdentityRole> roleManager, 
+        RoleManager<IdentityRole> roleManager,
+        SignInManager<ApplicationUser> signInManager,
         IMapper mapper)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
+        _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -84,5 +87,60 @@ public class UsersController : ControllerBase
         userDto.RoleName = registerDto.RoleName;
 
         return Ok(new { Status = "Success", Message = "User created successfully!", User = userDto });
+    }
+
+    /// <summary>
+    /// Authenticates a user and returns user details.
+    /// </summary>
+    /// <param name="loginDto">The data transfer object containing user login details.</param>
+    /// <returns>An action result containing the user details if successful; otherwise, an unauthorized response.</returns>
+    /// <response code="200">Returns the user details.</response>
+    /// <response code="401">If the login attempt is invalid or the user is not found.</response>
+    /// <response code="500">If an error occurs while processing the request.</response>
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto loginDto)
+    {
+        var result = await _signInManager
+            .PasswordSignInAsync(
+                loginDto.Email, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+        {
+            return Unauthorized(new { Status = "Error", Message = "Invalid login attempt." });
+        }
+
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        if (user == null)
+        {
+            return Unauthorized(new { Status = "Error", Message = "User not found." });
+        }
+
+        var userDto = _mapper.Map<UserDto>(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        userDto.RoleName = roles.FirstOrDefault();
+
+        return Ok(new { Status = "Success", Message = "User logged in successfully", User = userDto });
+    }
+
+    /// <summary>
+    /// Logs out the current user.
+    /// </summary>
+    /// <returns>A success message if the user is logged out successfully; otherwise, an error response.</returns>
+    /// <response code="200">Returns a success message.</response>
+    /// <response code="500">If an error occurs while processing the request.</response>
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new { Status = "Success", Message = "User logged out successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new { Status = "Error", Message = $"An error occurred while processing your request: {ex.Message}" });
+        }
     }
 }
