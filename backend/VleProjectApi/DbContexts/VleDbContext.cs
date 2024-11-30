@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VleProjectApi.Entities;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using VleProjectApi.Models;
 
 namespace VleProjectApi.DbContexts;
 
-public class VleDbContext : DbContext
+public class VleDbContext : IdentityDbContext<ApplicationUser>
 {
-    public VleDbContext(DbContextOptions<VleDbContext> options) : base(options) { }
-
-    public DbSet<User> Users { get; set; }
+    public VleDbContext(DbContextOptions<VleDbContext> options) 
+        : base(options) { }
 }
