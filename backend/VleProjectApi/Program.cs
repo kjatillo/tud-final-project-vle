@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using VleProjectApi.DbContexts;
-using VleProjectApi.Services.Implementations;
-using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi;
 
@@ -28,7 +26,6 @@ public class Program
                     });
             });
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
