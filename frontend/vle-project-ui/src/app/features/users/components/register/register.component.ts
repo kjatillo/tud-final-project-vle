@@ -19,7 +19,7 @@ export class RegisterComponent {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
