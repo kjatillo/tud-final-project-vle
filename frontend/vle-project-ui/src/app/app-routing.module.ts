@@ -4,8 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterComponent } from './features/users/components/register/register.component';
 import { LoginComponent } from './features/users/components/login/login.component';
 import { LogoutComponent } from './features/users/components/logout/logout.component';
+import { HomeComponent } from './features/home/home.component';
 
 const routes: Routes = [
+  { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent }
