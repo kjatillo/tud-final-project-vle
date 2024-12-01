@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Models;
 using VleProjectApi.Profiles;
@@ -28,6 +31,31 @@ public class Startup
         {
             options.LoginPath = "/Account/Login";
             options.AccessDeniedPath = "/Account/AccessDenied";
+        });
+
+        var jwtKey = Configuration["Jwt:Key"];
+        if (string.IsNullOrEmpty(jwtKey))
+        {
+            throw new ArgumentNullException(
+                nameof(jwtKey), "JWT key cannot be null or empty.");
+        }
+        var key = Encoding.ASCII.GetBytes(jwtKey);
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(jwtOptions =>
+        {
+            jwtOptions.RequireHttpsMetadata = false;
+            jwtOptions.SaveToken = true;
+            jwtOptions.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
         });
 
         services.AddCors(options =>

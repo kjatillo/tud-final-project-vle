@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using VleProjectApi.Dtos;
 using VleProjectApi.Models;
 
@@ -13,17 +17,20 @@ public class UsersController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
 
     public UsersController(
-        UserManager<ApplicationUser> userManager, 
+        UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
+        IConfiguration configuration,
         IMapper mapper)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -90,11 +97,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Authenticates a user and returns user details.
+    /// Authenticates a user and returns user details along with a JWT token.
     /// </summary>
     /// <param name="loginDto">The data transfer object containing user login details.</param>
-    /// <returns>An action result containing the user details if successful; otherwise, an unauthorized response.</returns>
-    /// <response code="200">Returns the user details.</response>
+    /// <returns>An action result containing the user details and JWT token if successful; otherwise, an unauthorized response.</returns>
+    /// <response code="200">Returns the user details and JWT token.</response>
     /// <response code="401">If the login attempt is invalid or the user is not found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpPost("login")]
@@ -119,7 +126,9 @@ public class UsersController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         userDto.RoleName = roles.FirstOrDefault();
 
-        return Ok(new { Status = "Success", Message = "User logged in successfully", User = userDto });
+        var token = GenerateJwtToken(user);
+
+        return Ok(new { Status = "Success", Message = "User logged in successfully", Token = token, User = userDto });
     }
 
     /// <summary>
@@ -142,5 +151,39 @@ public class UsersController : ControllerBase
                 StatusCodes.Status500InternalServerError,
                 new { Status = "Error", Message = $"An error occurred while processing your request: {ex.Message}" });
         }
+    }
+
+    /// <summary>
+    /// Generates a JWT token for the specified user.
+    /// </summary>
+    /// <param name="user">The user for whom the token is generated.</param>
+    /// <returns>A JWT token as a string.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the JWT key is not configured.</exception>
+    private string GenerateJwtToken(ApplicationUser user)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var key = _configuration["Jwt:Key"];
+        if (string.IsNullOrEmpty(key))
+        {
+            throw new ArgumentNullException(nameof(key), "JWT key is not configured.");
+        }
+
+        var keyBytes = Encoding.ASCII.GetBytes(key);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email)
+            }),
+            Expires = DateTime.UtcNow.AddDays(7),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        return tokenHandler.WriteToken(token);
     }
 }

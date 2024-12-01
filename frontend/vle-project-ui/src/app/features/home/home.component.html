@@ -1,0 +1,7 @@
+<div class="container mt-5">
+    <h2>Home Page</h2>
+    <p *ngIf="isLoggedIn; else notLoggedIn">Welcome back, user!</p>
+    <ng-template #notLoggedIn>
+        <p>Please log in to access more features.</p>
+    </ng-template>
+</div>
