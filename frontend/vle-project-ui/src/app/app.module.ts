@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FeaturesModule } from './features/features.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { FeaturesModule } from './features/features.module';
     AppRoutingModule,
     BrowserModule,
     FeaturesModule,
+    SharedModule,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi())

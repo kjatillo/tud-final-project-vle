@@ -10,7 +10,9 @@ import { UserService } from '../../services/user.service';
 export class RegisterComponent {
   registerForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService) {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],

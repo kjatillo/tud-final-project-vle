@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
+import { LogoutComponent } from './components/logout/logout.component';
 
 @NgModule({
   declarations: [
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    LogoutComponent
   ],
   imports: [
     CommonModule,
@@ -16,7 +18,8 @@ import { LoginComponent } from './components/login/login.component';
   ],
   exports: [
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    LogoutComponent
   ]
 })
 export class UsersModule { }
