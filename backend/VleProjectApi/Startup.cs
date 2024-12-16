@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Models;
 using VleProjectApi.Profiles;
+using VleProjectApi.Repositories.Implementations;
+using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi;
 
@@ -69,11 +72,42 @@ public class Startup
                 });
         });
 
-        services.AddAutoMapper(typeof(UserProfile));
+        services.AddScoped<IModuleRepository, ModuleRepository>();
+
+        services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "VLE API", Version = "v1" });
+
+            // Add JWT Authentication
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Enter JWT with Bearer",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }});
+        });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("InstructorPolicy", policy => policy.RequireRole("Instructor"));
+        });
     }
 
     public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
