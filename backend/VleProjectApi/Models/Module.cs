@@ -1,0 +1,10 @@
+﻿namespace VleProjectApi.Models;
+
+public class Module
+{
+    public Guid ModuleID { get; set; } = Guid.NewGuid();
+    public string ModuleName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+}

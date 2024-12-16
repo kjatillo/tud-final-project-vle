@@ -126,7 +126,7 @@ public class UsersController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         userDto.RoleName = roles.FirstOrDefault();
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtTokenAsync(user);
 
         return Ok(new { Status = "Success", Message = "User logged in successfully", Token = token, User = userDto });
     }
@@ -154,12 +154,12 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Generates a JWT token for the specified user.
+    /// Generates a JWT token for the specified user asynchronously.
     /// </summary>
     /// <param name="user">The user for whom the token is generated.</param>
-    /// <returns>A JWT token as a string.</returns>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the JWT token as a string.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the JWT key is not configured.</exception>
-    private string GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -170,13 +170,25 @@ public class UsersController : ControllerBase
         }
 
         var keyBytes = Encoding.ASCII.GetBytes(key);
+
+        // Get user roles
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var role = userRoles.FirstOrDefault();
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+        if (role != null)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
