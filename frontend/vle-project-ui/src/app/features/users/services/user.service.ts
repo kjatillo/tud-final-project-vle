@@ -25,7 +25,7 @@ export class UserService {
   login(loginData: Login): Observable<any> {
     return this.http.post(`${this.apiEndpoint}/login`, loginData).pipe(
       tap((response: any) => {
-        this.authService.login(response.Token);
+        this.authService.login(response.token);
       })
     );
   }
