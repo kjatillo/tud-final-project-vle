@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   providedIn: 'root',
 })
 export class UserService {
-  private apiEndpoint = environment.apiEndpoint;
+  private apiEndpoint = environment.usersApiEndpoint;
 
   constructor(
     private http: HttpClient,
@@ -25,7 +25,7 @@ export class UserService {
   login(loginData: Login): Observable<any> {
     return this.http.post(`${this.apiEndpoint}/login`, loginData).pipe(
       tap((response: any) => {
-        this.authService.login(response.token);
+        this.authService.login(response.token, response.user.roleName);
       })
     );
   }

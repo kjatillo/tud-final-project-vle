@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UsersModule } from './users/users.module';
 import { HomeComponent } from './home/home.component';
+import { ModulesModule } from './modules/modules.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { HomeComponent } from './home/home.component';
   ],
   exports: [
     HomeComponent,
-    UsersModule
+    UsersModule,
+    ModulesModule,
   ]
 })
 export class FeaturesModule { }
