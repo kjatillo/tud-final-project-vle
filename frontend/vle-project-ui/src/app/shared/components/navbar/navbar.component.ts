@@ -9,20 +9,24 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn = false;
+  isInstructor = false;
 
   constructor(
-    private userService: UserService, 
+    private userService: UserService,
     private authService: AuthService) {
-    this.isLoggedIn = !!localStorage.getItem('userToken');
   }
 
   ngOnInit(): void {
     this.authService.isLoggedIn.subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
     });
+    this.authService.userRoles.subscribe((roles) => {
+      this.isInstructor = roles.includes('Instructor');
+    });
   }
 
   logout(): void {
     this.userService.logout();
+    this.authService.logout();
   }
 }
