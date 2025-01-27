@@ -1,4 +1,5 @@
-﻿using VleProjectApi.DbContexts;
+﻿using Microsoft.EntityFrameworkCore;
+using VleProjectApi.DbContexts;
 using VleProjectApi.Models;
 using VleProjectApi.Repositories.Interfaces;
 
@@ -19,5 +20,12 @@ public class ModuleRepository : IModuleRepository
         await _context.SaveChangesAsync();
 
         return module;
+    }
+
+    public async Task<Module?> GetModuleByIdAsync(Guid moduleId)
+    {
+        return await _context.Modules
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.ModuleID == moduleId);
     }
 }
