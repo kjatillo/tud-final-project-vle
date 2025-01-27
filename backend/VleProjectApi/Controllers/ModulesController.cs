@@ -13,12 +13,18 @@ namespace VleProjectApi.Controllers;
 public class ModulesController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
     private readonly IMapper _mapper;
 
-    public ModulesController(UserManager<ApplicationUser> userManager, IModuleRepository moduleRepository, IMapper mapper)
+    public ModulesController(
+        UserManager<ApplicationUser> userManager,
+        IEnrolmentRepository enrolmentRepository,
+        IModuleRepository moduleRepository,
+        IMapper mapper)
     {
         _userManager = userManager;
+        _enrolmentRepository = enrolmentRepository;
         _moduleRepository = moduleRepository;
         _mapper = mapper;
     }
@@ -51,5 +57,46 @@ public class ModulesController : ControllerBase
         var createdModule = await _moduleRepository.CreateModuleAsync(module);
 
         return Ok(new { Status = "Success", Message = "Module created successfully!", Module = createdModule });
+    }
+
+    [HttpPost("{id}/enrol")]
+    [Authorize(Roles = "Student,Instructor")]
+    public async Task<IActionResult> EnrolInModule(Guid id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
+        if (isEnroled)
+        {
+            return BadRequest(new { Status = "Error", Message = "User is already enrolled in this module." });
+        }
+
+        await _enrolmentRepository.EnrolUserInModuleAsync(user.Id, id);
+
+        return Ok(new { Status = "Success", Message = "Enrolled in module successfully!" });
+    }
+
+    [HttpGet("{id}/isEnroled")]
+    [Authorize(Roles = "Student,Instructor")]
+    public async Task<IActionResult> IsUserEnrolled(Guid id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
+        return Ok(isEnroled);
     }
 }
