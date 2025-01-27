@@ -13,6 +13,7 @@ Built using **Angular** for the frontend and **.NET Core** for the backend, this
 * [Project Structure](#project-structure)
 * [Technologies Used](#technologies-used)
 * [Installation Guide](#installation-guide)
+* [Database](#database)
 * [Developer](#developer)
 * [Documentation](#documentation)
 
@@ -110,6 +111,35 @@ The repository is organized as follows:
    dotnet run
    ```
    - The API will be available at http://localhost:1234/api (port number will vary per machine).
+
+---
+
+## Database
+
+**Modules Table**
+```sql
+CREATE TABLE Modules (
+    ModuleID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    ModuleName NVARCHAR(150) NOT NULL,
+    Description NVARCHAR(MAX),
+    CreatedBy NVARCHAR(450) NOT NULL,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (CreatedBy) REFERENCES AspNetUsers(Id)
+);
+```
+
+**Enrolments Table**
+```sql
+CREATE TABLE Enrolments (
+    EnrolmentId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    UserId NVARCHAR(450) NOT NULL,
+    ModuleId UNIQUEIDENTIFIER NOT NULL,
+    EnrolmentDate DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id),
+    FOREIGN KEY (ModuleId) REFERENCES Modules(ModuleID),
+    CONSTRAINT UC_User_Module UNIQUE (UserId, ModuleId)
+);
+```
 
 ---
 
