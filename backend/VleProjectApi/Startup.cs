@@ -73,6 +73,7 @@ public class Startup
         });
 
         services.AddScoped<IModuleRepository, ModuleRepository>();
+        services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
 
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
 
