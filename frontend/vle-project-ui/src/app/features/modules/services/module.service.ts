@@ -20,4 +20,8 @@ export class ModuleService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(this.modules, moduleData, { headers });
   }
+
+  getModuleById(id: string): Observable<Module> {
+    return this.http.get<Module>(`${this.modules}/${id}`);
+  }
 }

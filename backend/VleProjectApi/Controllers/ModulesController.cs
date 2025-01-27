@@ -23,6 +23,17 @@ public class ModulesController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetModuleById(Guid id)
+    {
+        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        if (module == null)
+        {
+            return NotFound();
+        }
+        return Ok(module);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Instructor")]
     public async Task<IActionResult> CreateModule(CreateModuleDto createModuleDto)
@@ -34,7 +45,7 @@ public class ModulesController : ControllerBase
         }
 
         var module = _mapper.Map<Module>(createModuleDto);
-        module.CreatedBy = Guid.Parse(user.Id);
+        module.CreatedBy = user.Id;
         module.CreatedDate = DateTime.Now;
 
         var createdModule = await _moduleRepository.CreateModuleAsync(module);

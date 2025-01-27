@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VleProjectApi.DbContexts;
 
@@ -11,9 +12,11 @@ using VleProjectApi.DbContexts;
 namespace VleProjectApi.Migrations
 {
     [DbContext(typeof(VleDbContext))]
-    partial class VleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250127183847_UpdateCreatedByDataTypeMigration")]
+    partial class UpdateCreatedByDataTypeMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
