@@ -157,7 +157,7 @@ public class UsersController : ControllerBase
     /// Generates a JWT token for the specified user asynchronously.
     /// </summary>
     /// <param name="user">The user for whom the token is generated.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the JWT token as a string.</returns>
+    /// <returns>The task result contains the JWT token as a string.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the JWT key is not configured.</exception>
     private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
