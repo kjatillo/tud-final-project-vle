@@ -23,12 +23,17 @@ public class ModulesController : ControllerBase
         IModuleRepository moduleRepository,
         IMapper mapper)
     {
-        _userManager = userManager;
-        _enrolmentRepository = enrolmentRepository;
-        _moduleRepository = moduleRepository;
-        _mapper = mapper;
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
+        _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
+    /// <summary>
+    /// Get a module by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the module.</param>
+    /// <returns>The module if found, otherwise a NotFound result.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetModuleById(Guid id)
     {
@@ -40,6 +45,11 @@ public class ModulesController : ControllerBase
         return Ok(module);
     }
 
+    /// <summary>
+    /// Creates a new module.
+    /// </summary>
+    /// <param name="createModuleDto">The data transfer object containing the details of the module to be created.</param>
+    /// <returns>A success message with the created module details if the module is created successfully, otherwise an error message.</returns>
     [HttpPost]
     [Authorize(Roles = "Instructor")]
     public async Task<IActionResult> CreateModule(CreateModuleDto createModuleDto)
@@ -59,6 +69,11 @@ public class ModulesController : ControllerBase
         return Ok(new { Status = "Success", Message = "Module created successfully!", Module = createdModule });
     }
 
+    /// <summary>
+    /// Enrolls the current user in a specified module.
+    /// </summary>
+    /// <param name="id">The ID of the module to enroll in.</param>
+    /// <returns>A success message if the enrollment is successful, otherwise an error message.</returns>
     [HttpPost("{id}/enrol")]
     [Authorize(Roles = "Student,Instructor")]
     public async Task<IActionResult> EnrolInModule(Guid id)
@@ -78,17 +93,22 @@ public class ModulesController : ControllerBase
         var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
         if (isEnroled)
         {
-            return BadRequest(new { Status = "Error", Message = "User is already enrolled in this module." });
+            return BadRequest(new { Status = "Error", Message = "User is already enroled in this module." });
         }
 
         await _enrolmentRepository.EnrolUserInModuleAsync(user.Id, id);
 
-        return Ok(new { Status = "Success", Message = "Enrolled in module successfully!" });
+        return Ok(new { Status = "Success", Message = "Enroled in module successfully!" });
     }
 
+    /// <summary>
+    /// Checks if the current user is enroled in a specified module.
+    /// </summary>
+    /// <param name="id">The ID of the module to check enrollment for.</param>
+    /// <returns>Returns true if the user is enroled in the module, otherwise false.</returns>
     [HttpGet("{id}/isEnroled")]
     [Authorize(Roles = "Student,Instructor")]
-    public async Task<IActionResult> IsUserEnrolled(Guid id)
+    public async Task<IActionResult> IsUserEnroled(Guid id)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
