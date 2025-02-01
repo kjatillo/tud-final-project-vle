@@ -1,0 +1,16 @@
+<div class="container mt-5">
+    <h2>Edit Module</h2>
+    <form [formGroup]="editModuleForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+            <label for="moduleName" class="form-label">Module Name</label>
+            <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" class="form-control" formControlName="description"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Edit Module</button>
+    </form>
+</div>

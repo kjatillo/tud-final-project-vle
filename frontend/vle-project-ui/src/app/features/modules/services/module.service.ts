@@ -12,6 +12,10 @@ export class ModuleService {
 
   constructor(private http: HttpClient) { }
 
+  getModuleById(id: string): Observable<Module> {
+    return this.http.get<Module>(`${this.modulesApiEndpoint}/${id}`);
+  }
+
   createModule(moduleData: Module): Observable<any> {
     const token = localStorage.getItem('userToken');
     if (!token) {
@@ -21,8 +25,13 @@ export class ModuleService {
     return this.http.post(this.modulesApiEndpoint, moduleData, { headers });
   }
 
-  getModuleById(id: string): Observable<Module> {
-    return this.http.get<Module>(`${this.modulesApiEndpoint}/${id}`);
+  editModule(id: string, moduleData: Module): Observable<any> {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put(`${this.modulesApiEndpoint}/${id}`, moduleData, { headers });
   }
 
   enrolInModule(id: string | null): Observable<any> {

@@ -2,6 +2,7 @@
     <h2>{{ module.moduleName }}</h2>
     <p>{{ module.description }}</p>
     <button class="btn btn-primary" *ngIf="!isEnroled" (click)="enrol()">Enroll</button>
+    <button class="btn btn-secondary" *ngIf="moduleCreator" (click)="editModule()">Edit</button>
     <div *ngIf="isEnroled">
         <h3>Sample Content</h3>
         <p>This is a sample module content. The current user is enroled to this module.</p>
