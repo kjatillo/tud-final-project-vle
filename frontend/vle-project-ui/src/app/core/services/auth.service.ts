@@ -16,8 +16,9 @@ export class AuthService {
     return this.roles.asObservable();
   }
 
-  login(token: string, roles: string[]) {
+  login(token: string, userId: string, roles: string[]) {
     localStorage.setItem('userToken', token);
+    localStorage.setItem('userId', userId);
     localStorage.setItem('roles', JSON.stringify(roles || []));
     this.loggedIn.next(true);
     this.roles.next(roles || []);
