@@ -13,6 +13,7 @@ export class ModuleDetailComponent implements OnInit {
   module: Module | undefined;
   moduleId!: string | null;
   moduleCreator!: string;
+  currentUser: string = localStorage.getItem('userId') || '';
   isEnroled!: boolean;
 
   constructor(
@@ -23,13 +24,13 @@ export class ModuleDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id');
-
     this.checkEnrolment();
 
     if (this.moduleId) {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
           this.module = module;
+          this.moduleCreator = this.module.createdBy;
         },
         error: (error) => console.error('Error fetching module', error),
       });
