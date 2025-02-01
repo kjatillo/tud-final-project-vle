@@ -12,5 +12,10 @@ public class ModuleProfile : Profile
             .ForMember(dest => dest.ModuleID, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+
+        CreateMap<EditModuleDto, Module>()
+            .ForMember(dest => dest.ModuleID, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
     }
 }

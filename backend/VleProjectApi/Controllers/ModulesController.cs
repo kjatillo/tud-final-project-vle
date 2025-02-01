@@ -70,6 +70,41 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Edits an existing module.
+    /// </summary>
+    /// <param name="id">The ID of the module to be edited.</param>
+    /// <param name="updateModuleDto">The data transfer object containing the updated details of the module.</param>
+    /// <returns>A success message with the updated module details if the module is edited successfully, otherwise an error message.</returns>
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Instructor")]
+    public async Task<IActionResult> EditModule(Guid id, EditModuleDto updateModuleDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        module.ModuleName = updateModuleDto.ModuleName;
+        module.Description = updateModuleDto.Description;
+
+        var updatedModule = await _moduleRepository.EditModuleAsync(module);
+
+        return Ok(new { Status = "Success", Message = "Module edited successfully!", Module = updatedModule });
+    }
+
+    /// <summary>
     /// Enrolls the current user in a specified module.
     /// </summary>
     /// <param name="id">The ID of the module to enroll in.</param>
