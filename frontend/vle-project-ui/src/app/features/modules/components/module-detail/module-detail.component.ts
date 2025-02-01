@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class ModuleDetailComponent implements OnInit {
   module: Module | undefined;
   moduleId!: string | null;
+  moduleCreator!: string;
   isEnroled!: boolean;
 
   constructor(
@@ -22,9 +23,9 @@ export class ModuleDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id');
-    
+
     this.checkEnrolment();
-    
+
     if (this.moduleId) {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
@@ -53,6 +54,12 @@ export class ModuleDetailComponent implements OnInit {
         },
         error: (error) => console.error('Error enroling in module', error),
       });
+    }
+  }
+
+  editModule(): void {
+    if (this.module) {
+      this.router.navigate([`/module/${this.moduleId}/edit`]);
     }
   }
 }
