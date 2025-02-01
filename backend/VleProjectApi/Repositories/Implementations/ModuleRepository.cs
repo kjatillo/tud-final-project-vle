@@ -28,6 +28,19 @@ public class ModuleRepository : IModuleRepository
     }
 
     /// <summary>
+    /// Updates an existing module.
+    /// </summary>
+    /// <param name="module">The module to update.</param>
+    /// <returns>The task result contains the updated module.</returns>
+    public async Task<Module> EditModuleAsync(Module module)
+    {
+        _context.Modules.Update(module);
+        await _context.SaveChangesAsync();
+
+        return module;
+    }
+
+    /// <summary>
     /// Retrieves a module by its unique identifier.
     /// </summary>
     /// <param name="moduleId">The unique identifier of the module.</param>
