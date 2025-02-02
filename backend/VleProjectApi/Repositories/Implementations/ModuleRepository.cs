@@ -49,6 +49,15 @@ public class ModuleRepository : IModuleRepository
     {
         return await _context.Modules
             .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.ModuleID == moduleId);
+            .FirstOrDefaultAsync(m => m.ModuleId == moduleId);
+    }
+
+    /// <summary>
+    /// Retrieves all modules.
+    /// </summary>
+    /// <returns>The task result contains a list of all modules.</returns>
+    public async Task<IEnumerable<Module>> GetAllModulesAsync()
+    {
+        return await _context.Modules.ToListAsync();
     }
 }

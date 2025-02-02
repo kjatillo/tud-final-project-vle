@@ -30,6 +30,18 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves all modules.
+    /// </summary>
+    /// <returns>A list of all modules.</returns>
+    [HttpGet]
+    public async Task<IActionResult> GetAllModules()
+    {
+        var modules = await _moduleRepository.GetAllModulesAsync();
+
+        return Ok(modules);
+    }
+
+    /// <summary>
     /// Get a module by its ID.
     /// </summary>
     /// <param name="id">The ID of the module.</param>

@@ -2,7 +2,7 @@
 
 public class Module
 {
-    public Guid ModuleID { get; set; } = Guid.NewGuid();
+    public Guid ModuleId { get; set; } = Guid.NewGuid();
     public string ModuleName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string CreatedBy { get; set; } = string.Empty;
