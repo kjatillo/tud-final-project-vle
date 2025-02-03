@@ -8,4 +8,6 @@ public interface IModuleRepository
     Task<Module> EditModuleAsync(Module module);
     Task<Module?> GetModuleByIdAsync(Guid moduleId);
     Task<IEnumerable<Module>> GetAllModulesAsync();
+    Task DeleteModuleAsync(Guid id);
+    Task DeleteEnrolmentsByModuleIdAsync(Guid moduleId);
 }

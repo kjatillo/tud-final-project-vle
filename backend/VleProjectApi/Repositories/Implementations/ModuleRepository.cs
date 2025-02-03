@@ -60,4 +60,31 @@ public class ModuleRepository : IModuleRepository
     {
         return await _context.Modules.ToListAsync();
     }
+
+    /// <summary>
+    /// Deletes a module by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the module to delete.</param>
+    public async Task DeleteModuleAsync(Guid id)
+    {
+        var module = await _context.Modules.FindAsync(id);
+        if (module != null)
+        {
+            _context.Modules.Remove(module);
+
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Deletes all enrolments associated with a specific module.
+    /// </summary>
+    /// <param name="moduleId">The unique identifier of the module whose enrolments are to be deleted.</param>
+    public async Task DeleteEnrolmentsByModuleIdAsync(Guid moduleId)
+    {
+        var enrolments = _context.Enrolments.Where(e => e.ModuleId == moduleId);
+        _context.Enrolments.RemoveRange(enrolments);
+
+        await _context.SaveChangesAsync();
+    }
 }
