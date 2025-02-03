@@ -117,6 +117,38 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Deletes a module by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the module to be deleted.</param>
+    /// <returns>A success message if the module is deleted successfully, otherwise an error message.</returns>
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Instructor")]
+    public async Task<IActionResult> DeleteModule(Guid id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        await _moduleRepository.DeleteEnrolmentsByModuleIdAsync(id);
+        await _moduleRepository.DeleteModuleAsync(id);
+
+        return Ok(new { Status = "Success", Message = "Module deleted successfully!" });
+    }
+
+    /// <summary>
     /// Enrolls the current user in a specified module.
     /// </summary>
     /// <param name="id">The ID of the module to enroll in.</param>
