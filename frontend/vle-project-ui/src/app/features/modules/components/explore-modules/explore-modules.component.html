@@ -1,7 +1,11 @@
 <div class="container mt-5">
     <h2>Explore Modules</h2>
+    <div class="mb-3">
+        <input type="text" class="form-control" placeholder="Search modules..." [(ngModel)]="searchQuery"
+            (input)="onSearch()">
+    </div>
     <div class="list-group">
-        <a *ngFor="let module of modules" class="list-group-item list-group-item-action"
+        <a *ngFor="let module of filteredModules" class="list-group-item list-group-item-action"
             (click)="navigateToModule(module.moduleId)">
             <h5 class="mb-1">{{ module.moduleName }}</h5>
             <p class="mb-1">{{ module.description }}</p>
