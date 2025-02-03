@@ -6,6 +6,7 @@ import { LogoutComponent } from './features/users/components/logout/logout.compo
 import { HomeComponent } from './features/home/home.component';
 import { CreateModuleComponent } from './features/modules/components/create-module/create-module.component';
 import { EditModuleComponent } from './features/modules/components/edit-module/edit-module.component';
+import { ExploreModulesComponent } from './features/modules/components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './features/modules/components/module-detail/module-detail.component';
 
 const routes: Routes = [
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'logout', component: LogoutComponent },
   { path: 'create-module', component: CreateModuleComponent },
   { path: 'module/:id', component: ModuleDetailComponent },
-  { path: 'module/:id/edit', component: EditModuleComponent }
+  { path: 'module/:id/edit', component: EditModuleComponent },
+  { path: 'explore', component: ExploreModulesComponent }
 ];
 
 @NgModule({

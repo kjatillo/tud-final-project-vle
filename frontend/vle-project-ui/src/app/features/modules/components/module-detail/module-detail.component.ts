@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./module-detail.component.scss'],
 })
 export class ModuleDetailComponent implements OnInit {
-  module: Module | undefined;
+  module!: Module;
   moduleId!: string | null;
   moduleCreator!: string;
   currentUser: string = localStorage.getItem('userId') || '';
