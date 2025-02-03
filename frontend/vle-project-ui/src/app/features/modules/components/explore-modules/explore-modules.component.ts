@@ -10,6 +10,8 @@ import { Module } from '../../models/module.model';
 })
 export class ExploreModulesComponent implements OnInit {
   modules: Module[] = [];
+  filteredModules: Module[] = [];
+  searchQuery: string = '';
 
   constructor(
     private moduleService: ModuleService,
@@ -20,7 +22,7 @@ export class ExploreModulesComponent implements OnInit {
     this.moduleService.getAllModules().subscribe({
       next: (modules) => {
         this.modules = modules;
-        console.log(this.modules)
+        this.filteredModules = [...modules];
       },
       error: (error) => console.error('Error fetching modules', error),
     });
@@ -28,5 +30,12 @@ export class ExploreModulesComponent implements OnInit {
 
   navigateToModule(moduleId: string): void {
     this.router.navigate([`/module/${moduleId}`]);
+  }
+
+  onSearch(): void {
+    this.filteredModules = this.modules.filter(module =>
+      module.moduleName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      module.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
   }
 }
