@@ -27,7 +27,7 @@ export class CreateModuleComponent {
       this.moduleService.createModule(this.createModuleForm.value).subscribe({
         next: (response) => {
           console.log('Module created successfully', response);
-          this.router.navigate([`/module/${response.module.moduleID}`]);
+          this.router.navigate([`/module/${response.module.moduleId}`]);
         },
         error: (error) => {
           console.error('Error creating module', error);

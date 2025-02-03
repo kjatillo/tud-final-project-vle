@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ModuleService } from '../../services/module.service';
 import { Module } from '../../models/module.model';
 import { Router } from '@angular/router';
+import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-module-detail',
@@ -19,7 +21,8 @@ export class ModuleDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private moduleService: ModuleService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -62,5 +65,23 @@ export class ModuleDetailComponent implements OnInit {
     if (this.module) {
       this.router.navigate([`/module/${this.moduleId}/edit`]);
     }
+  }
+
+  deleteModule(): void {
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.moduleService.deleteModule(this.moduleId).subscribe({
+          next: (response) => {
+            console.log('Module deleted successfully', response);
+            this.router.navigate(['/explore']);
+          },
+          error: (error) => {
+            console.error('Error deleting module', error);
+          }
+        });
+      }
+    });
   }
 }

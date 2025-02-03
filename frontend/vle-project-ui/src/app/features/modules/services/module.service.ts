@@ -38,6 +38,15 @@ export class ModuleService {
     return this.http.put(`${this.modulesApiEndpoint}/${id}`, moduleData, { headers });
   }
 
+  deleteModule(id: string | null): Observable<any> {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.modulesApiEndpoint}/${id}`, { headers });
+  }
+
   enrolInModule(id: string | null): Observable<any> {
     const token = localStorage.getItem('userToken');
     if (!token) {
