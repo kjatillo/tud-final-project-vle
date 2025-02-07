@@ -16,7 +16,7 @@ export class ExploreModulesComponent implements OnInit {
   constructor(
     private moduleService: ModuleService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.moduleService.getAllModules().subscribe({
