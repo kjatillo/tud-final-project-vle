@@ -15,30 +15,46 @@ public class EnrolmentRepository : IEnrolmentRepository
     }
 
     /// <summary>
-    /// Enrolls a user in a module.
+    /// Enrols a user in a module.
     /// </summary>
-    /// <param name="userId">The ID of the user to enroll.</param>
-    /// <param name="moduleId">The ID of the module to enroll the user in.</param>
-    /// <returns>The enrollment record created.</returns>
+    /// <param name="userId">The ID of the user to enrol.</param>
+    /// <param name="moduleId">The ID of the module to enrol the user in.</param>
+    /// <returns>The enrolment record created.</returns>
     public async Task<Enrolment> EnrolUserInModuleAsync(string userId, Guid moduleId)
     {
-        var enrollment = new Enrolment
+        var enrolment = new Enrolment
         {
             UserId = userId,
             ModuleId = moduleId
         };
 
-        _context.Enrolments.Add(enrollment);
+        _context.Enrolments.Add(enrolment);
         await _context.SaveChangesAsync();
-        return enrollment;
+        return enrolment;
     }
 
     /// <summary>
-    /// Checks if a user is enrolled in a specific module.
+    /// Retrieves all modules enroled by a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A list of modules enroled by the user.</returns>
+    public async Task<IEnumerable<Module>> GetEnroledModulesByUserIdAsync(string userId)
+    {
+        return await _context.Enrolments
+            .Where(e => e.UserId == userId)
+            .Join(_context.Modules,
+                  e => e.ModuleId,
+                  m => m.ModuleId,
+                  (e, m) => m)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Checks if a user is enroled in a specific module.
     /// </summary>
     /// <param name="userId">The ID of the user to check.</param>
     /// <param name="moduleId">The ID of the module to check.</param>
-    /// <returns>The task result contains a boolean value indicating whether the user is enrolled in the module.</returns>
+    /// <returns>The task result contains a boolean value indicating whether the user is enroled in the module.</returns>
     public async Task<bool> IsUserEnroledInModuleAsync(string userId, Guid moduleId)
     {
         return await _context.Enrolments

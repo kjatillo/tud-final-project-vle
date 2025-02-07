@@ -58,6 +58,24 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves all modules enroled by the current user.
+    /// </summary>
+    /// <returns>A list of modules enroled by the current user.</returns>
+    [HttpGet("enroled")]
+    [Authorize]
+    public async Task<IActionResult> GetEnroledModules()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var enroledModules = await _enrolmentRepository.GetEnroledModulesByUserIdAsync(user.Id);
+        return Ok(enroledModules);
+    }
+
+    /// <summary>
     /// Creates a new module.
     /// </summary>
     /// <param name="createModuleDto">The data transfer object containing the details of the module to be created.</param>
@@ -149,10 +167,10 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
-    /// Enrolls the current user in a specified module.
+    /// Enrols the current user in a specified module.
     /// </summary>
-    /// <param name="id">The ID of the module to enroll in.</param>
-    /// <returns>A success message if the enrollment is successful, otherwise an error message.</returns>
+    /// <param name="id">The ID of the module to enrol in.</param>
+    /// <returns>A success message if the enrolment is successful, otherwise an error message.</returns>
     [HttpPost("{id}/enrol")]
     [Authorize(Roles = "Student,Instructor")]
     public async Task<IActionResult> EnrolInModule(Guid id)
@@ -183,7 +201,7 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Checks if the current user is enroled in a specified module.
     /// </summary>
-    /// <param name="id">The ID of the module to check enrollment for.</param>
+    /// <param name="id">The ID of the module to check enrolment for.</param>
     /// <returns>Returns true if the user is enroled in the module, otherwise false.</returns>
     [HttpGet("{id}/isEnroled")]
     [Authorize(Roles = "Student,Instructor")]
