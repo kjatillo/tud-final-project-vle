@@ -20,6 +20,14 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.authService.isLoggedIn.subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
+      if (loggedIn) {
+        this.moduleService.getEnroledModules().subscribe({
+          next: (modules) => {
+            this.enroledModules = modules;
+          },
+          error: (error) => console.error('Error fetching enrolled modules', error),
+        });
+      }
     });
   }
 }

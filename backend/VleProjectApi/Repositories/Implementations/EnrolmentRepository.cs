@@ -46,6 +46,7 @@ public class EnrolmentRepository : IEnrolmentRepository
                   e => e.ModuleId,
                   m => m.ModuleId,
                   (e, m) => m)
+            .OrderBy(m => m.ModuleName)
             .ToListAsync();
     }
 
