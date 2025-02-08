@@ -20,6 +20,15 @@ export class ModuleService {
     return this.http.get<Module>(`${this.modulesApiEndpoint}/${id}`);
   }
 
+  getEnroledModules(): Observable<Module[]> {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<Module[]>(`${this.modulesApiEndpoint}/enroled`, { headers });
+  }
+
   createModule(moduleData: Module): Observable<any> {
     const token = localStorage.getItem('userToken');
     if (!token) {
