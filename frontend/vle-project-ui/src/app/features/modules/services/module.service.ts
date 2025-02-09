@@ -1,8 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Module } from '../models/module.model';
 import { environment } from '../../../../environments/environment.development';
+import { Module } from '../models/module.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,56 +21,26 @@ export class ModuleService {
   }
 
   getEnroledModules(): Observable<Module[]> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<Module[]>(`${this.modulesApiEndpoint}/enroled`, { headers });
+    return this.http.get<Module[]>(`${this.modulesApiEndpoint}/enroled`);
   }
 
   createModule(moduleData: Module): Observable<any> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post(this.modulesApiEndpoint, moduleData, { headers });
+    return this.http.post(this.modulesApiEndpoint, moduleData);
   }
 
   editModule(id: string, moduleData: Module): Observable<any> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.put(`${this.modulesApiEndpoint}/${id}`, moduleData, { headers });
+    return this.http.put(`${this.modulesApiEndpoint}/${id}`, moduleData);
   }
 
   deleteModule(id: string | null): Observable<any> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete(`${this.modulesApiEndpoint}/${id}`, { headers });
+    return this.http.delete(`${this.modulesApiEndpoint}/${id}`);
   }
 
   enrolInModule(id: string | null): Observable<any> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post(`${this.modulesApiEndpoint}/${id}/enrol`, {}, { headers });
+    return this.http.post(`${this.modulesApiEndpoint}/${id}/enrol`, {});
   }
 
   isUserEnroled(id: string | null): Observable<boolean> {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      throw new Error('No token found');
-    }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<boolean>(`${this.modulesApiEndpoint}/${id}/isEnroled`, { headers });
+    return this.http.get<boolean>(`${this.modulesApiEndpoint}/${id}/is-enroled`);
   }
 }

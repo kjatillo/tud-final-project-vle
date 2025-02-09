@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModuleService } from '../../services/module.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ModuleService } from '../../services/module.service';
 
 @Component({
   selector: 'app-create-module',
@@ -10,8 +11,10 @@ import { Router } from '@angular/router';
 })
 export class CreateModuleComponent {
   createModuleForm!: FormGroup;
+  isInstructor = false;
 
   constructor(
+    private authService: AuthService,
     private fb: FormBuilder,
     private moduleService: ModuleService,
     private router: Router
@@ -19,6 +22,12 @@ export class CreateModuleComponent {
     this.createModuleForm = this.fb.group({
       moduleName: ['', Validators.required],
       description: ['', Validators.required],
+    });
+  }
+
+  ngOnInit(): void {
+    this.authService.userRoles$.subscribe(roles => {
+      this.isInstructor = roles.includes('Instructor');
     });
   }
 

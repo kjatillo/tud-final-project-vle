@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UsersModule } from './users/users.module';
+import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home.component';
 import { ModulesModule } from './modules/modules.module';
+import { UsersModule } from './users/users.module';
 
 @NgModule({
   declarations: [

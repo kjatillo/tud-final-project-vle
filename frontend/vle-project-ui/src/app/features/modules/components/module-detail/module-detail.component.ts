@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ModuleService } from '../../services/module.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Module } from '../../models/module.model';
-import { Router } from '@angular/router';
+import { ModuleService } from '../../services/module.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
@@ -15,25 +15,33 @@ export class ModuleDetailComponent implements OnInit {
   module!: Module;
   moduleId!: string | null;
   moduleCreator!: string;
-  currentUser: string = localStorage.getItem('userId') || '';
+  currentUser!: string;
   isEnroled!: boolean;
 
   constructor(
     private route: ActivatedRoute,
+    private authService: AuthService,
+    private dialog: MatDialog,
     private moduleService: ModuleService,
-    private router: Router,
-    private dialog: MatDialog
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id');
+
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUser = user.userId;
+      }
+    });
+
     this.checkEnrolment();
 
     if (this.moduleId) {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
           this.module = module;
-          this.moduleCreator = this.module.createdBy;
+          this.moduleCreator = module.createdBy;
         },
         error: (error) => console.error('Error fetching module', error),
       });
@@ -70,7 +78,7 @@ export class ModuleDetailComponent implements OnInit {
   deleteModule(): void {
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.moduleService.deleteModule(this.moduleId).subscribe({
           next: (response) => {

@@ -108,6 +108,12 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        if (user == null)
+        {
+            return Unauthorized(new { Status = "Error", Message = "User not found." });
+        }
+
         var result = await _signInManager
             .PasswordSignInAsync(
                 loginDto.Email, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
@@ -115,12 +121,6 @@ public class UsersController : ControllerBase
         if (!result.Succeeded)
         {
             return Unauthorized(new { Status = "Error", Message = "Invalid login attempt." });
-        }
-
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user == null)
-        {
-            return Unauthorized(new { Status = "Error", Message = "User not found." });
         }
 
         var userDto = _mapper.Map<UserDto>(user);

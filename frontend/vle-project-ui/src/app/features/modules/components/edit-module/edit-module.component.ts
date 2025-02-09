@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ModuleService } from '../../services/module.service';
 
 @Component({
@@ -11,8 +12,10 @@ import { ModuleService } from '../../services/module.service';
 export class EditModuleComponent implements OnInit {
   editModuleForm!: FormGroup;
   moduleId!: string;
+  isInstructor = false;
 
   constructor(
+    private authService: AuthService,
     private fb: FormBuilder,
     private moduleService: ModuleService,
     private route: ActivatedRoute,
@@ -26,6 +29,11 @@ export class EditModuleComponent implements OnInit {
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
+
+    this.authService.userRoles$.subscribe(roles => {
+      this.isInstructor = roles.includes('Instructor');
+    });
+
     this.moduleService.getModuleById(this.moduleId).subscribe({
       next: (module) => {
         this.editModuleForm.patchValue({

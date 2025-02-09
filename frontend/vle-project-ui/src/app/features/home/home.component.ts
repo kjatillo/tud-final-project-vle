@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
-import { ModuleService } from '../modules/services/module.service';
 import { Module } from '../modules/models/module.model';
+import { ModuleService } from '../modules/services/module.service';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.authService.isLoggedIn.subscribe((loggedIn) => {
+    this.authService.isLoggedIn$.subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
       if (loggedIn) {
         this.moduleService.getEnroledModules().subscribe({
