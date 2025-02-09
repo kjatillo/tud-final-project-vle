@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +13,7 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService,
+    private authService: AuthService,
     private router: Router) {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
@@ -23,11 +23,9 @@ export class RegisterComponent {
     });
   }
 
-  ngOnInit(): void { }
-
   onSubmit(): void {
     if (this.registerForm.valid) {
-      this.userService.register(this.registerForm.value).subscribe({
+      this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
           console.log('User registed successfully', response);
           this.router.navigate(['/login']);

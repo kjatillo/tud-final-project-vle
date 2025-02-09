@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService,
+    private authService: AuthService,
     private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -21,11 +21,9 @@ export class LoginComponent {
     });
   }
 
-  ngOnInit(): void { }
-
   onSubmit(): void {
     if (this.loginForm.valid) {
-      this.userService.login(this.loginForm.value).subscribe({
+      this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           console.log('Login successful', response);
           this.router.navigate(['/']);
