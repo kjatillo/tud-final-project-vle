@@ -203,7 +203,7 @@ public class ModulesController : ControllerBase
     /// </summary>
     /// <param name="id">The ID of the module to check enrolment for.</param>
     /// <returns>Returns true if the user is enroled in the module, otherwise false.</returns>
-    [HttpGet("{id}/isEnroled")]
+    [HttpGet("{id}/is-enroled")]
     [Authorize(Roles = "Student,Instructor")]
     public async Task<IActionResult> IsUserEnroled(Guid id)
     {
