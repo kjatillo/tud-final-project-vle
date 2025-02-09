@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -128,22 +129,44 @@ public class UsersController : ControllerBase
 
         var token = await GenerateJwtTokenAsync(user);
 
-        return Ok(new { Status = "Success", Message = "User logged in successfully", Token = token, User = userDto });
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddHours(1),
+            Path = "/"
+        };
+
+        Response.Cookies.Append("jwt", token, cookieOptions);
+
+        return Ok(new { Status = "Success", Message = "Login successful", User = userDto });
     }
 
     /// <summary>
-    /// Logs out the current user.
+    /// Logs out the current user by signing them out and removing the JWT cookie.
     /// </summary>
-    /// <returns>A success message if the user is logged out successfully; otherwise, an error response.</returns>
-    /// <response code="200">Returns a success message.</response>
-    /// <response code="500">If an error occurs while processing the request.</response>
+    /// <returns>An action result indicating the success or failure of the logout operation.</returns>
+    /// <response code="200">If the logout is successful.</response>
+    /// <response code="500">If an error occurs during the logout process.</response>
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         try
         {
             await _signInManager.SignOutAsync();
-            return Ok(new { Status = "Success", Message = "User logged out successfully" });
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(-1),
+                Path = "/"
+            };
+            Response.Cookies.Append("jwt", "", cookieOptions);
+
+            return Ok(new { Status = "Success", Message = "Logout successful" });
         }
         catch (Exception ex)
         {
@@ -151,6 +174,49 @@ public class UsersController : ControllerBase
                 StatusCodes.Status500InternalServerError,
                 new { Status = "Error", Message = $"An error occurred while processing your request: {ex.Message}" });
         }
+    }
+
+    /// <summary>
+    /// Retrieves the current authenticated user's details.
+    /// </summary>
+    /// <returns>An action result containing the user details if successful otherwise an unauthorized response.</returns>
+    /// <response code="200">Returns the user details.</response>
+    /// <response code="401">If the user is not authenticated.</response>
+    [HttpGet("current-user")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var userDto = _mapper.Map<UserDto>(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        userDto.RoleName = roles.FirstOrDefault();
+
+        return Ok(userDto);
+    }
+
+    /// <summary>
+    /// Verifies the validity of the current user's token.
+    /// </summary>
+    /// <returns>An action result indicating whether the token is valid and the user's roles.</returns>
+    /// <response code="200">If the token is valid.</response>
+    /// <response code="401">If the user is not authenticated or the token is invalid.</response>
+    [HttpGet("verify-token")]
+    [Authorize]
+    public async Task<IActionResult> VerifyToken()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized(new { isValid = false });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return Ok(new { isValid = true, roles });
     }
 
     /// <summary>
@@ -170,8 +236,6 @@ public class UsersController : ControllerBase
         }
 
         var keyBytes = Encoding.ASCII.GetBytes(key);
-
-        // Get user roles
         var userRoles = await _userManager.GetRolesAsync(user);
         var role = userRoles.FirstOrDefault();
 
@@ -189,7 +253,7 @@ public class UsersController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
         };
