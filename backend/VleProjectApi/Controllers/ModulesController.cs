@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VleProjectApi.Dtos;
 using VleProjectApi.Models;
 using VleProjectApi.Repositories.Interfaces;
+using VleProjectApi.Services;
 
 namespace VleProjectApi.Controllers;
 
@@ -12,20 +13,26 @@ namespace VleProjectApi.Controllers;
 [ApiController]
 public class ModulesController : ControllerBase
 {
+    private readonly BlobStorageService _blobStorageService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
+    private readonly IModuleFileRepository _moduleFileRepository;
     private readonly IMapper _mapper;
 
     public ModulesController(
+        BlobStorageService blobStorageService,
         UserManager<ApplicationUser> userManager,
         IEnrolmentRepository enrolmentRepository,
         IModuleRepository moduleRepository,
+        IModuleFileRepository moduleFileRepository,
         IMapper mapper)
     {
+        _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
+        _moduleFileRepository = moduleFileRepository ?? throw new ArgumentNullException(nameof(moduleFileRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -215,5 +222,60 @@ public class ModulesController : ControllerBase
 
         var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
         return Ok(isEnroled);
+    }
+
+    /// <summary>
+    /// Uploads a lecture note for a specific module.
+    /// </summary>
+    /// <param name="id">The ID of the module to upload the lecture note to.</param>
+    /// <param name="uploadLectureNoteDto">The data transfer object containing the lecture note details and file.</param>
+    /// <returns>A success message with the file URL if the upload is successful, otherwise an error message.</returns>
+    [HttpPost("{id}/upload-lecture-note")]
+    [Authorize(Roles = "Instructor")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadLectureNote(
+        Guid id, [FromForm] UploadLectureNoteDto uploadLectureNoteDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        if (uploadLectureNoteDto.File == null)
+        {
+            return BadRequest(new { Status = "Error", Message = "File is required." });
+        }
+
+        using var stream = uploadLectureNoteDto.File.OpenReadStream();
+        var filePath = $"modules/{id}/lecture-notes/{uploadLectureNoteDto.File.FileName}";
+        await _blobStorageService.UploadFileAsync(stream, filePath);
+
+        // Generate a SAS token that is valid for 10 years
+        var fileUrl = _blobStorageService.GetBlobSasUri(filePath, DateTimeOffset.UtcNow.AddYears(10));
+
+        var moduleFile = new ModuleFile
+        {
+            ModuleId = id,
+            FileName = uploadLectureNoteDto.File.FileName,
+            FileUrl = fileUrl,
+            Title = uploadLectureNoteDto.Title,
+            Description = uploadLectureNoteDto.Description
+        };
+
+        await _moduleFileRepository.AddModuleFileAsync(moduleFile);
+
+        return Ok(new { Status = "Success", Message = "Lecture note uploaded successfully!", FileUrl = fileUrl });
     }
 }
