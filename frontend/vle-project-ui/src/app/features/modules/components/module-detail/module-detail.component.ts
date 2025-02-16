@@ -17,6 +17,7 @@ export class ModuleDetailComponent implements OnInit {
   moduleCreator!: string;
   currentUser!: string;
   isEnroled!: boolean;
+  lectureNotes: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +45,10 @@ export class ModuleDetailComponent implements OnInit {
           this.moduleCreator = module.createdBy;
         },
         error: (error) => console.error('Error fetching module', error),
+      });
+
+      this.moduleService.getLectureNotes(this.moduleId).subscribe(lectureNotes => {
+        this.lectureNotes = lectureNotes;
       });
     }
   }
