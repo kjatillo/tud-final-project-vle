@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import { Module } from '../models/module.model';
+import { ModuleFile } from '../models/module-file.model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,15 @@ export class ModuleService {
 
   deleteModule(id: string | null): Observable<any> {
     return this.http.delete(`${this.modulesApiEndpoint}/${id}`);
+  }
+
+  uploadLectureNote(moduleId: string, moduleFile: ModuleFile): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', moduleFile.file);
+    formData.append('title', moduleFile.title);
+    formData.append('description', moduleFile.description);
+    
+    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/upload-lecture-note`, formData);
   }
 
   enrolInModule(id: string | null): Observable<any> {
