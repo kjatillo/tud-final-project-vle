@@ -46,6 +46,10 @@ export class ModuleService {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/upload-lecture-note`, formData);
   }
 
+  getLectureNotes(moduleId: string): Observable<any> {
+    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/lecture-notes`);
+  }
+
   enrolInModule(id: string | null): Observable<any> {
     return this.http.post(`${this.modulesApiEndpoint}/${id}/enrol`, {});
   }

@@ -278,4 +278,18 @@ public class ModulesController : ControllerBase
 
         return Ok(new { Status = "Success", Message = "Lecture note uploaded successfully!", FileUrl = fileUrl });
     }
+
+    /// <summary>
+    /// Retrieves all lecture notes for a specific module.
+    /// </summary>
+    /// <param name="id">The ID of the module to get lecture notes for.</param>
+    /// <returns>A list of lecture notes for the specified module.</returns>
+    [HttpGet("{id}/lecture-notes")]
+    [Authorize]
+    public async Task<IActionResult> GetLectureNotes(Guid id)
+    {
+        var moduleFiles = await _moduleFileRepository.GetModuleFilesByModuleIdAsync(id);
+
+        return Ok(moduleFiles);
+    }
 }
