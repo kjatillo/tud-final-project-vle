@@ -1,0 +1,30 @@
+<div class="container mt-5">
+    <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+        <div class="form-group mb-3">
+            <label for="title">Title:</label>
+            <input type="text" id="title" formControlName="title" class="form-control" />
+            <div *ngIf="uploadForm.get('title')?.invalid && uploadForm.get('title')?.touched" class="text-danger">
+                Title is required.
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="description">Description:</label>
+            <textarea id="description" formControlName="description" class="form-control"></textarea>
+            <div *ngIf="uploadForm.get('description')?.invalid && uploadForm.get('description')?.touched"
+                class="text-danger">
+                Description is required.
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="file">Upload Lecture Note: </label>
+            <input type="file" id="file" (change)="onFileSelected($event)" class="form-control-file" />
+            <div *ngIf="uploadForm.get('file')?.invalid && uploadForm.get('file')?.touched" class="text-danger">
+                File is required.
+            </div>
+        </div>
+
+        <button type="submit" [disabled]="uploadForm.invalid" class="btn btn-primary">Upload</button>
+    </form>
+</div>

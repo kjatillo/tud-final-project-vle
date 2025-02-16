@@ -8,6 +8,7 @@ import { DeleteConfirmationDialogComponent } from './components/delete-confirmat
 import { EditModuleComponent } from './components/edit-module/edit-module.component';
 import { ExploreModulesComponent } from './components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
+import { UploadLectureNoteComponent } from './components/upload-lecture-note/upload-lecture-note.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { ModuleDetailComponent } from './components/module-detail/module-detail.
     DeleteConfirmationDialogComponent,
     ModuleDetailComponent,
     EditModuleComponent,
-    ExploreModulesComponent
+    ExploreModulesComponent,
+    UploadLectureNoteComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import { ModuleDetailComponent } from './components/module-detail/module-detail.
     DeleteConfirmationDialogComponent,
     ModuleDetailComponent,
     EditModuleComponent,
-    ExploreModulesComponent
+    ExploreModulesComponent,
+    UploadLectureNoteComponent
   ]
 })
 export class ModulesModule { }

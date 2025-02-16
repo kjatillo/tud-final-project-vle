@@ -92,4 +92,10 @@ export class ModuleDetailComponent implements OnInit {
       }
     });
   }
+
+  addLectureNote(): void {
+    if (this.module) {
+      this.router.navigate([`/module/${this.moduleId}/upload-lecture-note`]);
+    }
+  }
 }

@@ -1,7 +1,9 @@
 <div class="container mt-5" *ngIf="module">
     <h2>{{ module.moduleName }}</h2>
     <p>{{ module.description }}</p>
-    <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator)" (click)="enrol()">Enroll</button>
+    <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator)"
+        (click)="enrol()">Enroll</button>
+        <button class="btn btn-primary me-2" *ngIf="moduleCreator == currentUser" (click)="addLectureNote()">Add Lecture Note</button>
     <button class="btn btn-secondary me-2" *ngIf="moduleCreator == currentUser" (click)="editModule()">Edit</button>
     <button class="btn btn-danger" *ngIf="moduleCreator == currentUser" (click)="deleteModule()">Delete</button>
     <div *ngIf="isEnroled">

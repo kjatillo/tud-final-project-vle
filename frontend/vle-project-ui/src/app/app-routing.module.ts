@@ -8,6 +8,7 @@ import { CreateModuleComponent } from './features/modules/components/create-modu
 import { EditModuleComponent } from './features/modules/components/edit-module/edit-module.component';
 import { ExploreModulesComponent } from './features/modules/components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './features/modules/components/module-detail/module-detail.component';
+import { UploadLectureNoteComponent } from './features/modules/components/upload-lecture-note/upload-lecture-note.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'create-module', component: CreateModuleComponent },
   { path: 'module/:id', component: ModuleDetailComponent },
   { path: 'module/:id/edit', component: EditModuleComponent },
-  { path: 'explore', component: ExploreModulesComponent }
+  { path: 'explore', component: ExploreModulesComponent },
+  { path: 'module/:id/upload-lecture-note', component: UploadLectureNoteComponent },
 ];
 
 @NgModule({
