@@ -9,6 +9,7 @@ using VleProjectApi.Models;
 using VleProjectApi.Profiles;
 using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
+using VleProjectApi.Services;
 
 namespace VleProjectApi;
 
@@ -85,8 +86,10 @@ public class Startup
                 });
         });
 
-        services.AddScoped<IModuleRepository, ModuleRepository>();
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
+        services.AddScoped<IModuleRepository, ModuleRepository>();
+        services.AddScoped<IModuleFileRepository, ModuleFileRepository>();
+        services.AddSingleton<BlobStorageService>();
 
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
 
