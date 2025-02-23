@@ -16,15 +16,18 @@ export class ModulePageComponent implements OnInit {
   contents: ModuleContent[] = [];
   selectedPageId!: string;
   selectedPageTitle!: string;
+  selectedContent!: ModuleContent;
   isInstructor = false;
   showAddContentForm = false;
+  showEditContentForm = false;
   showAddPageForm = false;
   showContents = true;
 
   constructor(
     private route: ActivatedRoute,
     private moduleService: ModuleService,
-    private authService: AuthService  ) {}
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
@@ -41,8 +44,9 @@ export class ModulePageComponent implements OnInit {
     this.selectedPageTitle = selectedPage ? selectedPage.title : '';
 
     this.loadContents(pageId);
-    
+
     this.showAddContentForm = false;
+    this.showEditContentForm = false;
     this.showAddPageForm = false;
     this.showContents = true;
   }
@@ -65,17 +69,28 @@ export class ModulePageComponent implements OnInit {
   addPage(): void {
     this.showAddPageForm = true;
     this.showAddContentForm = false;
+    this.showEditContentForm = false;
     this.showContents = false;
   }
 
   addContent(): void {
     this.showAddContentForm = true;
     this.showAddPageForm = false;
+    this.showEditContentForm = false;
+    this.showContents = false;
+  }
+
+  editContent(contentId: string): void {
+    this.selectedContent = this.contents.find(content => content.contentId === contentId)!;
+    this.showEditContentForm = true;
+    this.showAddContentForm = false;
+    this.showAddPageForm = false;
     this.showContents = false;
   }
 
   onContentAdded(): void {
     this.showAddContentForm = false;
+    this.showEditContentForm = false;
     this.showContents = true;
     this.loadContents(this.selectedPageId);
   }
@@ -93,6 +108,13 @@ export class ModulePageComponent implements OnInit {
 
   onCancelAddContent(): void {
     this.showAddContentForm = false;
+    this.showEditContentForm = false;
     this.showContents = true;
+  }
+
+  onContentUpdated(): void {
+    this.showEditContentForm = false;
+    this.showContents = true;
+    this.loadContents(this.selectedPageId);
   }
 }

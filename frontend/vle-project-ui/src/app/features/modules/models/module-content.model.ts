@@ -1,4 +1,6 @@
 export interface ModuleContent {
+    contentId: string;
+    pageId: string;
     title: string;
     description: string;
     file: File;

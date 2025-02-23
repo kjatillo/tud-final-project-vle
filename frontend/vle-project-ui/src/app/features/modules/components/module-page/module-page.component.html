@@ -18,20 +18,24 @@
 
         <div class="col-12 col-md-9">
             <div *ngIf="showContents && selectedPageId">
-                <button *ngIf="isInstructor && !showAddContentForm" class="btn btn-primary mb-3" (click)="addContent()">Add New Content</button>
-                <div *ngIf="!showAddContentForm">
+                <button *ngIf="isInstructor && !showAddContentForm && !showEditContentForm" class="btn btn-primary mb-3" (click)="addContent()">Add New Content</button>
+                <div *ngIf="!showAddContentForm && !showEditContentForm">
                     <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
                     <ul class="list-group" *ngIf="contents.length > 0; else noPageContentsTemplate">
                         <li *ngFor="let content of contents" class="list-group-item">
                             <h5 class="content-title">{{ content.title }}</h5>
                             <p class="content-description">{{ content.description }}</p>
+                            
                             <ng-container *ngIf="content.isLink; else fileTemplate">
                                 <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary">Go to link</a>
                             </ng-container>
+                            
                             <ng-template #fileTemplate>
                                 <p>Type: {{ content.fileType }}</p>
                                 <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary">Download File</a>
                             </ng-template>
+
+                            <button *ngIf="isInstructor" class="btn btn-secondary" (click)="editContent(content.contentId)">Edit</button>
                         </li>
                     </ul>
 
@@ -44,6 +48,11 @@
             <div *ngIf="showAddContentForm">
                 <h4>Add Content - {{ selectedPageTitle }}</h4>
                 <app-add-content [pageId]="selectedPageId" (contentAdded)="onContentAdded()" (cancel)="onCancelAddContent()"></app-add-content>
+            </div>
+
+            <div *ngIf="showEditContentForm">
+                <h4>Edit Content - {{ selectedPageTitle }}</h4>
+                <app-edit-content [content]="selectedContent" (contentUpdated)="onContentUpdated()" (cancel)="onCancelAddContent()"></app-edit-content>
             </div>
             
             <div *ngIf="showAddPageForm">
