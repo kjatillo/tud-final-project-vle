@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
-import { Module } from '../models/module.model';
+import { ModuleContent } from '../models/module-content.model';
 import { ModulePage } from '../models/module-page.model';
+import { Module } from '../models/module.model';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,14 @@ export class ModuleService {
 
   addContent(moduleId: string, pageId: string, content: FormData): Observable<any> {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/add-content`, content);
+  }
+
+  editContent(moduleId: string, pageId: string, contentId: string, content: FormData): Observable<ModuleContent> {
+    return this.http.put<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`, content);
+  }
+
+  getContentById(moduleId: string, pageId: string, contentId: string): Observable<ModuleContent> {
+    return this.http.get<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
   }
 
   getContents(moduleId: string, pageId: string): Observable<any> {

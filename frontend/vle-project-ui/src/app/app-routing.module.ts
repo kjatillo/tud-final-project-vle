@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { AddContentComponent } from './features/modules/components/add-content/add-content.component';
 import { CreateModuleComponent } from './features/modules/components/create-module/create-module.component';
+import { EditContentComponent } from './features/modules/components/edit-content/edit-content.component';
 import { EditModuleComponent } from './features/modules/components/edit-module/edit-module.component';
 import { ExploreModulesComponent } from './features/modules/components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './features/modules/components/module-detail/module-detail.component';
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'module/:id', component: ModuleDetailComponent, children: [
     { path: 'page/:pageId', component: ModulePageComponent, children: [
       { path: 'add-content', component: AddContentComponent },
+      { path: 'content/:contentId/edit', component: EditContentComponent }
     ]}
   ]},
   { path: 'module/:id/edit', component: EditModuleComponent },

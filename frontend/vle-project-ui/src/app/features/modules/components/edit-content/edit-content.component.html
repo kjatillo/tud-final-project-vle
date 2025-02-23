@@ -1,0 +1,26 @@
+<div class="container p-0">
+    <form [formGroup]="editContentForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+            <label for="title" class="form-label">Content Title</label>
+            <input type="text" id="title" class="form-control" formControlName="title">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" class="form-control" formControlName="description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="isLink" class="form-label">Is this content a link?</label>
+            <input type="checkbox" id="isLink" formControlName="isLink">
+        </div>
+        <div class="mb-3" *ngIf="editContentForm.get('isLink')?.value">
+            <label for="linkUrl" class="form-label">Link URL</label>
+            <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl">
+        </div>
+        <div class="mb-3" *ngIf="!editContentForm.get('isLink')?.value">
+            <label for="file" class="form-label">File</label>
+            <input type="file" id="file" (change)="onFileSelected($event)" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary mt-2 me-2">Update Content</button>
+        <button type="button" class="btn btn-secondary mt-2" (click)="onCancel()">Cancel</button>
+    </form>
+</div>
