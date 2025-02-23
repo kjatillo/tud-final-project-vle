@@ -17,5 +17,8 @@ public class ModuleProfile : Profile
             .ForMember(dest => dest.ModuleId, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+
+        CreateMap<AddContentDto, ModuleContent>()
+            .ForMember(dest => dest.UploadedDate, opt => opt.MapFrom(src => DateTime.Now));
     }
 }

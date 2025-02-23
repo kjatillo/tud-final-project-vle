@@ -87,8 +87,9 @@ public class Startup
         });
 
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
-        services.AddScoped<IModuleRepository, ModuleRepository>();
+        services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
+        services.AddScoped<IModuleRepository, ModuleRepository>();
         services.AddScoped<IModuleFileRepository, ModuleFileRepository>();
         services.AddSingleton<BlobStorageService>();
 

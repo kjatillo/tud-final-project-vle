@@ -8,5 +8,5 @@ public class Module
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-    public ICollection<ModuleFile> ModuleFiles { get; set; } = new List<ModuleFile>();
+    public ICollection<ModulePage> ModulePages { get; set; } = new List<ModulePage>();
 }
