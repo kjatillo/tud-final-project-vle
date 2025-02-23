@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
+using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
 using VleProjectApi.Services;
 
@@ -19,6 +20,7 @@ public class ModulesController : ControllerBase
     private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
     private readonly IModuleFileRepository _moduleFileRepository;
+    private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
     private readonly IMapper _mapper;
 
@@ -27,6 +29,7 @@ public class ModulesController : ControllerBase
         UserManager<ApplicationUser> userManager,
         IEnrolmentRepository enrolmentRepository,
         IModuleRepository moduleRepository,
+        IModuleContentRepository moduleContentRepository,
         IModuleFileRepository moduleFileRepository,
         IModulePageRepository modulePageRepository,
         IMapper mapper)
@@ -36,6 +39,7 @@ public class ModulesController : ControllerBase
         _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
         _moduleFileRepository = moduleFileRepository ?? throw new ArgumentNullException(nameof(moduleFileRepository));
+        _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
@@ -336,5 +340,83 @@ public class ModulesController : ControllerBase
         var pages = await _modulePageRepository.GetPagesByModuleIdAsync(moduleId);
 
         return Ok(pages);
+    }
+
+    [HttpPost("{moduleId}/pages/{pageId}/add-content")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> AddContent(Guid moduleId, Guid pageId, [FromForm] AddContentDto contentDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        var modulePage = await _modulePageRepository.GetModulePageById(pageId);
+        if (modulePage == null)
+        {
+            return NotFound();
+        }
+
+        if (contentDto.IsLink && string.IsNullOrEmpty(contentDto.LinkUrl))
+        {
+            return BadRequest(new { Status = "Error", Message = "Link URL is required for link content." });
+        }
+
+        if (!contentDto.IsLink && contentDto.File == null)
+        {
+            return BadRequest(new { Status = "Error", Message = "File is required for file content." });
+        }
+
+        var content = _mapper.Map<ModuleContent>(contentDto);
+        content.PageId = pageId;
+
+        if (!contentDto.IsLink && contentDto.File != null)
+        {
+            using var stream = contentDto.File.OpenReadStream();
+            var filePath = $"modules/{moduleId}/pages/{pageId}/resource/{contentDto.File.FileName}";
+            await _blobStorageService.UploadFileAsync(stream, filePath);
+
+            // Generate a SAS token that is valid for 10 years
+            var fileUrl = _blobStorageService.GetBlobSasUri(filePath, DateTimeOffset.UtcNow.AddYears(10));
+
+            content.FileUrl = fileUrl;
+            content.FileType = contentDto.File.ContentType;
+        }
+
+        var createdContent = await _moduleContentRepository.AddContentAsync(content);
+
+        return Ok(createdContent);
+    }
+
+    [HttpGet("{moduleId}/pages/{pageId}/contents")]
+    [Authorize]
+    public async Task<IActionResult> GetContents(Guid moduleId, Guid pageId)
+    {
+        var modulePage = await _modulePageRepository.GetModulePageById(pageId);
+        if (modulePage == null)
+        {
+            return NotFound();
+        }
+
+        if (modulePage.ModuleId != moduleId)
+        {
+            return BadRequest(new { Status = "Error", Message = "The page does not belong to the specified module." });
+        }
+
+        var contents = await _moduleContentRepository.GetContentsByPageIdAsync(pageId);
+
+        return Ok(contents);
     }
 }
