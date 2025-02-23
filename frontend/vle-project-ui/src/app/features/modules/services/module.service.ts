@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import { Module } from '../models/module.model';
-import { ModuleFile } from '../models/module-file.model';
 import { ModulePage } from '../models/module-page.model';
 
 @Injectable({
@@ -52,19 +51,6 @@ export class ModuleService {
 
   getContents(moduleId: string, pageId: string): Observable<any> {
     return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents`);
-  }
-
-  uploadLectureNote(moduleId: string, moduleFile: ModuleFile): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', moduleFile.file);
-    formData.append('title', moduleFile.title);
-    formData.append('description', moduleFile.description);
-    
-    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/upload-lecture-note`, formData);
-  }
-
-  getLectureNotes(moduleId: string): Observable<any> {
-    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/lecture-notes`);
   }
 
   enrolInModule(id: string | null): Observable<any> {

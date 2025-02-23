@@ -12,7 +12,6 @@ import { EditModuleComponent } from './components/edit-module/edit-module.compon
 import { ExploreModulesComponent } from './components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
 import { ModulePageComponent } from './components/module-page/module-page.component';
-import { UploadLectureNoteComponent } from './components/upload-lecture-note/upload-lecture-note.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +23,6 @@ import { UploadLectureNoteComponent } from './components/upload-lecture-note/upl
     ExploreModulesComponent,
     ModuleDetailComponent,
     ModulePageComponent,
-    UploadLectureNoteComponent,
   ],
   imports: [
     CommonModule,
@@ -43,7 +41,6 @@ import { UploadLectureNoteComponent } from './components/upload-lecture-note/upl
     ExploreModulesComponent,
     ModuleDetailComponent,
     ModulePageComponent,
-    UploadLectureNoteComponent,
   ]
 })
 export class ModulesModule { }

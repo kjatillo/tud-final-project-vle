@@ -90,7 +90,6 @@ public class Startup
         services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
         services.AddScoped<IModuleRepository, ModuleRepository>();
-        services.AddScoped<IModuleFileRepository, ModuleFileRepository>();
         services.AddSingleton<BlobStorageService>();
 
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
