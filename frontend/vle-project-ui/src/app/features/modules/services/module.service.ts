@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import { Module } from '../models/module.model';
 import { ModuleFile } from '../models/module-file.model';
+import { ModulePage } from '../models/module-page.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class ModuleService {
 
   constructor(private http: HttpClient) { }
 
-  getAllModules(): Observable<Module[]> {
+  getModules(): Observable<Module[]> {
     return this.http.get<Module[]>(this.modulesApiEndpoint);
   }
 
@@ -35,6 +36,14 @@ export class ModuleService {
 
   deleteModule(id: string | null): Observable<any> {
     return this.http.delete(`${this.modulesApiEndpoint}/${id}`);
+  }
+
+  getPages(moduleId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.modulesApiEndpoint}/${moduleId}/pages`);
+  }
+
+  addPage(moduleId: string, page: ModulePage): Observable<any> {
+    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/add-page`, page);
   }
 
   uploadLectureNote(moduleId: string, moduleFile: ModuleFile): Observable<any> {

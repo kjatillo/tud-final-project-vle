@@ -1,0 +1,30 @@
+<div class="container mt-5 p-0">
+    <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+            <button *ngIf="isInstructor" class="btn btn-primary mb-3" (click)="addPage()">Add New Page</button>
+            <div *ngIf="pages.length > 0; else noModuleContentsTemplate">
+                <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
+                <ul class="list-group">
+                    <li *ngFor="let page of pages" class="list-group-item" (click)="selectPage(page.pageId)">
+                        <a [routerLink]="['/module', moduleId, 'page', page.pageId]">{{ page.title }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <ng-template #noModuleContentsTemplate>
+            <p>No module contents to display.</p>
+        </ng-template>
+
+        <div class="col-12 col-md-9">
+            <div *ngIf="showContents && selectedPageId">
+                Temp Page Content
+            </div>
+            
+            <div *ngIf="showAddPageForm">
+                <h4>Add Page</h4>
+                <app-add-page (pageAdded)="onPageAdded()" (cancel)="onCancelAddPage()"></app-add-page>
+            </div>
+        </div>
+    </div>
+</div>

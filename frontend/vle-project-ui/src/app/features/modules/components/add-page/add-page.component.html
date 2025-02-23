@@ -1,0 +1,11 @@
+<div class="container p-0">
+    <form [formGroup]="addPageForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input id="title" formControlName="title" class="form-control" />
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3 me-2" [disabled]="addPageForm.invalid">Add Page</button>
+        <button type="button" class="btn btn-secondary mt-3" (click)="onCancel()">Cancel</button>
+    </form>
+</div>

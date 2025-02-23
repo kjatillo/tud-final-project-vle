@@ -19,7 +19,7 @@ export class ExploreModulesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.moduleService.getAllModules().subscribe({
+    this.moduleService.getModules().subscribe({
       next: (modules) => {
         this.modules = modules;
         this.filteredModules = [...modules];
