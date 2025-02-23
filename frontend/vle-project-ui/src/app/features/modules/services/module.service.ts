@@ -46,6 +46,14 @@ export class ModuleService {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/add-page`, page);
   }
 
+  addContent(moduleId: string, pageId: string, content: FormData): Observable<any> {
+    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/add-content`, content);
+  }
+
+  getContents(moduleId: string, pageId: string): Observable<any> {
+    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents`);
+  }
+
   uploadLectureNote(moduleId: string, moduleFile: ModuleFile): Observable<any> {
     const formData = new FormData();
     formData.append('file', moduleFile.file);
