@@ -32,6 +32,14 @@ public class BlobStorageService
         return downloadInfo.Value.Content;
     }
 
+    public async Task<bool> DeleteFileAsync(string filePath)
+    {
+        var blobClient = _containerClient.GetBlobClient(filePath);
+        var response = await blobClient.DeleteIfExistsAsync();
+
+        return response.Value;
+    }
+
     public string GetBlobSasUri(string filePath, DateTimeOffset expiryTime)
     {
         var blobClient = _containerClient.GetBlobClient(filePath);
