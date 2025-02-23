@@ -141,6 +141,31 @@ CREATE TABLE Enrolments (
 );
 ```
 
+**Module Pages Table**
+```sql
+CREATE TABLE ModulePages (
+    PageId UNIQUEIDENTIFIER PRIMARY KEY,
+    ModuleId UNIQUEIDENTIFIER NOT NULL,
+    Title NVARCHAR(255) NOT NULL
+);
+```
+
+**Module Contents Table**
+```sql
+CREATE TABLE ModuleContents (
+    ContentId UNIQUEIDENTIFIER PRIMARY KEY,
+    PageId UNIQUEIDENTIFIER NOT NULL,
+    Title NVARCHAR(255) NOT NULL,
+    Description NVARCHAR(MAX),
+    FileUrl NVARCHAR(MAX),
+    FileType NVARCHAR(255),
+    IsLink BIT NOT NULL,
+    LinkUrl NVARCHAR(255),
+    UploadedDate DATETIME NOT NULL DEFAULT GETDATE()
+    FOREIGN KEY (PageId) REFERENCES ModulePages(PageId)
+);
+```
+
 ---
 
 ## Developer
