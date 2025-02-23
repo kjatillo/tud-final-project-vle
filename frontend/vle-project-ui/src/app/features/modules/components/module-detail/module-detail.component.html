@@ -4,22 +4,8 @@
     
     <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator)"
         (click)="enrol()">Enroll</button>
-    <button class="btn btn-primary me-2" *ngIf="moduleCreator == currentUser" (click)="addLectureNote()">Add Lecture Note</button>
     <button class="btn btn-secondary me-2" *ngIf="moduleCreator == currentUser" (click)="editModule()">Edit</button>
     <button class="btn btn-danger" *ngIf="moduleCreator == currentUser" (click)="deleteModule()">Delete</button>
     
-    <div class="mt-5" *ngIf="(isEnroled || moduleCreator) && lectureNotes.length > 0; else noModules">
-        <h2>Lecture Notes</h2>
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let note of lectureNotes">
-            <h4>{{ note.title }}</h4>
-            <p>{{ note.description }}</p>
-            <a [href]="note.fileUrl" target="_blank" class="btn btn-outline-primary">Download</a>
-            </li>
-        </ul>
-    </div>
-    
-    <ng-template #noModules>
-        <p>There's currently no module content to display.</p>
-    </ng-template>
+    <app-module-page></app-module-page>
 </div>
