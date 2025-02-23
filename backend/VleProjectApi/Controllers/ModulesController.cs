@@ -19,7 +19,6 @@ public class ModulesController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
-    private readonly IModuleFileRepository _moduleFileRepository;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
     private readonly IMapper _mapper;
@@ -30,7 +29,6 @@ public class ModulesController : ControllerBase
         IEnrolmentRepository enrolmentRepository,
         IModuleRepository moduleRepository,
         IModuleContentRepository moduleContentRepository,
-        IModuleFileRepository moduleFileRepository,
         IModulePageRepository modulePageRepository,
         IMapper mapper)
     {
@@ -38,7 +36,6 @@ public class ModulesController : ControllerBase
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
-        _moduleFileRepository = moduleFileRepository ?? throw new ArgumentNullException(nameof(moduleFileRepository));
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -96,7 +93,7 @@ public class ModulesController : ControllerBase
     /// <param name="createModuleDto">The data transfer object containing the details of the module to be created.</param>
     /// <returns>A success message with the created module details if the module is created successfully, otherwise an error message.</returns>
     [HttpPost]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> CreateModule(CreateModuleDto createModuleDto)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -121,7 +118,7 @@ public class ModulesController : ControllerBase
     /// <param name="updateModuleDto">The data transfer object containing the updated details of the module.</param>
     /// <returns>A success message with the updated module details if the module is edited successfully, otherwise an error message.</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> EditModule(Guid id, EditModuleDto updateModuleDto)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -155,7 +152,7 @@ public class ModulesController : ControllerBase
     /// <param name="id">The ID of the module to be deleted.</param>
     /// <returns>A success message if the module is deleted successfully, otherwise an error message.</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> DeleteModule(Guid id)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -187,7 +184,7 @@ public class ModulesController : ControllerBase
     /// <param name="id">The ID of the module to enrol in.</param>
     /// <returns>A success message if the enrolment is successful, otherwise an error message.</returns>
     [HttpPost("{id}/enrol")]
-    [Authorize(Roles = "Student,Instructor")]
+    [Authorize]
     public async Task<IActionResult> EnrolInModule(Guid id)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -219,7 +216,7 @@ public class ModulesController : ControllerBase
     /// <param name="id">The ID of the module to check enrolment for.</param>
     /// <returns>Returns true if the user is enroled in the module, otherwise false.</returns>
     [HttpGet("{id}/is-enroled")]
-    [Authorize(Roles = "Student,Instructor")]
+    [Authorize]
     public async Task<IActionResult> IsUserEnroled(Guid id)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -230,75 +227,6 @@ public class ModulesController : ControllerBase
 
         var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
         return Ok(isEnroled);
-    }
-
-    /// <summary>
-    /// Uploads a lecture note for a specific module.
-    /// </summary>
-    /// <param name="id">The ID of the module to upload the lecture note to.</param>
-    /// <param name="uploadLectureNoteDto">The data transfer object containing the lecture note details and file.</param>
-    /// <returns>A success message with the file URL if the upload is successful, otherwise an error message.</returns>
-    [HttpPost("{id}/upload-lecture-note")]
-    [Authorize(Roles = "Instructor")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadLectureNote(
-        Guid id, [FromForm] UploadLectureNoteDto uploadLectureNoteDto)
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return Unauthorized();
-        }
-
-        var module = await _moduleRepository.GetModuleByIdAsync(id);
-        if (module == null)
-        {
-            return NotFound();
-        }
-
-        if (module.CreatedBy != user.Id)
-        {
-            return Forbid();
-        }
-
-        if (uploadLectureNoteDto.File == null)
-        {
-            return BadRequest(new { Status = "Error", Message = "File is required." });
-        }
-
-        using var stream = uploadLectureNoteDto.File.OpenReadStream();
-        var filePath = $"modules/{id}/lecture-notes/{uploadLectureNoteDto.File.FileName}";
-        await _blobStorageService.UploadFileAsync(stream, filePath);
-
-        // Generate a SAS token that is valid for 10 years
-        var fileUrl = _blobStorageService.GetBlobSasUri(filePath, DateTimeOffset.UtcNow.AddYears(10));
-
-        var moduleFile = new ModuleFile
-        {
-            ModuleId = id,
-            FileName = uploadLectureNoteDto.File.FileName,
-            FileUrl = fileUrl,
-            Title = uploadLectureNoteDto.Title,
-            Description = uploadLectureNoteDto.Description
-        };
-
-        await _moduleFileRepository.AddModuleFileAsync(moduleFile);
-
-        return Ok(new { Status = "Success", Message = "Lecture note uploaded successfully!", FileUrl = fileUrl });
-    }
-
-    /// <summary>
-    /// Retrieves all lecture notes for a specific module.
-    /// </summary>
-    /// <param name="id">The ID of the module to get lecture notes for.</param>
-    /// <returns>A list of lecture notes for the specified module.</returns>
-    [HttpGet("{id}/lecture-notes")]
-    [Authorize]
-    public async Task<IActionResult> GetLectureNotes(Guid id)
-    {
-        var moduleFiles = await _moduleFileRepository.GetModuleFilesByModuleIdAsync(id);
-
-        return Ok(moduleFiles);
     }
 
     [HttpPost("{moduleId}/add-page")]

@@ -11,7 +11,6 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
 
     public required DbSet<Module> Modules { get; set; }
     public required DbSet<Enrolment> Enrolments { get; set; }
-    public required DbSet<ModuleFile> ModuleFiles { get; set; }
     public required DbSet<ModulePage> ModulePages { get; set; }
     public required DbSet<ModuleContent> ModuleContents { get; set; }
 
@@ -25,11 +24,6 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Enrolment>()
             .HasIndex(e => new { e.UserId, e.ModuleId })
             .IsUnique();
-
-        //builder.Entity<Module>()
-        //    .HasMany(m => m.ModuleFiles)
-        //    .WithOne(f => f.Module)
-        //    .HasForeignKey(f => f.ModuleId);
 
         builder.Entity<ModulePage>()
             .HasKey(p => p.PageId);
