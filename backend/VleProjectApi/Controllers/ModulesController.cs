@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
-using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
 using VleProjectApi.Services;
 
@@ -56,16 +55,17 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Get a module by its ID.
     /// </summary>
-    /// <param name="id">The ID of the module.</param>
+    /// <param name="moduleId">The ID of the module.</param>
     /// <returns>The module if found, otherwise a NotFound result.</returns>
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetModuleById(Guid id)
+    [HttpGet("{moduleId}")]
+    public async Task<IActionResult> GetModuleById(Guid moduleId)
     {
-        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
         if (module == null)
         {
             return NotFound();
         }
+
         return Ok(module);
     }
 
@@ -84,6 +84,7 @@ public class ModulesController : ControllerBase
         }
 
         var enroledModules = await _enrolmentRepository.GetEnroledModulesByUserIdAsync(user.Id);
+
         return Ok(enroledModules);
     }
 
@@ -114,12 +115,12 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Edits an existing module.
     /// </summary>
-    /// <param name="id">The ID of the module to be edited.</param>
+    /// <param name="moduleId">The ID of the module to be edited.</param>
     /// <param name="updateModuleDto">The data transfer object containing the updated details of the module.</param>
     /// <returns>A success message with the updated module details if the module is edited successfully, otherwise an error message.</returns>
-    [HttpPut("{id}")]
+    [HttpPut("{moduleId}")]
     [Authorize(Roles = nameof(Role.Instructor))]
-    public async Task<IActionResult> EditModule(Guid id, EditModuleDto updateModuleDto)
+    public async Task<IActionResult> EditModule(Guid moduleId, EditModuleDto updateModuleDto)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -127,7 +128,7 @@ public class ModulesController : ControllerBase
             return Unauthorized();
         }
 
-        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
         if (module == null)
         {
             return NotFound();
@@ -149,11 +150,11 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Deletes a module by its ID.
     /// </summary>
-    /// <param name="id">The ID of the module to be deleted.</param>
+    /// <param name="moduleId">The ID of the module to be deleted.</param>
     /// <returns>A success message if the module is deleted successfully, otherwise an error message.</returns>
-    [HttpDelete("{id}")]
+    [HttpDelete("{moduleId}")]
     [Authorize(Roles = nameof(Role.Instructor))]
-    public async Task<IActionResult> DeleteModule(Guid id)
+    public async Task<IActionResult> DeleteModule(Guid moduleId)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -161,7 +162,7 @@ public class ModulesController : ControllerBase
             return Unauthorized();
         }
 
-        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
         if (module == null)
         {
             return NotFound();
@@ -172,8 +173,8 @@ public class ModulesController : ControllerBase
             return Forbid();
         }
 
-        await _moduleRepository.DeleteEnrolmentsByModuleIdAsync(id);
-        await _moduleRepository.DeleteModuleAsync(id);
+        await _moduleRepository.DeleteEnrolmentsByModuleIdAsync(moduleId);
+        await _moduleRepository.DeleteModuleAsync(moduleId);
 
         return Ok(new { Status = "Success", Message = "Module deleted successfully!" });
     }
@@ -181,11 +182,11 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Enrols the current user in a specified module.
     /// </summary>
-    /// <param name="id">The ID of the module to enrol in.</param>
+    /// <param name="moduleId">The ID of the module to enrol in.</param>
     /// <returns>A success message if the enrolment is successful, otherwise an error message.</returns>
-    [HttpPost("{id}/enrol")]
+    [HttpPost("{moduleId}/enrol")]
     [Authorize]
-    public async Task<IActionResult> EnrolInModule(Guid id)
+    public async Task<IActionResult> EnrolInModule(Guid moduleId)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -193,19 +194,19 @@ public class ModulesController : ControllerBase
             return Unauthorized();
         }
 
-        var module = await _moduleRepository.GetModuleByIdAsync(id);
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
         if (module == null)
         {
             return NotFound();
         }
 
-        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
+        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, moduleId);
         if (isEnroled)
         {
             return BadRequest(new { Status = "Error", Message = "User is already enroled in this module." });
         }
 
-        await _enrolmentRepository.EnrolUserInModuleAsync(user.Id, id);
+        await _enrolmentRepository.EnrolUserInModuleAsync(user.Id, moduleId);
 
         return Ok(new { Status = "Success", Message = "Enroled in module successfully!" });
     }
@@ -213,11 +214,11 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Checks if the current user is enroled in a specified module.
     /// </summary>
-    /// <param name="id">The ID of the module to check enrolment for.</param>
+    /// <param name="moduleId">The ID of the module to check enrolment for.</param>
     /// <returns>Returns true if the user is enroled in the module, otherwise false.</returns>
-    [HttpGet("{id}/is-enroled")]
+    [HttpGet("{moduleId}/is-enroled")]
     [Authorize]
-    public async Task<IActionResult> IsUserEnroled(Guid id)
+    public async Task<IActionResult> IsUserEnroled(Guid moduleId)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -225,8 +226,17 @@ public class ModulesController : ControllerBase
             return Unauthorized();
         }
 
-        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, id);
+        var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, moduleId);
         return Ok(isEnroled);
+    }
+
+    [HttpGet("{moduleId}/pages")]
+    [Authorize]
+    public async Task<IActionResult> GetPages(Guid moduleId)
+    {
+        var pages = await _modulePageRepository.GetPagesByModuleIdAsync(moduleId);
+
+        return Ok(pages);
     }
 
     [HttpPost("{moduleId}/add-page")]
@@ -261,13 +271,36 @@ public class ModulesController : ControllerBase
         return Ok(createdPage);
     }
 
-    [HttpGet("{moduleId}/pages")]
+    [HttpGet("{moduleId}/pages/{pageId}/contents")]
     [Authorize]
-    public async Task<IActionResult> GetPages(Guid moduleId)
+    public async Task<IActionResult> GetContents(Guid moduleId, Guid pageId)
     {
-        var pages = await _modulePageRepository.GetPagesByModuleIdAsync(moduleId);
+        var modulePage = await _modulePageRepository.GetModulePageById(pageId);
+        if (modulePage == null)
+        {
+            return NotFound();
+        }
 
-        return Ok(pages);
+        if (modulePage.ModuleId != moduleId)
+        {
+            return BadRequest(new { Status = "Error", Message = "The page does not belong to the specified module." });
+        }
+
+        var contents = await _moduleContentRepository.GetContentsByPageIdAsync(pageId);
+
+        return Ok(contents);
+    }
+
+    [HttpGet("{moduleId}/pages/{pageId}/contents/{contentId}")]
+    public async Task<IActionResult> GetContentById(Guid contentId)
+    {
+        var content = await _moduleContentRepository.GetContentByIdAsync(contentId);
+        if (content == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(content);
     }
 
     [HttpPost("{moduleId}/pages/{pageId}/add-content")]
@@ -328,23 +361,58 @@ public class ModulesController : ControllerBase
         return Ok(createdContent);
     }
 
-    [HttpGet("{moduleId}/pages/{pageId}/contents")]
-    [Authorize]
-    public async Task<IActionResult> GetContents(Guid moduleId, Guid pageId)
+    [HttpPut("{moduleId}/pages/{pageId}/contents/{contentId}")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> EditContent(Guid moduleId, Guid pageId, Guid contentId, [FromForm] EditContentDto contentDto)
     {
-        var modulePage = await _modulePageRepository.GetModulePageById(pageId);
-        if (modulePage == null)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
+        if (module == null)
         {
             return NotFound();
         }
 
-        if (modulePage.ModuleId != moduleId)
+        if (module.CreatedBy != user.Id)
         {
-            return BadRequest(new { Status = "Error", Message = "The page does not belong to the specified module." });
+            return Forbid();
         }
 
-        var contents = await _moduleContentRepository.GetContentsByPageIdAsync(pageId);
+        var content = await _moduleContentRepository.GetContentByIdAsync(contentId);
+        if (content == null)
+        {
+            return NotFound();
+        }
 
-        return Ok(contents);
+        content.Title = contentDto.Title;
+        content.Description = contentDto.Description;
+        content.IsLink = contentDto.IsLink;
+        content.LinkUrl = contentDto.LinkUrl;
+
+        if (contentDto.File != null)
+        {
+            if (!string.IsNullOrEmpty(content.FileUrl))
+            {
+                await _blobStorageService.DeleteFileAsync(content.FileUrl);
+            }
+
+            using var stream = contentDto.File.OpenReadStream();
+            var filePath = $"modules/{moduleId}/pages/{pageId}/resource/{contentDto.File.FileName}";
+            await _blobStorageService.UploadFileAsync(stream, filePath);
+
+            // Generate a SAS token that is valid for 10 years
+            var fileUrl = _blobStorageService.GetBlobSasUri(filePath, DateTimeOffset.UtcNow.AddYears(10));
+
+            content.FileUrl = fileUrl;
+            content.FileType = contentDto.File.ContentType;
+        }
+
+        await _moduleContentRepository.UpdateContentAsync(content);
+
+        return Ok(content);
     }
 }

@@ -29,4 +29,17 @@ public class ModuleContentRepository : IModuleContentRepository
             .OrderBy(c => c.Title)
             .ToListAsync();
     }
+
+    public async Task<ModuleContent?> GetContentByIdAsync(Guid contentId)
+    {
+        return await _context.ModuleContents.FindAsync(contentId);
+    }
+
+    public async Task<ModuleContent> UpdateContentAsync(ModuleContent content)
+    {
+        _context.ModuleContents.Update(content);
+        await _context.SaveChangesAsync();
+
+        return content;
+    }
 }
