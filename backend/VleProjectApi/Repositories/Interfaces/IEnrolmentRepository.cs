@@ -1,4 +1,4 @@
-﻿using VleProjectApi.Models;
+﻿using VleProjectApi.Entities;
 
 namespace VleProjectApi.Repositories.Interfaces;
 

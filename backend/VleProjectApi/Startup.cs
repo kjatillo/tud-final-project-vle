@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using VleProjectApi.DbContexts;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
 using VleProjectApi.Profiles;
 using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
@@ -88,6 +88,7 @@ public class Startup
 
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
         services.AddScoped<IModuleRepository, ModuleRepository>();
+        services.AddScoped<IModulePageRepository, ModulePageRepository>();
         services.AddScoped<IModuleFileRepository, ModuleFileRepository>();
         services.AddSingleton<BlobStorageService>();
 

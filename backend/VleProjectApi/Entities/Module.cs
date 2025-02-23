@@ -1,4 +1,4 @@
-﻿namespace VleProjectApi.Models;
+﻿namespace VleProjectApi.Entities;
 
 public class Module
 {

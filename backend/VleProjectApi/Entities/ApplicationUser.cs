@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace VleProjectApi.Models;
+namespace VleProjectApi.Entities;
 
 public class ApplicationUser : IdentityUser
 {
