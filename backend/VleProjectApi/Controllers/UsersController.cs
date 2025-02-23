@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using VleProjectApi.Dtos;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
 
 namespace VleProjectApi.Controllers;
 

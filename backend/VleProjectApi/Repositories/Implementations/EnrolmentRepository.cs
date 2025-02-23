@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VleProjectApi.DbContexts;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
 using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi.Repositories.Implementations;

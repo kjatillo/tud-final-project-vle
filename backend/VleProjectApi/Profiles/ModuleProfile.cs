@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using VleProjectApi.Dtos;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
 
 namespace VleProjectApi.Profiles;
 

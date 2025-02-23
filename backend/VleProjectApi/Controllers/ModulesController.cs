@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VleProjectApi.Dtos;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
+using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
 using VleProjectApi.Services;
 
@@ -18,6 +19,7 @@ public class ModulesController : ControllerBase
     private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
     private readonly IModuleFileRepository _moduleFileRepository;
+    private readonly IModulePageRepository _modulePageRepository;
     private readonly IMapper _mapper;
 
     public ModulesController(
@@ -26,6 +28,7 @@ public class ModulesController : ControllerBase
         IEnrolmentRepository enrolmentRepository,
         IModuleRepository moduleRepository,
         IModuleFileRepository moduleFileRepository,
+        IModulePageRepository modulePageRepository,
         IMapper mapper)
     {
         _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
@@ -33,6 +36,7 @@ public class ModulesController : ControllerBase
         _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
         _moduleFileRepository = moduleFileRepository ?? throw new ArgumentNullException(nameof(moduleFileRepository));
+        _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -291,5 +295,46 @@ public class ModulesController : ControllerBase
         var moduleFiles = await _moduleFileRepository.GetModuleFilesByModuleIdAsync(id);
 
         return Ok(moduleFiles);
+    }
+
+    [HttpPost("{moduleId}/add-page")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> AddPage(Guid moduleId, [FromBody] AddPageDto pageDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        var page = new ModulePage
+        {
+            ModuleId = moduleId,
+            Title = pageDto.Title
+        };
+
+        var createdPage = await _modulePageRepository.AddPageAsync(page);
+
+        return Ok(createdPage);
+    }
+
+    [HttpGet("{moduleId}/pages")]
+    [Authorize]
+    public async Task<IActionResult> GetPages(Guid moduleId)
+    {
+        var pages = await _modulePageRepository.GetPagesByModuleIdAsync(moduleId);
+
+        return Ok(pages);
     }
 }

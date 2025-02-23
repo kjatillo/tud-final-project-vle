@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using VleProjectApi.Models;
+using VleProjectApi.Entities;
 
 namespace VleProjectApi.DbContexts;
 
@@ -12,6 +12,7 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
     public required DbSet<Module> Modules { get; set; }
     public required DbSet<Enrolment> Enrolments { get; set; }
     public required DbSet<ModuleFile> ModuleFiles { get; set; }
+    public required DbSet<ModulePage> ModulePages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -28,5 +29,16 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
             .HasMany(m => m.ModuleFiles)
             .WithOne(f => f.Module)
             .HasForeignKey(f => f.ModuleId);
+
+        builder.Entity<ModulePage>()
+            .HasKey(p => p.PageId);
+
+        builder.Entity<ModulePage>()
+            .HasMany(p => p.Contents)
+            .WithOne()
+            .HasForeignKey(c => c.PageId);
+
+        builder.Entity<ModuleContent>()
+            .HasKey(c => c.ContentId);
     }
 }
