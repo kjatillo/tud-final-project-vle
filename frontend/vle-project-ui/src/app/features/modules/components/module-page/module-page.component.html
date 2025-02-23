@@ -18,7 +18,32 @@
 
         <div class="col-12 col-md-9">
             <div *ngIf="showContents && selectedPageId">
-                Temp Page Content
+                <button *ngIf="isInstructor && !showAddContentForm" class="btn btn-primary mb-3" (click)="addContent()">Add New Content</button>
+                <div *ngIf="!showAddContentForm">
+                    <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
+                    <ul class="list-group" *ngIf="contents.length > 0; else noPageContentsTemplate">
+                        <li *ngFor="let content of contents" class="list-group-item">
+                            <h5 class="content-title">{{ content.title }}</h5>
+                            <p class="content-description">{{ content.description }}</p>
+                            <ng-container *ngIf="content.isLink; else fileTemplate">
+                                <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary">Go to link</a>
+                            </ng-container>
+                            <ng-template #fileTemplate>
+                                <p>Type: {{ content.fileType }}</p>
+                                <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary">Download File</a>
+                            </ng-template>
+                        </li>
+                    </ul>
+
+                    <ng-template #noPageContentsTemplate>
+                        <p>No contents available for this page to display.</p>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div *ngIf="showAddContentForm">
+                <h4>Add Content - {{ selectedPageTitle }}</h4>
+                <app-add-content [pageId]="selectedPageId" (contentAdded)="onContentAdded()" (cancel)="onCancelAddContent()"></app-add-content>
             </div>
             
             <div *ngIf="showAddPageForm">

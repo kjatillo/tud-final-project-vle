@@ -1,0 +1,33 @@
+.content-title {
+    margin-bottom: 0.5rem;
+}
+
+.content-description {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .btn-primary {
+        width: 100%;
+    }
+
+    .list-group-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .list-group-item a {
+        width: 100%;
+    }
+
+    .btn-outline-primary {
+        width: 100%;
+    }
+
+    .content-title,
+    .content-description,
+    .btn-outline-primary {
+        width: 100%;
+    }
+}
