@@ -34,10 +34,24 @@ public class BlobStorageService
 
     public async Task<bool> DeleteFileAsync(string filePath)
     {
-        var blobClient = _containerClient.GetBlobClient(filePath);
-        var response = await blobClient.DeleteIfExistsAsync();
+        // Extract the actual blob name from the SAS URL
+        if (Uri.TryCreate(filePath, UriKind.Absolute, out Uri? uri) && uri != null)
+        {
+            string containerName = _containerClient.Name + "/";
+            int startIndex = uri.AbsolutePath.IndexOf(containerName) + containerName.Length;
+            filePath = uri.AbsolutePath[startIndex..];
 
-        return response.Value;
+            filePath = Uri.UnescapeDataString(filePath);
+        }
+
+        var blobClient = _containerClient.GetBlobClient(filePath);
+        if (await blobClient.ExistsAsync())
+        {
+            var response = await blobClient.DeleteIfExistsAsync();
+            return response.Value;
+        }
+
+        return false;
     }
 
     public string GetBlobSasUri(string filePath, DateTimeOffset expiryTime)

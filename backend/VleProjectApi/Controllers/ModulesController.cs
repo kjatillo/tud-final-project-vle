@@ -415,4 +415,24 @@ public class ModulesController : ControllerBase
 
         return Ok(content);
     }
+
+    [HttpDelete("{moduleId}/pages/{pageId}/contents/{contentId}")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> DeleteContent(Guid moduleId, Guid pageId, Guid contentId)
+    {
+        var content = await _moduleContentRepository.GetContentByIdAsync(contentId);
+        if (content == null)
+        {
+            return NotFound();
+        }
+
+        if (!string.IsNullOrEmpty(content.FileUrl))
+        {
+            await _blobStorageService.DeleteFileAsync(content.FileUrl);
+        }
+
+        await _moduleContentRepository.DeleteContentAsync(contentId);
+
+        return Ok(new { Status = "Success", Message = "Content deleted successfully!" });
+    }
 }
