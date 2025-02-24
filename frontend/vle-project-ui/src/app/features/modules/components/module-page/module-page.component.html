@@ -36,6 +36,7 @@
                             </ng-template>
 
                             <button *ngIf="isInstructor" class="btn btn-secondary" (click)="editContent(content.contentId)">Edit</button>
+                            <button *ngIf="isInstructor" class="btn btn-danger" (click)="deleteContent(content.contentId)">Delete</button>
                         </li>
                     </ul>
 

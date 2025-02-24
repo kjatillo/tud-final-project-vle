@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModulePage } from '../../models/module-page.model';
 import { ModuleService } from '../../services/module.service';
+import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-module-page',
@@ -25,6 +27,7 @@ export class ModulePageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private dialog: MatDialog,
     private moduleService: ModuleService,
     private authService: AuthService
   ) { }
@@ -86,6 +89,22 @@ export class ModulePageComponent implements OnInit {
     this.showAddContentForm = false;
     this.showAddPageForm = false;
     this.showContents = false;
+  }
+
+  deleteContent(contentId: string): void {
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.moduleService.deleteContent(this.moduleId, this.selectedPageId, contentId).subscribe({
+          next: (response) => {
+            console.log('Content deleted successfully', response);
+            this.loadContents(this.selectedPageId);
+          },
+          error: (error) => console.error('Error deleting content', error)
+        });
+      }
+    });
   }
 
   onContentAdded(): void {

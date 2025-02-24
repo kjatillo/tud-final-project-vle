@@ -54,6 +54,10 @@ export class ModuleService {
     return this.http.put<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`, content);
   }
 
+  deleteContent(moduleId: string, pageId: string, contentId: string): Observable<any> {
+    return this.http.delete(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
+  }
+
   getContentById(moduleId: string, pageId: string, contentId: string): Observable<ModuleContent> {
     return this.http.get<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
   }
