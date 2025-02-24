@@ -42,4 +42,15 @@ public class ModuleContentRepository : IModuleContentRepository
 
         return content;
     }
+
+    public async Task DeleteContentAsync(Guid contentId)
+    {
+        var content = await _context.ModuleContents.FindAsync(contentId);
+        if (content != null)
+        {
+            _context.ModuleContents.Remove(content);
+
+            await _context.SaveChangesAsync();
+        }
+    }
 }

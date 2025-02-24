@@ -8,4 +8,5 @@ public interface IModuleContentRepository
     Task<IEnumerable<ModuleContent>> GetContentsByPageIdAsync(Guid pageId);
     Task<ModuleContent?> GetContentByIdAsync(Guid contentId);
     Task<ModuleContent> UpdateContentAsync(ModuleContent content);
+    Task DeleteContentAsync(Guid contentId);
 }
