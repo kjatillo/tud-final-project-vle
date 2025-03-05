@@ -76,7 +76,12 @@ export class ModuleDetailComponent implements OnInit {
   }
 
   deleteModule(): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      data: {
+        title: "Confirm Module Deletion",
+        message: "Deleting a module will also delete associated pages and contents permanently. Are you sure you want to do this?"
+      }
+    });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {

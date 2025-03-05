@@ -46,6 +46,10 @@ export class ModuleService {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/add-page`, page);
   }
 
+  editPage(moduleId: string, pageId: string, page: ModulePage): Observable<ModulePage> {
+    return this.http.put<ModulePage>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}`, page);
+  }
+
   addContent(moduleId: string, pageId: string, content: FormData): Observable<any> {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/add-content`, content);
   }

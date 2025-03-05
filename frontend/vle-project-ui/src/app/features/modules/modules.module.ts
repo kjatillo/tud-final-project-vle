@@ -10,6 +10,7 @@ import { CreateModuleComponent } from './components/create-module/create-module.
 import { DeleteConfirmationDialogComponent } from './components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { EditContentComponent } from './components/edit-content/edit-content.component';
 import { EditModuleComponent } from './components/edit-module/edit-module.component';
+import { EditPageComponent } from './components/edit-page/edit-page.component';
 import { ExploreModulesComponent } from './components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
 import { ModulePageComponent } from './components/module-page/module-page.component';
@@ -25,6 +26,7 @@ import { ModulePageComponent } from './components/module-page/module-page.compon
     ExploreModulesComponent,
     ModuleDetailComponent,
     ModulePageComponent,
+    EditPageComponent
   ],
   imports: [
     CommonModule,
@@ -44,6 +46,7 @@ import { ModulePageComponent } from './components/module-page/module-page.compon
     ExploreModulesComponent,
     ModuleDetailComponent,
     ModulePageComponent,
+    EditPageComponent
   ]
 })
 export class ModulesModule { }

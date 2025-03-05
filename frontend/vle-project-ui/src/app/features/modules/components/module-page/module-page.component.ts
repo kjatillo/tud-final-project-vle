@@ -19,10 +19,12 @@ export class ModulePageComponent implements OnInit {
   selectedPageId!: string;
   selectedPageTitle!: string;
   selectedContent!: ModuleContent;
+  selectedPage!: ModulePage;
   isInstructor = false;
   showAddContentForm = false;
   showEditContentForm = false;
   showAddPageForm = false;
+  showEditPageForm = false;
   showContents = true;
 
   constructor(
@@ -51,6 +53,7 @@ export class ModulePageComponent implements OnInit {
     this.showAddContentForm = false;
     this.showEditContentForm = false;
     this.showAddPageForm = false;
+    this.showEditPageForm = false;
     this.showContents = true;
   }
 
@@ -71,6 +74,16 @@ export class ModulePageComponent implements OnInit {
 
   addPage(): void {
     this.showAddPageForm = true;
+    this.showEditPageForm = false;
+    this.showAddContentForm = false;
+    this.showEditContentForm = false;
+    this.showContents = false;
+  }
+
+  editPage(pageId: string): void {
+    this.selectedPage = this.pages.find(page => page.pageId === pageId)!;
+    this.showEditPageForm = true;
+    this.showAddPageForm = false;
     this.showAddContentForm = false;
     this.showEditContentForm = false;
     this.showContents = false;
@@ -79,6 +92,7 @@ export class ModulePageComponent implements OnInit {
   addContent(): void {
     this.showAddContentForm = true;
     this.showAddPageForm = false;
+    this.showEditPageForm = false;
     this.showEditContentForm = false;
     this.showContents = false;
   }
@@ -107,15 +121,14 @@ export class ModulePageComponent implements OnInit {
     });
   }
 
-  onContentAdded(): void {
-    this.showAddContentForm = false;
-    this.showEditContentForm = false;
-    this.showContents = true;
-    this.loadContents(this.selectedPageId);
-  }
-
   onPageAdded(): void {
     this.showAddPageForm = false;
+    this.showContents = true;
+    this.loadPages();
+  }
+
+  onPageUpdated(): void {
+    this.showEditPageForm = false;
     this.showContents = true;
     this.loadPages();
   }
@@ -125,15 +138,32 @@ export class ModulePageComponent implements OnInit {
     this.showContents = true;
   }
 
-  onCancelAddContent(): void {
+  onCancelEditPage(): void {
+    this.showEditPageForm = false;
+    this.showContents = true;
+  }
+
+  onContentAdded(): void {
     this.showAddContentForm = false;
     this.showEditContentForm = false;
     this.showContents = true;
+    this.loadContents(this.selectedPageId);
   }
 
   onContentUpdated(): void {
     this.showEditContentForm = false;
     this.showContents = true;
     this.loadContents(this.selectedPageId);
+  }
+
+  onCancelAddContent(): void {
+    this.showAddContentForm = false;
+    this.showEditContentForm = false;
+    this.showContents = true;
+  }
+
+  onCancelEditContent(): void {
+    this.showEditContentForm = false;
+    this.showContents = true;
   }
 }

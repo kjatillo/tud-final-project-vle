@@ -20,7 +20,7 @@
             <label for="file" class="form-label">File</label>
             <input type="file" id="file" (change)="onFileSelected($event)" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary mt-2 me-2">Add Content</button>
+        <button type="submit" class="btn btn-primary mt-2 me-2" [disabled]="addContentForm.invalid">Add Content</button>
         <button type="button" class="btn btn-secondary mt-2" (click)="onCancel()">Cancel</button>
     </form>
 </div>

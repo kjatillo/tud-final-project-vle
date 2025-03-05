@@ -5,8 +5,16 @@
             <div *ngIf="pages.length > 0; else noModuleContentsTemplate">
                 <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
                 <ul class="list-group">
-                    <li *ngFor="let page of pages" class="list-group-item" (click)="selectPage(page.pageId)">
-                        <a [routerLink]="['/module', moduleId, 'page', page.pageId]">{{ page.title }}</a>
+                    <li *ngFor="let page of pages" class="list-group-item d-flex justify-content-between">
+                        <a [routerLink]="['/module', moduleId, 'page', page.pageId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
+                        <div class="dropdown me-2">
+                            <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -23,9 +31,19 @@
                     <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
                     <ul class="list-group" *ngIf="contents.length > 0; else noPageContentsTemplate">
                         <li *ngFor="let content of contents" class="list-group-item">
-                            <h5 class="content-title">{{ content.title }}</h5>
+                            <div class="dropdown me-2 d-flex justify-content-between">
+                                <h5 class="content-title">{{ content.title }}</h5>
+
+                                <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" (click)="editContent(content.contentId)">Edit Content</a></li>
+                                </ul>
+                            </div>
+
                             <p class="content-description">{{ content.description }}</p>
-                            
+
                             <ng-container *ngIf="content.isLink; else fileTemplate">
                                 <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary">Go to link</a>
                             </ng-container>
@@ -34,9 +52,6 @@
                                 <p>Type: {{ content.fileType }}</p>
                                 <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary">Download File</a>
                             </ng-template>
-
-                            <button *ngIf="isInstructor" class="btn btn-secondary" (click)="editContent(content.contentId)">Edit</button>
-                            <button *ngIf="isInstructor" class="btn btn-danger" (click)="deleteContent(content.contentId)">Delete</button>
                         </li>
                     </ul>
 
@@ -53,12 +68,17 @@
 
             <div *ngIf="showEditContentForm">
                 <h4>Edit Content - {{ selectedPageTitle }}</h4>
-                <app-edit-content [content]="selectedContent" (contentUpdated)="onContentUpdated()" (cancel)="onCancelAddContent()"></app-edit-content>
+                <app-edit-content [content]="selectedContent" (contentUpdated)="onContentUpdated()" (cancel)="onCancelEditContent()"></app-edit-content>
             </div>
             
             <div *ngIf="showAddPageForm">
                 <h4>Add Page</h4>
                 <app-add-page (pageAdded)="onPageAdded()" (cancel)="onCancelAddPage()"></app-add-page>
+            </div>
+
+            <div *ngIf="showEditPageForm">
+                <h4>Edit Page - {{ selectedPageTitle }}</h4>
+                <app-edit-page [page]="selectedPage" (pageUpdated)="onPageUpdated()" (cancel)="onCancelEditPage()"></app-edit-page>
             </div>
         </div>
     </div>
