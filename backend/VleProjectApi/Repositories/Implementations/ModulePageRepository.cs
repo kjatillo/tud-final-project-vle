@@ -50,4 +50,17 @@ public class ModulePageRepository : IModulePageRepository
             .OrderBy(p => p.Title)
             .ToListAsync();
     }
+
+    /// <summary>
+    /// Updates an existing module page in the database.
+    /// </summary>
+    /// <param name="page">The module page to update.</param>
+    /// <returns>The updated module page.</returns>
+    public async Task<ModulePage> EditPageAsync(ModulePage page)
+    {
+        _context.ModulePages.Update(page);
+        await _context.SaveChangesAsync();
+
+        return page;
+    }
 }

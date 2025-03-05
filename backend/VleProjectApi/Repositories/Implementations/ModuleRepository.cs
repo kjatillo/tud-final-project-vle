@@ -64,10 +64,10 @@ public class ModuleRepository : IModuleRepository
     /// <summary>
     /// Deletes a module by its unique identifier.
     /// </summary>
-    /// <param name="id">The unique identifier of the module to delete.</param>
-    public async Task DeleteModuleAsync(Guid id)
+    /// <param name="moduleId">The unique identifier of the module to delete.</param>
+    public async Task DeleteModuleAsync(Guid moduleId)
     {
-        var module = await _context.Modules.FindAsync(id);
+        var module = await _context.Modules.FindAsync(moduleId);
         if (module != null)
         {
             _context.Modules.Remove(module);
