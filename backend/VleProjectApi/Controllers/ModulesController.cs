@@ -147,11 +147,6 @@ public class ModulesController : ControllerBase
         return Ok(new { Status = "Success", Message = "Module edited successfully!", Module = updatedModule });
     }
 
-    /// <summary>
-    /// Deletes a module by its ID.
-    /// </summary>
-    /// <param name="moduleId">The ID of the module to be deleted.</param>
-    /// <returns>A success message if the module is deleted successfully, otherwise an error message.</returns>
     [HttpDelete("{moduleId}")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> DeleteModule(Guid moduleId)
@@ -173,10 +168,34 @@ public class ModulesController : ControllerBase
             return Forbid();
         }
 
+        // Delete associated pages and contents
+        var pages = await _modulePageRepository.GetPagesByModuleIdAsync(moduleId);
+        if (pages != null && pages.Any())
+        {
+            foreach (var page in pages)
+            {
+                var contents = await _moduleContentRepository.GetContentsByPageIdAsync(page.PageId);
+                if (contents != null && contents.Any())
+                {
+                    foreach (var content in contents)
+                    {
+                        if (!string.IsNullOrEmpty(content.FileUrl))
+                        {
+                            await _blobStorageService.DeleteFileAsync(content.FileUrl);
+                        }
+
+                        await _moduleContentRepository.DeleteContentAsync(content.ContentId);
+                    }
+                }
+
+                await _modulePageRepository.DeletePageAsync(page.PageId);
+            }
+        }
+
         await _moduleRepository.DeleteEnrolmentsByModuleIdAsync(moduleId);
         await _moduleRepository.DeleteModuleAsync(moduleId);
 
-        return Ok(new { Status = "Success", Message = "Module deleted successfully!" });
+        return Ok(new { Status = "Success", Message = "Module and its associated pages and contents deleted successfully!" });
     }
 
     /// <summary>
