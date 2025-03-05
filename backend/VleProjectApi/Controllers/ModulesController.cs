@@ -230,6 +230,11 @@ public class ModulesController : ControllerBase
         return Ok(isEnroled);
     }
 
+    /// <summary>
+    /// Retrieves all pages for a specified module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>A list of pages for the specified module.</returns>
     [HttpGet("{moduleId}/pages")]
     [Authorize]
     public async Task<IActionResult> GetPages(Guid moduleId)
@@ -239,6 +244,12 @@ public class ModulesController : ControllerBase
         return Ok(pages);
     }
 
+    /// <summary>
+    /// Adds a new page to a specified module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module to add the page to.</param>
+    /// <param name="pageDto">The data transfer object containing the details of the page to be added.</param>
+    /// <returns>The created page if the operation is successful, otherwise an error message.</returns>
     [HttpPost("{moduleId}/add-page")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> AddPage(Guid moduleId, [FromBody] AddPageDto pageDto)
@@ -271,6 +282,12 @@ public class ModulesController : ControllerBase
         return Ok(createdPage);
     }
 
+    /// <summary>
+    /// Retrieves all contents for a specified page within a module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page.</param>
+    /// <returns>A list of contents for the specified page.</returns>
     [HttpGet("{moduleId}/pages/{pageId}/contents")]
     [Authorize]
     public async Task<IActionResult> GetContents(Guid moduleId, Guid pageId)
@@ -291,6 +308,11 @@ public class ModulesController : ControllerBase
         return Ok(contents);
     }
 
+    /// <summary>
+    /// Retrieves a specific content by its ID.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to retrieve.</param>
+    /// <returns>The content if found, otherwise a NotFound result.</returns>
     [HttpGet("{moduleId}/pages/{pageId}/contents/{contentId}")]
     public async Task<IActionResult> GetContentById(Guid contentId)
     {
@@ -303,6 +325,13 @@ public class ModulesController : ControllerBase
         return Ok(content);
     }
 
+    /// <summary>
+    /// Adds new content to a specified page within a module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page.</param>
+    /// <param name="contentDto">The data transfer object containing the details of the content to be added.</param>
+    /// <returns>The created content if the operation is successful, otherwise an error message.</returns>
     [HttpPost("{moduleId}/pages/{pageId}/add-content")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> AddContent(Guid moduleId, Guid pageId, [FromForm] AddContentDto contentDto)
@@ -361,6 +390,14 @@ public class ModulesController : ControllerBase
         return Ok(createdContent);
     }
 
+    /// <summary>
+    /// Edits an existing content within a specified page of a module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page.</param>
+    /// <param name="contentId">The ID of the content to be edited.</param>
+    /// <param name="contentDto">The data transfer object containing the updated details of the content.</param>
+    /// <returns>The updated content if the operation is successful, otherwise an error message.</returns>
     [HttpPut("{moduleId}/pages/{pageId}/contents/{contentId}")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> EditContent(Guid moduleId, Guid pageId, Guid contentId, [FromForm] EditContentDto contentDto)
@@ -416,6 +453,13 @@ public class ModulesController : ControllerBase
         return Ok(content);
     }
 
+    /// <summary>
+    /// Deletes a specific content by its ID within a specified page of a module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page.</param>
+    /// <param name="contentId">The ID of the content to be deleted.</param>
+    /// <returns>A success message if the content is deleted successfully, otherwise an error message.</returns>
     [HttpDelete("{moduleId}/pages/{pageId}/contents/{contentId}")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> DeleteContent(Guid moduleId, Guid pageId, Guid contentId)
