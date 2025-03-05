@@ -13,7 +13,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a></li>
-                                <li><a class="dropdown-item text-danger" (click)="deletePage(page.pageId)">Delete Page</a></li>
+                                <li><a class="dropdown-item text-danger" type="button" (click)="deletePage(page.pageId)">Delete Page</a></li>
                             </ul>
                         </div>
                     </li>
@@ -39,8 +39,8 @@
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" (click)="editContent(content.contentId)">Edit Content</a></li>
-                                    <li><a class="dropdown-item text-danger" (click)="deleteContent(content.contentId)">Delete Content</a></li>
+                                    <li><a class="dropdown-item" type="button" (click)="editContent(content.contentId)">Edit Content</a></li>
+                                    <li><a class="dropdown-item text-danger" type="button" (click)="deleteContent(content.contentId)">Delete Content</a></li>
                                 </ul>
                             </div>
 

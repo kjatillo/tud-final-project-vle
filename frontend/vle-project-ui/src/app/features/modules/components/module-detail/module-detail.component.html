@@ -5,8 +5,8 @@
             <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" *ngIf="moduleCreator == currentUser" (click)="editModule()">Edit Module</a></li>
-            <li><a class="dropdown-item text-danger" *ngIf="moduleCreator == currentUser" (click)="deleteModule()">Delete Module</a></li>
+            <li><a class="dropdown-item" type="button" *ngIf="moduleCreator == currentUser" (click)="editModule()">Edit Module</a></li>
+            <li><a class="dropdown-item text-danger" type="button" *ngIf="moduleCreator == currentUser" (click)="deleteModule()">Delete Module</a></li>
         </ul>
     </div>
 
