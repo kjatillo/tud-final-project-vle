@@ -8,7 +8,7 @@
                     <li *ngFor="let page of pages" class="list-group-item d-flex justify-content-between">
                         <a [routerLink]="['/module', moduleId, 'page', page.pageId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
                         <div class="dropdown me-2">
-                            <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="moduleCreator == currentUser">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -35,7 +35,7 @@
                             <div class="dropdown me-2 d-flex justify-content-between">
                                 <h5 class="content-title">{{ content.title }}</h5>
 
-                                <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="moduleCreator == currentUser">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
