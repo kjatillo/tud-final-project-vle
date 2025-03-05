@@ -89,6 +89,31 @@ export class ModulePageComponent implements OnInit {
     this.showContents = false;
   }
 
+  deletePage(pageId: string): void {
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent , {
+      data: {
+        title: "Confirm Page Deletion",
+        message: "Deleting a page will also delete any associated content permanently. Are you sure you want to do this?"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.moduleService.deletePage(this.moduleId, pageId).subscribe({
+          next: () => {
+            this.loadPages();
+
+            this.selectedPageId = '';
+            this.selectedPageTitle = '';
+            this.contents = [];
+            this.showContents = false;
+          },
+          error: (error) => console.error('Error deleting page', error)
+        });
+      }
+    });
+  }
+
   addContent(): void {
     this.showAddContentForm = true;
     this.showAddPageForm = false;
@@ -106,13 +131,17 @@ export class ModulePageComponent implements OnInit {
   }
 
   deleteContent(contentId: string): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent);
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      data: {
+        title: "Confirm Content Deletion",
+        message: "Deleting content permanently. Are you sure you want to do this?"
+      }
+    });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.moduleService.deleteContent(this.moduleId, this.selectedPageId, contentId).subscribe({
-          next: (response) => {
-            console.log('Content deleted successfully', response);
+          next: () => {
             this.loadContents(this.selectedPageId);
           },
           error: (error) => console.error('Error deleting content', error)
