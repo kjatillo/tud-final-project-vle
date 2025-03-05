@@ -63,4 +63,19 @@ public class ModulePageRepository : IModulePageRepository
 
         return page;
     }
+
+    /// <summary>
+    /// Deletes a module page from the database by its unique identifier.
+    /// </summary>
+    /// <param name="pageId">The unique identifier of the module page to delete.</param>
+    /// <returns>A task that represents the asynchronous delete operation.</returns>
+    public async Task DeletePageAsync(Guid pageId)
+    {
+        var page = await _context.ModulePages.FindAsync(pageId);
+        if (page != null)
+        {
+            _context.ModulePages.Remove(page);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

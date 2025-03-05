@@ -324,6 +324,56 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Deletes a page by its ID within a specified module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page to be deleted.</param>
+    /// <returns>A success message if the page and its contents are deleted successfully, otherwise an error message.</returns>
+    [HttpDelete("{moduleId}/pages/{pageId}")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> DeletePage(Guid moduleId, Guid pageId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        var page = await _modulePageRepository.GetModulePageById(pageId);
+        if (page == null)
+        {
+            return NotFound();
+        }
+
+        // Delete associated page contents
+        var contents = await _moduleContentRepository.GetContentsByPageIdAsync(pageId);
+        foreach (var content in contents)
+        {
+            if (!string.IsNullOrEmpty(content.FileUrl))
+            {
+                await _blobStorageService.DeleteFileAsync(content.FileUrl);
+            }
+
+            await _moduleContentRepository.DeleteContentAsync(content.ContentId);
+        }
+
+        await _modulePageRepository.DeletePageAsync(pageId);
+
+        return Ok(new { Status = "Success", Message = "Page and its associated contents deleted successfully!" });
+    }
+
+    /// <summary>
     /// Retrieves all contents for a specified page within a module.
     /// </summary>
     /// <param name="moduleId">The ID of the module.</param>
