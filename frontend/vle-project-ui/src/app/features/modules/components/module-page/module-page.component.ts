@@ -16,6 +16,8 @@ export class ModulePageComponent implements OnInit {
   moduleId!: string;
   pages: ModulePage[] = [];
   contents: ModuleContent[] = [];
+  currentUser!: string;
+  moduleCreator!: string;
   selectedPageId!: string;
   selectedPageTitle!: string;
   selectedContent!: ModuleContent;
@@ -39,6 +41,21 @@ export class ModulePageComponent implements OnInit {
     this.authService.userRoles$.subscribe(roles => {
       this.isInstructor = roles.includes('Instructor');
     });
+
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUser = user.userId;
+      }
+    });
+
+    if (this.moduleId) {
+      this.moduleService.getModuleById(this.moduleId).subscribe({
+        next: (module) => {
+          this.moduleCreator = module.createdBy;
+        },
+        error: (error) => console.error('Error fetching module', error),
+      });
+    }
 
     this.loadPages();
   }
