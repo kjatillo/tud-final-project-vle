@@ -33,6 +33,28 @@ export class AddContentComponent implements OnInit {
       isLink: [false],
       linkUrl: ['']
     });
+
+    this.addContentForm.get('isLink')?.valueChanges.subscribe((isLink: boolean) => {
+      this.updateValidators(isLink);
+    });
+
+    this.updateValidators(this.addContentForm.get('isLink')?.value);
+  }
+
+  updateValidators(isLink: boolean): void {
+    const linkUrlControl = this.addContentForm.get('linkUrl');
+    const fileControl = this.addContentForm.get('file');
+
+    if (isLink) {
+      linkUrlControl?.setValidators([Validators.required]);
+      fileControl?.clearValidators();
+    } else {
+      linkUrlControl?.clearValidators();
+      fileControl?.setValidators([Validators.required]);
+    }
+
+    linkUrlControl?.updateValueAndValidity();
+    fileControl?.updateValueAndValidity();
   }
 
   onFileSelected(event: any): void {

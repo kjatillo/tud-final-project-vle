@@ -19,10 +19,7 @@ const routes: Routes = [
   { path: 'logout', component: LogoutComponent },
   { path: 'create-module', component: CreateModuleComponent },
   { path: 'module/:id', component: ModuleDetailComponent, children: [
-    { path: 'page/:pageId', component: ModulePageComponent, children: [
-      { path: 'add-content', component: AddContentComponent },
-      { path: 'content/:contentId/edit', component: EditContentComponent }
-    ]}
+    { path: 'page/:pageId', component: ModulePageComponent}
   ]},
   { path: 'module/:id/edit', component: EditModuleComponent },
   { path: 'explore', component: ExploreModulesComponent },
