@@ -55,7 +55,7 @@ public class ModuleContentRepository : IModuleContentRepository
     /// </summary>
     /// <param name="content">The module content to update.</param>
     /// <returns>The updated module content.</returns>
-    public async Task<ModuleContent> UpdateContentAsync(ModuleContent content)
+    public async Task<ModuleContent> EditContentAsync(ModuleContent content)
     {
         _context.ModuleContents.Update(content);
         await _context.SaveChangesAsync();

@@ -283,6 +283,47 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Edits an existing page within a specified module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <param name="pageId">The ID of the page to be edited.</param>
+    /// <param name="pageDto">The data transfer object containing the updated details of the page.</param>
+    /// <returns>A success message with the updated page details if the page is edited successfully, otherwise an error message.</returns>
+    [HttpPut("{moduleId}/pages/{pageId}")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> EditPage(Guid moduleId, Guid pageId, [FromBody] EditPageDto pageDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var module = await _moduleRepository.GetModuleByIdAsync(moduleId);
+        if (module == null)
+        {
+            return NotFound();
+        }
+
+        if (module.CreatedBy != user.Id)
+        {
+            return Forbid();
+        }
+
+        var page = await _modulePageRepository.GetModulePageById(pageId);
+        if (page == null)
+        {
+            return NotFound();
+        }
+
+        page.Title = pageDto.Title;
+
+        var updatedPage = await _modulePageRepository.EditPageAsync(page);
+
+        return Ok(new { Status = "Success", Message = "Page edited successfully!", Page = updatedPage });
+    }
+
+    /// <summary>
     /// Retrieves all contents for a specified page within a module.
     /// </summary>
     /// <param name="moduleId">The ID of the module.</param>
@@ -448,7 +489,7 @@ public class ModulesController : ControllerBase
             content.FileType = contentDto.File.ContentType;
         }
 
-        await _moduleContentRepository.UpdateContentAsync(content);
+        await _moduleContentRepository.EditContentAsync(content);
 
         return Ok(content);
     }
