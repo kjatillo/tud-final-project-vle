@@ -50,6 +50,10 @@ export class ModuleService {
     return this.http.put<ModulePage>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}`, page);
   }
 
+  deletePage(moduleId: string, pageId: string): Observable<any> {
+    return this.http.delete(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}`);
+  }
+
   addContent(moduleId: string, pageId: string, content: FormData): Observable<any> {
     return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/add-content`, content);
   }
