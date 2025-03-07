@@ -20,6 +20,7 @@ public class ModulesController : ControllerBase
     private readonly IModuleRepository _moduleRepository;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
+    private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
     private readonly IMapper _mapper;
 
     public ModulesController(
@@ -29,6 +30,7 @@ public class ModulesController : ControllerBase
         IModuleRepository moduleRepository,
         IModuleContentRepository moduleContentRepository,
         IModulePageRepository modulePageRepository,
+        IModuleSubmissionRepository moduleSubmissionsRepository,
         IMapper mapper)
     {
         _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
@@ -37,6 +39,7 @@ public class ModulesController : ControllerBase
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
+        _moduleSubmissionRepository = moduleSubmissionsRepository ?? throw new ArgumentNullException(nameof(moduleSubmissionsRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -436,10 +439,10 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
-    /// Adds new content to a specified page within a module.
+    /// Adds a new content to a specified page within a module.
     /// </summary>
     /// <param name="moduleId">The ID of the module.</param>
-    /// <param name="pageId">The ID of the page.</param>
+    /// <param name="pageId">The ID of the page to add the content to.</param>
     /// <param name="contentDto">The data transfer object containing the details of the content to be added.</param>
     /// <returns>The created content if the operation is successful, otherwise an error message.</returns>
     [HttpPost("{moduleId}/pages/{pageId}/add-content")]
@@ -474,7 +477,7 @@ public class ModulesController : ControllerBase
             return BadRequest(new { Status = "Error", Message = "Link URL is required for link content." });
         }
 
-        if (!contentDto.IsLink && contentDto.File == null)
+        if (!contentDto.IsLink && !contentDto.IsUpload && contentDto.File == null)
         {
             return BadRequest(new { Status = "Error", Message = "File is required for file content." });
         }
@@ -493,6 +496,14 @@ public class ModulesController : ControllerBase
 
             content.FileUrl = fileUrl;
             content.FileType = contentDto.File.ContentType;
+        }
+
+        if (contentDto.IsUpload)
+        {
+            if (contentDto.Deadline != null)
+            {
+                content.Deadline = (DateTime)contentDto.Deadline;
+            }
         }
 
         var createdContent = await _moduleContentRepository.AddContentAsync(content);
@@ -588,5 +599,80 @@ public class ModulesController : ControllerBase
         await _moduleContentRepository.DeleteContentAsync(contentId);
 
         return Ok(new { Status = "Success", Message = "Content deleted successfully!" });
+    }
+
+    /// <summary>
+    /// Retrieves the file name of the submission for the specified content by the current user.
+    /// </summary>
+    /// <param name="contentId">The ID of the content.</param>
+    /// <returns>The submission file name if found, otherwise a NotFound result.</returns>
+    [HttpGet("{moduleId}/content/{contentId}/submission")]
+    [Authorize]
+    public async Task<IActionResult> GetSubmission([FromQuery] Guid contentId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var submission = await _moduleSubmissionRepository.GetSubmissionByContentIdAndUserIdAsync(contentId, user.Id);
+        if (submission == null || string.IsNullOrEmpty(submission.FileName))
+        {
+            return NotFound(new { Status = "Error", Message = "Submission not found." });
+        }
+
+        return Ok(submission);
+    }
+
+    /// <summary>
+    /// Uploads a submission for a specific content within a module page.
+    /// </summary>
+    /// <param name="uploadSubmissionDto">The data transfer object containing the details of the submission.</param>
+    /// <returns>A success message with the file URL if the submission is uploaded successfully, otherwise an error message.</returns>
+    [HttpPost("{moduleId}/pages/{pageId}/contents/{contentId}/upload-submission")]
+    [Authorize(Roles = nameof(Role.Student))]
+    public async Task<IActionResult> UploadSubmission([FromForm] UploadSubmissionDto uploadSubmissionDto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        if (uploadSubmissionDto.File == null)
+        {
+            return BadRequest(new { Status = "Error", Message = "File is required for submission." });
+        }
+
+        var existingSubmission = await _moduleSubmissionRepository
+            .GetSubmissionsByContentIdAsync(uploadSubmissionDto.ContentId);
+        var userSubmission = existingSubmission.FirstOrDefault(s => s.UserId == user.Id);
+        if (userSubmission != null && !string.IsNullOrEmpty(userSubmission.FileUrl))
+        {
+            await _blobStorageService.DeleteFileAsync(userSubmission.FileUrl);
+            await _moduleSubmissionRepository.DeleteSubmissionAsync(userSubmission.SubmissionId);
+        }
+
+        using var stream = uploadSubmissionDto.File.OpenReadStream();
+        var filePath = $"modules/{uploadSubmissionDto.ModuleId}/pages/{uploadSubmissionDto.PageId}" +
+            $"/assignments/{uploadSubmissionDto.ContentId}/{uploadSubmissionDto.File.FileName}";
+        await _blobStorageService.UploadFileAsync(stream, filePath);
+
+        // Generate a SAS token that is valid for 10 years
+        var fileUrl = _blobStorageService.GetBlobSasUri(filePath, DateTimeOffset.UtcNow.AddYears(10));
+
+        var submission = new ModuleSubmission
+        {
+            ContentId = uploadSubmissionDto.ContentId,
+            UserId = user.Id,
+            FileUrl = fileUrl,
+            FileName = uploadSubmissionDto.FileName,
+            SubmittedDate = DateTime.UtcNow
+        };
+
+        await _moduleSubmissionRepository.AddSubmissionAsync(submission);
+
+        return Ok(new { Status = "Success", Message = "Submission uploaded successfully.", FileUrl = fileUrl });
     }
 }

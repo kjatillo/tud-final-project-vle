@@ -8,4 +8,6 @@ public class AddContentDto
     public string FileType { get; set; } = string.Empty;
     public bool IsLink { get; set; }
     public string LinkUrl { get; set; } = string.Empty;
+    public bool IsUpload { get; set; }
+    public DateTime? Deadline { get; set; }
 }
