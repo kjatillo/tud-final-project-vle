@@ -13,6 +13,7 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
     public required DbSet<Enrolment> Enrolments { get; set; }
     public required DbSet<ModulePage> ModulePages { get; set; }
     public required DbSet<ModuleContent> ModuleContents { get; set; }
+    public DbSet<ModuleSubmission> ModuleSubmissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -35,5 +36,8 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<ModuleContent>()
             .HasKey(c => c.ContentId);
+
+        builder.Entity<ModuleSubmission>()
+        .HasKey(ms => ms.SubmissionId);
     }
 }
