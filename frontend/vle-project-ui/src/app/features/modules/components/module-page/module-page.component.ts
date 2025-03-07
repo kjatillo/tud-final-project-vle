@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModulePage } from '../../models/module-page.model';
+import { AssignmentService } from '../../services/assignment.service';
+import { ModuleContentService } from '../../services/module-content.service';
+import { ModulePageService } from '../../services/module-page.service';
 import { ModuleService } from '../../services/module.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -30,10 +33,13 @@ export class ModulePageComponent implements OnInit {
   showContents = true;
 
   constructor(
-    private route: ActivatedRoute,
+    private assignmentService: AssignmentService,
+    private authService: AuthService,
+    private moduleContentService: ModuleContentService,
+    private modulePageService: ModulePageService,
     private dialog: MatDialog,
     private moduleService: ModuleService,
-    private authService: AuthService
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
@@ -75,7 +81,7 @@ export class ModulePageComponent implements OnInit {
   }
 
   loadPages(): void {
-    this.moduleService.getPages(this.moduleId).subscribe(pages => {
+    this.modulePageService.getPages(this.moduleId).subscribe(pages => {
       this.pages = pages;
       if (this.pages.length > 0) {
         this.selectPage(this.pages[0].pageId);
@@ -84,7 +90,7 @@ export class ModulePageComponent implements OnInit {
   }
 
   loadContents(pageId: string): void {
-    this.moduleService.getContents(this.moduleId, pageId).subscribe(contents => {
+    this.moduleContentService.getContents(this.moduleId, pageId).subscribe(contents => {
       this.contents = contents;
 
       this.contents.forEach(content => {
@@ -97,7 +103,7 @@ export class ModulePageComponent implements OnInit {
 
   getSubmissionFileName(contentId: string): void {
     if (!this.isInstructor) {
-      this.moduleService.getSubmission(this.moduleId, contentId).subscribe(response => {
+      this.assignmentService.getSubmission(contentId).subscribe(response => {
         const content = this.contents.find(c => c.contentId === contentId);
         if (content) {
           content.submissionFileName = response.fileName;
@@ -144,7 +150,7 @@ export class ModulePageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.moduleService.deletePage(this.moduleId, pageId).subscribe({
+        this.modulePageService.deletePage(this.moduleId, pageId).subscribe({
           next: () => {
             this.loadPages();
 
@@ -185,7 +191,7 @@ export class ModulePageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.moduleService.deleteContent(this.moduleId, this.selectedPageId, contentId).subscribe({
+        this.moduleContentService.deleteContent(this.moduleId, this.selectedPageId, contentId).subscribe({
           next: () => {
             this.loadContents(this.selectedPageId);
           },
@@ -208,7 +214,7 @@ export class ModulePageComponent implements OnInit {
         formData.append('pageId', this.selectedPageId);
         formData.append('fileName', file.name);
 
-        this.moduleService.addSubmission(this.moduleId, contentId, formData).subscribe({
+        this.assignmentService.addSubmission(formData).subscribe({
           next: () => {
             alert('Submission uploaded successfully');
             this.getSubmissionFileName(contentId);
@@ -219,6 +225,7 @@ export class ModulePageComponent implements OnInit {
         });
       }
     };
+    
     input.click();
   }
 

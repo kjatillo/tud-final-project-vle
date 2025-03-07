@@ -2,91 +2,33 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
-import { ModuleContent } from '../models/module-content.model';
-import { ModulePage } from '../models/module-page.model';
 import { Module } from '../models/module.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModuleService {
-  private modulesApiEndpoint = environment.modulesApiEndpoint;
+  private modulesBaseEndpoint = environment.modulesApiEndpoint;
 
   constructor(private http: HttpClient) { }
 
   getModules(): Observable<Module[]> {
-    return this.http.get<Module[]>(this.modulesApiEndpoint);
+    return this.http.get<Module[]>(this.modulesBaseEndpoint);
   }
 
-  getModuleById(id: string): Observable<Module> {
-    return this.http.get<Module>(`${this.modulesApiEndpoint}/${id}`);
-  }
-
-  getEnroledModules(): Observable<Module[]> {
-    return this.http.get<Module[]>(`${this.modulesApiEndpoint}/enroled`);
+  getModuleById(moduleId: string): Observable<Module> {
+    return this.http.get<Module>(`${this.modulesBaseEndpoint}/${moduleId}`);
   }
 
   createModule(moduleData: Module): Observable<any> {
-    return this.http.post(this.modulesApiEndpoint, moduleData);
+    return this.http.post(this.modulesBaseEndpoint, moduleData);
   }
 
-  editModule(id: string, moduleData: Module): Observable<any> {
-    return this.http.put(`${this.modulesApiEndpoint}/${id}`, moduleData);
+  editModule(moduleId: string, moduleData: Module): Observable<any> {
+    return this.http.put(`${this.modulesBaseEndpoint}/${moduleId}`, moduleData);
   }
 
-  deleteModule(id: string | null): Observable<any> {
-    return this.http.delete(`${this.modulesApiEndpoint}/${id}`);
-  }
-
-  getPages(moduleId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.modulesApiEndpoint}/${moduleId}/pages`);
-  }
-
-  addPage(moduleId: string, page: ModulePage): Observable<any> {
-    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/add-page`, page);
-  }
-
-  editPage(moduleId: string, pageId: string, page: ModulePage): Observable<ModulePage> {
-    return this.http.put<ModulePage>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}`, page);
-  }
-
-  deletePage(moduleId: string, pageId: string): Observable<any> {
-    return this.http.delete(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}`);
-  }
-
-  addContent(moduleId: string, pageId: string, content: FormData): Observable<any> {
-    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/add-content`, content);
-  }
-
-  editContent(moduleId: string, pageId: string, contentId: string, content: FormData): Observable<ModuleContent> {
-    return this.http.put<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`, content);
-  }
-
-  deleteContent(moduleId: string, pageId: string, contentId: string): Observable<any> {
-    return this.http.delete(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
-  }
-
-  addSubmission(moduleId: string, contentId: string, formData: FormData): Observable<any> {
-    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/contents/${contentId}/submission`, formData);
-  }
-
-  getSubmission(moduleId: string, contentId: string): Observable<any> {
-    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/contents/${contentId}/submission`, { params: { contentId } });
-  }
-
-  getContentById(moduleId: string, pageId: string, contentId: string): Observable<ModuleContent> {
-    return this.http.get<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
-  }
-
-  getContents(moduleId: string, pageId: string): Observable<any> {
-    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents`);
-  }
-
-  enrolInModule(id: string | null): Observable<any> {
-    return this.http.post(`${this.modulesApiEndpoint}/${id}/enrol`, {});
-  }
-
-  isUserEnroled(id: string | null): Observable<boolean> {
-    return this.http.get<boolean>(`${this.modulesApiEndpoint}/${id}/is-enroled`);
+  deleteModule(moduleId: string): Observable<any> {
+    return this.http.delete(`${this.modulesBaseEndpoint}/${moduleId}`);
   }
 }

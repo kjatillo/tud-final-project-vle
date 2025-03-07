@@ -182,7 +182,7 @@ public class UsersController : ControllerBase
     /// <returns>An action result containing the user details if successful otherwise an unauthorized response.</returns>
     /// <response code="200">Returns the user details.</response>
     /// <response code="401">If the user is not authenticated.</response>
-    [HttpGet("current-user")]
+    [HttpGet("current")]
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
@@ -205,7 +205,7 @@ public class UsersController : ControllerBase
     /// <returns>An action result indicating whether the token is valid and the user's roles.</returns>
     /// <response code="200">If the token is valid.</response>
     /// <response code="401">If the user is not authenticated or the token is invalid.</response>
-    [HttpGet("verify-token")]
+    [HttpGet("verify")]
     [Authorize]
     public async Task<IActionResult> VerifyToken()
     {

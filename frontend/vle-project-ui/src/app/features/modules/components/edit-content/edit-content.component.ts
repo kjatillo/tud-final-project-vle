@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModuleService } from '../../services/module.service';
 import { ModuleContent } from '../../models/module-content.model';
+import { ModuleContentService } from '../../services/module-content.service';
 
 @Component({
   selector: 'app-edit-content',
@@ -17,8 +17,8 @@ export class EditContentComponent implements OnInit {
   editContentForm!: FormGroup;
 
   constructor(
+    private moduleContentService: ModuleContentService,
     private route: ActivatedRoute,
-    private moduleService: ModuleService,
     private router: Router,
     private fb: FormBuilder
   ) {}
@@ -59,7 +59,9 @@ export class EditContentComponent implements OnInit {
         formData.append('file', this.editContentForm.get('file')?.value);
       }
 
-      this.moduleService.editContent(this.moduleId, this.content.pageId, this.content.contentId, formData).subscribe({
+      this.moduleContentService
+      .editContent(this.moduleId, this.content.pageId, this.content.contentId, formData)
+      .subscribe({
         next: () => {
           this.contentUpdated.emit();
           this.router.navigate([`/module/${this.moduleId}/page/${this.content.pageId}`]);
