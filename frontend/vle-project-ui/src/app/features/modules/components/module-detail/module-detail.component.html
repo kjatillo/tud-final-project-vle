@@ -1,8 +1,14 @@
 <div class="container mt-5" *ngIf="module">
     <div class="dropdown me-2 d-flex justify-content-between">
         <h2>{{ module.moduleName }}</h2>
-        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="moduleCreator == currentUser">
-            <i class="bi bi-three-dots-vertical"></i>
+        <button 
+            class="btn p-0" 
+            type="button" 
+            id="dropdownMenuButton" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false" 
+            *ngIf="moduleCreator == currentUser">
+                <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
@@ -12,8 +18,10 @@
 
     <p>{{ module.description }}</p>
     
-    <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator)"
+    <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
         (click)="enrol()">Enroll</button>
     
-    <app-module-page></app-module-page>
+        <ng-template #modulePage>
+            <app-module-page></app-module-page>
+        </ng-template>
 </div>

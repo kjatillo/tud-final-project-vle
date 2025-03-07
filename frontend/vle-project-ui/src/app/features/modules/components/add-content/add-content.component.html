@@ -4,22 +4,43 @@
             <label for="title" class="form-label">Content Title</label>
             <input type="text" id="title" class="form-control" formControlName="title">
         </div>
+
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" class="form-control" formControlName="description"></textarea>
         </div>
+
         <div class="mb-3">
-            <label for="isLink" class="form-label">Is this content a link?</label>
-            <input type="checkbox" id="isLink" formControlName="isLink">
+            <label class="form-label">Content Type</label>
+            <div>
+                <input type="radio" id="file" formControlName="contentType" value="file" checked>
+                <label for="file">File</label>
+            </div>
+            <div>
+                <input type="radio" id="link" formControlName="contentType" value="link">
+                <label for="link">Link</label>
+            </div>
+            <div>
+                <input type="radio" id="upload" formControlName="contentType" value="upload">
+                <label for="upload">Upload</label>
+            </div>
         </div>
-        <div class="mb-3" *ngIf="addContentForm.get('isLink')?.value">
+
+        <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'link'">
             <label for="linkUrl" class="form-label">Link URL</label>
             <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl">
         </div>
-        <div class="mb-3" *ngIf="!addContentForm.get('isLink')?.value">
+        
+        <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'file'">
             <label for="file" class="form-label">File</label>
             <input type="file" id="file" (change)="onFileSelected($event)" class="form-control">
         </div>
+        
+        <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'upload'">
+            <label for="deadline" class="form-label">Deadline</label>
+            <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline">
+        </div>
+        
         <button type="submit" class="btn btn-primary mt-2 me-2" [disabled]="addContentForm.invalid">Add Content</button>
         <button type="button" class="btn btn-secondary mt-2" (click)="onCancel()">Cancel</button>
     </form>

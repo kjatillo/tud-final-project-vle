@@ -31,30 +31,47 @@ export class AddContentComponent implements OnInit {
       file: [null],
       fileType: [''],
       isLink: [false],
-      linkUrl: ['']
+      linkUrl: [''],
+      isUpload: [false],
+      deadline: [this.getDefaultDeadline(), Validators.required],
+      contentType: ['file', Validators.required]
     });
 
-    this.addContentForm.get('isLink')?.valueChanges.subscribe((isLink: boolean) => {
-      this.updateValidators(isLink);
+    this.addContentForm.get('contentType')?.valueChanges.subscribe((contentType: string) => {
+      this.updateValidators(contentType);
     });
 
-    this.updateValidators(this.addContentForm.get('isLink')?.value);
+    this.updateValidators(this.addContentForm.get('contentType')?.value);
   }
 
-  updateValidators(isLink: boolean): void {
+  getDefaultDeadline(): string {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    return now.toISOString().slice(0, 16);
+  }
+
+  updateValidators(contentType: string): void {
     const linkUrlControl = this.addContentForm.get('linkUrl');
     const fileControl = this.addContentForm.get('file');
+    const deadlineControl = this.addContentForm.get('deadline');
 
-    if (isLink) {
+    if (contentType === 'link') {
       linkUrlControl?.setValidators([Validators.required]);
       fileControl?.clearValidators();
-    } else {
+      deadlineControl?.clearValidators();
+    } else if (contentType === 'file') {
       linkUrlControl?.clearValidators();
       fileControl?.setValidators([Validators.required]);
+      deadlineControl?.clearValidators();
+    } else if (contentType === 'upload') {
+      linkUrlControl?.clearValidators();
+      fileControl?.clearValidators();
+      deadlineControl?.setValidators([Validators.required]);
     }
 
     linkUrlControl?.updateValueAndValidity();
     fileControl?.updateValueAndValidity();
+    deadlineControl?.updateValueAndValidity();
   }
 
   onFileSelected(event: any): void {
@@ -70,15 +87,17 @@ export class AddContentComponent implements OnInit {
       const formData = new FormData();
       formData.append('title', this.addContentForm.get('title')?.value);
       formData.append('description', this.addContentForm.get('description')?.value);
-      formData.append('isLink', this.addContentForm.get('isLink')?.value);
-      
-      // Append URL to FormData only if content is link to avoid validation error
-      if (this.addContentForm.get('isLink')?.value) {
+
+      const contentType = this.addContentForm.get('contentType')?.value;
+      formData.append('isLink', contentType === 'link' ? 'true' : 'false');
+      formData.append('isUpload', contentType === 'upload' ? 'true' : 'false');
+
+      if (contentType === 'link') {
         formData.append('linkUrl', this.addContentForm.get('linkUrl')?.value);
-      }
-      
-      if (this.addContentForm.get('file')?.value) {
+      } else if (contentType === 'file') {
         formData.append('file', this.addContentForm.get('file')?.value);
+      } else if (contentType === 'upload') {
+        formData.append('deadline', this.addContentForm.get('deadline')?.value);
       }
 
       this.moduleService.addContent(this.moduleId, this.pageId, formData).subscribe({

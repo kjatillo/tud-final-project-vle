@@ -6,15 +6,8 @@
     margin-bottom: 1rem;
 }
 
-.btn-secondary,
-.btn-danger {
-    margin-left: .75rem;
-}
-
 @media (max-width: 767.98px) {
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger {
+    .btn-primary {
         width: 100%;
         margin-left: 0;
         margin-top: .75rem;
@@ -35,7 +28,8 @@
 
     .content-title,
     .content-description,
-    .btn-outline-primary {
+    .btn-outline-primary,
+    .btn-outline-danger {
         width: 100%;
     }
 }

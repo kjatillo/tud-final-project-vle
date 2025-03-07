@@ -1,6 +1,6 @@
 ﻿namespace VleProjectApi.Dtos;
 
-public class UploadSubmissionDto
+public class AddSubmissionDto
 {
     public IFormFile? File { get; set; }
     public Guid ContentId { get; set; }
