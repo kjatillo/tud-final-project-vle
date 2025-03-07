@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Module } from '../../models/module.model';
+import { EnrolmentService } from '../../services/enrolment.service';
 import { ModuleService } from '../../services/module.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -13,21 +14,22 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
 })
 export class ModuleDetailComponent implements OnInit {
   module!: Module;
-  moduleId!: string | null;
+  moduleId!: string;
   moduleCreator!: string;
   currentUser!: string;
   isEnroled!: boolean;
 
   constructor(
-    private route: ActivatedRoute,
     private authService: AuthService,
     private dialog: MatDialog,
+    private enrolmentService: EnrolmentService,
     private moduleService: ModuleService,
+    private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.moduleId = this.route.snapshot.paramMap.get('id');
+    this.moduleId = this.route.snapshot.paramMap.get('id')!;
 
     this.authService.currentUser$.subscribe(user => {
       if (user) {
@@ -49,7 +51,7 @@ export class ModuleDetailComponent implements OnInit {
   }
 
   checkEnrolment(): void {
-    this.moduleService.isUserEnroled(this.moduleId).subscribe({
+    this.enrolmentService.isUserEnroled(this.moduleId).subscribe({
       next: (isEnroled) => this.isEnroled = isEnroled,
       error: (error) => console.error('Error checking enrollment', error),
     });
@@ -57,7 +59,7 @@ export class ModuleDetailComponent implements OnInit {
 
   enrol(): void {
     if (this.module) {
-      this.moduleService.enrolInModule(this.moduleId).subscribe({
+      this.enrolmentService.enrolInModule(this.moduleId).subscribe({
         next: (response) => {
           console.log('Enroled successfully', response);
           this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

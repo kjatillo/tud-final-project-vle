@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { Module } from '../modules/models/module.model';
-import { ModuleService } from '../modules/services/module.service';
+import { EnrolmentService } from '../modules/services/enrolment.service';
 
 @Component({
   selector: 'app-home',
@@ -14,14 +14,14 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private moduleService: ModuleService
+    private enrolmentService: EnrolmentService
   ) { }
 
   ngOnInit(): void {
     this.authService.isLoggedIn$.subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
       if (loggedIn) {
-        this.moduleService.getEnroledModules().subscribe({
+        this.enrolmentService.getEnroledModules().subscribe({
           next: (modules) => {
             this.enroledModules = modules;
           },

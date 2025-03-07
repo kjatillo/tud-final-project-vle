@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModuleService } from '../../services/module.service';
+import { ModulePageService } from '../../services/module-page.service';
 
 @Component({
   selector: 'app-add-page',
@@ -15,8 +15,8 @@ export class AddPageComponent implements OnInit {
   addPageForm!: FormGroup;
 
   constructor(
+    private modulePageService: ModulePageService,
     private route: ActivatedRoute,
-    private moduleService: ModuleService,
     private router: Router,
     private fb: FormBuilder
   ) { }
@@ -33,7 +33,7 @@ export class AddPageComponent implements OnInit {
     if (this.addPageForm.valid) {
       const pageData = this.addPageForm.value;
 
-      this.moduleService.addPage(this.moduleId, pageData).subscribe({
+      this.modulePageService.addPage(this.moduleId, pageData).subscribe({
         next: () => {
           this.pageAdded.emit();
           this.router.navigate([`/module/${this.moduleId}`]);

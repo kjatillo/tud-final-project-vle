@@ -11,7 +11,7 @@ import { User } from '../../features/users/models/user.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiEndpoint = environment.usersApiEndpoint;
+  private usersBaseEndpoint = environment.usersApiEndpoint;
   private loggedIn$ = new BehaviorSubject<boolean>(false);
   private roles$ = new BehaviorSubject<string[]>([]);
   private user$ = new BehaviorSubject<User | null>(null);
@@ -29,7 +29,7 @@ export class AuthService {
       return;
     }
 
-    this.http.get(`${this.apiEndpoint}/verify-token`)
+    this.http.get(`${this.usersBaseEndpoint}/verify`)
       .pipe(
         catchError((error) => {
           this.clearAuthState();
@@ -69,11 +69,11 @@ export class AuthService {
   }
 
   register(registerData: Register): Observable<any> {
-    return this.http.post(`${this.apiEndpoint}/register`, registerData);
+    return this.http.post(`${this.usersBaseEndpoint}/register`, registerData);
   }
 
   login(loginData: Login): Observable<any> {
-    return this.http.post(`${this.apiEndpoint}/login`, loginData)
+    return this.http.post(`${this.usersBaseEndpoint}/login`, loginData)
       .pipe(
         tap((response: any) => {
           if (response && response.user && response.user.roleName) {
@@ -94,7 +94,7 @@ export class AuthService {
   logout(): void {
     this.isLoggingOut = true;
 
-    this.http.post(`${this.apiEndpoint}/logout`, {})
+    this.http.post(`${this.usersBaseEndpoint}/logout`, {})
       .subscribe({
         next: () => {
           this.clearAuthState();
@@ -112,7 +112,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User | null> {
-    return this.http.get<User>(`${this.apiEndpoint}/current-user`)
+    return this.http.get<User>(`${this.usersBaseEndpoint}/current`)
       .pipe(
         tap((user: User | null) => {
           this.user$.next(user);

@@ -32,7 +32,7 @@ public class ModulePageRepository : IModulePageRepository
     /// </summary>
     /// <param name="modulePageId">The unique identifier of the module page.</param>
     /// <returns>The module page if found; otherwise, null.</returns>
-    public async Task<ModulePage?> GetModulePageById(Guid modulePageId)
+    public async Task<ModulePage?> GetModulePageByIdAsync(Guid modulePageId)
     {
         return await _context.ModulePages
             .FirstOrDefaultAsync(p => p.PageId == modulePageId);

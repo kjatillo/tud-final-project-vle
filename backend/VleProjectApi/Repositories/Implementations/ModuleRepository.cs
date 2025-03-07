@@ -56,7 +56,7 @@ public class ModuleRepository : IModuleRepository
     /// Retrieves all modules.
     /// </summary>
     /// <returns>The task result contains a list of all modules.</returns>
-    public async Task<IEnumerable<Module>> GetAllModulesAsync()
+    public async Task<IEnumerable<Module>> GetModulesAsync()
     {
         return await _context.Modules.OrderBy(m => m.ModuleName).ToListAsync();
     }

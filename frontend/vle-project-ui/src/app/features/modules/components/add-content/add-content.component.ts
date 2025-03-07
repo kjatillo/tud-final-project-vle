@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModuleService } from '../../services/module.service';
+import { ModuleContentService } from '../../services/module-content.service';
 
 @Component({
   selector: 'app-add-content',
@@ -16,8 +16,8 @@ export class AddContentComponent implements OnInit {
   addContentForm!: FormGroup;
 
   constructor(
+    private moduleContentService: ModuleContentService,
     private route: ActivatedRoute,
-    private moduleService: ModuleService,
     private router: Router,
     private fb: FormBuilder
   ) { }
@@ -100,7 +100,7 @@ export class AddContentComponent implements OnInit {
         formData.append('deadline', this.addContentForm.get('deadline')?.value);
       }
 
-      this.moduleService.addContent(this.moduleId, this.pageId, formData).subscribe({
+      this.moduleContentService.addContent(this.moduleId, this.pageId, formData).subscribe({
         next: () => {
           this.contentAdded.emit();
           this.router.navigate([`/module/${this.moduleId}/page/${this.pageId}`]);
