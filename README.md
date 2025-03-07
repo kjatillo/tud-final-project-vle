@@ -161,8 +161,24 @@ CREATE TABLE ModuleContents (
     FileType NVARCHAR(255),
     IsLink BIT NOT NULL,
     LinkUrl NVARCHAR(255),
-    UploadedDate DATETIME NOT NULL DEFAULT GETDATE()
+    IsUpload BIT NOT NULL,
+    Deadline DATETIME,
+    UploadedDate DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (PageId) REFERENCES ModulePages(PageId)
+);
+```
+
+**Module Submissions Table**
+```sql
+CREATE TABLE ModuleSubmissions (
+    SubmissionId UNIQUEIDENTIFIER PRIMARY KEY,
+    ContentId UNIQUEIDENTIFIER NOT NULL,
+    UserId NVARCHAR(450) NOT NULL,
+    FileName NVARCHAR(255) NULL,
+    FileUrl NVARCHAR(MAX) NOT NULL,
+    SubmittedDate DATETIME2 NOT NULL,
+    FOREIGN KEY (ContentId) REFERENCES ModuleContents(ContentId),
+    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
 );
 ```
 
