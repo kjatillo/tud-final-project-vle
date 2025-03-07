@@ -86,7 +86,35 @@ export class ModulePageComponent implements OnInit {
   loadContents(pageId: string): void {
     this.moduleService.getContents(this.moduleId, pageId).subscribe(contents => {
       this.contents = contents;
+
+      this.contents.forEach(content => {
+        if (content.isUpload) {
+          this.getSubmissionFileName(content.contentId);
+        }
+      });
     });
+  }
+
+  getSubmissionFileName(contentId: string): void {
+    if (!this.isInstructor) {
+      this.moduleService.getSubmission(this.moduleId, contentId).subscribe(response => {
+        const content = this.contents.find(c => c.contentId === contentId);
+        if (content) {
+          content.submissionFileName = response.fileName;
+          content.submissionFileUrl = response.fileUrl;
+          content.submissionDate = response.submittedDate;
+        }
+      });
+    }
+  }
+
+  isPastDeadline(deadline: Date | null): boolean {
+    const currentDate = new Date();
+    if (deadline != null) {
+      return new Date(deadline) < currentDate;
+    }
+
+    return false;
   }
 
   addPage(): void {
@@ -165,6 +193,33 @@ export class ModulePageComponent implements OnInit {
         });
       }
     });
+  }
+
+  uploadSubmission(contentId: string): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('contentId', contentId);
+        formData.append('moduleId', this.moduleId);
+        formData.append('pageId', this.selectedPageId);
+        formData.append('fileName', file.name);
+
+        this.moduleService.addSubmission(this.moduleId, contentId, formData).subscribe({
+          next: () => {
+            alert('Submission uploaded successfully');
+            this.getSubmissionFileName(contentId);
+          },
+          error: (error) => {
+            console.error('Error uploading submission', error);
+          }
+        });
+      }
+    };
+    input.click();
   }
 
   onPageAdded(): void {

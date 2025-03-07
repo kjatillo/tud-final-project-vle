@@ -66,6 +66,14 @@ export class ModuleService {
     return this.http.delete(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
   }
 
+  addSubmission(moduleId: string, contentId: string, formData: FormData): Observable<any> {
+    return this.http.post(`${this.modulesApiEndpoint}/${moduleId}/contents/${contentId}/submission`, formData);
+  }
+
+  getSubmission(moduleId: string, contentId: string): Observable<any> {
+    return this.http.get(`${this.modulesApiEndpoint}/${moduleId}/contents/${contentId}/submission`, { params: { contentId } });
+  }
+
   getContentById(moduleId: string, pageId: string, contentId: string): Observable<ModuleContent> {
     return this.http.get<ModuleContent>(`${this.modulesApiEndpoint}/${moduleId}/pages/${pageId}/contents/${contentId}`);
   }

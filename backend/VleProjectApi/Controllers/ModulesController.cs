@@ -606,7 +606,7 @@ public class ModulesController : ControllerBase
     /// </summary>
     /// <param name="contentId">The ID of the content.</param>
     /// <returns>The submission file name if found, otherwise a NotFound result.</returns>
-    [HttpGet("{moduleId}/content/{contentId}/submission")]
+    [HttpGet("{moduleId}/contents/{contentId}/submission")]
     [Authorize]
     public async Task<IActionResult> GetSubmission([FromQuery] Guid contentId)
     {
@@ -628,11 +628,11 @@ public class ModulesController : ControllerBase
     /// <summary>
     /// Uploads a submission for a specific content within a module page.
     /// </summary>
-    /// <param name="uploadSubmissionDto">The data transfer object containing the details of the submission.</param>
+    /// <param name="addSubmissionDto">The data transfer object containing the details of the submission.</param>
     /// <returns>A success message with the file URL if the submission is uploaded successfully, otherwise an error message.</returns>
-    [HttpPost("{moduleId}/pages/{pageId}/contents/{contentId}/upload-submission")]
+    [HttpPost("{moduleId}/contents/{contentId}/submission")]
     [Authorize(Roles = nameof(Role.Student))]
-    public async Task<IActionResult> UploadSubmission([FromForm] UploadSubmissionDto uploadSubmissionDto)
+    public async Task<IActionResult> AddSubmission([FromForm] AddSubmissionDto addSubmissionDto)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -640,13 +640,13 @@ public class ModulesController : ControllerBase
             return Unauthorized();
         }
 
-        if (uploadSubmissionDto.File == null)
+        if (addSubmissionDto.File == null)
         {
             return BadRequest(new { Status = "Error", Message = "File is required for submission." });
         }
 
         var existingSubmission = await _moduleSubmissionRepository
-            .GetSubmissionsByContentIdAsync(uploadSubmissionDto.ContentId);
+            .GetSubmissionsByContentIdAsync(addSubmissionDto.ContentId);
         var userSubmission = existingSubmission.FirstOrDefault(s => s.UserId == user.Id);
         if (userSubmission != null && !string.IsNullOrEmpty(userSubmission.FileUrl))
         {
@@ -654,9 +654,9 @@ public class ModulesController : ControllerBase
             await _moduleSubmissionRepository.DeleteSubmissionAsync(userSubmission.SubmissionId);
         }
 
-        using var stream = uploadSubmissionDto.File.OpenReadStream();
-        var filePath = $"modules/{uploadSubmissionDto.ModuleId}/pages/{uploadSubmissionDto.PageId}" +
-            $"/assignments/{uploadSubmissionDto.ContentId}/{uploadSubmissionDto.File.FileName}";
+        using var stream = addSubmissionDto.File.OpenReadStream();
+        var filePath = $"modules/{addSubmissionDto.ModuleId}/pages/{addSubmissionDto.PageId}" +
+            $"/assignments/{addSubmissionDto.ContentId}/{addSubmissionDto.File.FileName}";
         await _blobStorageService.UploadFileAsync(stream, filePath);
 
         // Generate a SAS token that is valid for 10 years
@@ -664,10 +664,10 @@ public class ModulesController : ControllerBase
 
         var submission = new ModuleSubmission
         {
-            ContentId = uploadSubmissionDto.ContentId,
+            ContentId = addSubmissionDto.ContentId,
             UserId = user.Id,
             FileUrl = fileUrl,
-            FileName = uploadSubmissionDto.FileName,
+            FileName = addSubmissionDto.FileName,
             SubmittedDate = DateTime.UtcNow
         };
 
