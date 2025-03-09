@@ -67,7 +67,7 @@
                                 </div>
 
                                 <div *ngIf="content.isUpload">
-                                    <p><b>Deadline</b>: {{ content.deadline | date:'short' }}</p>
+                                    <p><b>Deadline</b>: {{ content.deadline | date:'dd/MM/yyyy HH:mm' }}</p>
                                     <p *ngIf="!isInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
                                         content.submissionFileName : 'N/A' }}</p>
                                     <button *ngIf="!isInstructor" class="btn"
