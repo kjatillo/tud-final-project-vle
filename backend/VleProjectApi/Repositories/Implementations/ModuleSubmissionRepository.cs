@@ -15,6 +15,17 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     }
 
     /// <summary>
+    /// Retrieves a module submission by its ID.
+    /// </summary>
+    /// <param name="submissionId">The ID of the submission to retrieve.</param>
+    /// <returns>The module submission with the specified ID, or null if not found.</returns>
+    public async Task<ModuleSubmission?> GetSubmissionByIdAsync(Guid submissionId)
+    {
+        return await _context.ModuleSubmissions
+            .FirstOrDefaultAsync(s => s.SubmissionId == submissionId);
+    }
+
+    /// <summary>
     /// Adds a new module submission to the database.
     /// </summary>
     /// <param name="submission">The module submission to add.</param>
@@ -51,6 +62,20 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     }
 
     /// <summary>
+    /// Updates an existing module submission in the database.
+    /// </summary>
+    /// <param name="submission">The module submission to update. If null, no action is taken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task UpdateSubmissionAsync(ModuleSubmission? submission)
+    {
+        if (submission != null)
+        {
+            _context.ModuleSubmissions.Update(submission);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
     /// Deletes a module submission from the database.
     /// </summary>
     /// <param name="submissionId">The ID of the submission to delete.</param>
@@ -64,5 +89,15 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
             _context.ModuleSubmissions.Remove(submission);
             await _context.SaveChangesAsync();
         }
+    }
+
+    /// <summary>
+    /// Checks if a content exists in the database by content ID.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to check.</param>
+    /// <returns>True if the content exists, otherwise false.</returns>
+    public async Task<bool> ContentExistsAsync(Guid contentId)
+    {
+        return await _context.ModuleContents.AnyAsync(c => c.ContentId == contentId);
     }
 }
