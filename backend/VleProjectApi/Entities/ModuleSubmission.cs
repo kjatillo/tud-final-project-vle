@@ -8,4 +8,6 @@ public class ModuleSubmission
     public string FileName { get; set; } = string.Empty;
     public string FileUrl { get; set; } = string.Empty;
     public DateTime SubmittedDate { get; set; }
+    public double? Grade { get; set; }
+    public string? Feedback { get; set; }
 }
