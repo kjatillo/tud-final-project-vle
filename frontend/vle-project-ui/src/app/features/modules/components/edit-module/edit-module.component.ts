@@ -58,4 +58,10 @@ export class EditModuleComponent implements OnInit {
       });
     }
   }
+
+  onCancel(): void {
+    if (this.moduleId) {
+      this.router.navigate([`/module/${this.moduleId}`]);
+    }
+  }
 }

@@ -67,14 +67,16 @@
                                 </div>
 
                                 <div *ngIf="content.isUpload">
-                                    <p><b>Deadline</b>: {{ content.deadline | date:'dd/MM/yyyy HH:mm' }}</p>
+                                    <p><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
                                     <p *ngIf="!isInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
                                         content.submissionFileName : 'N/A' }}</p>
                                     <button *ngIf="!isInstructor" class="btn"
                                         [ngClass]="isPastDeadline(content.deadline) ? 'btn-outline-danger' : 'btn-outline-primary'"
                                         (click)="uploadSubmission(content.contentId)"
-                                        [disabled]="isPastDeadline(content.deadline)">{{
-                                        !isPastDeadline(content.deadline) ? 'Upload Submission' : 'Submission Closed'}}
+                                        [disabled]="isPastDeadline(content.deadline)">
+                                        {{ !isPastDeadline(content.deadline) ?
+                                        (content.submissionFileName ? 'Edit Submission' : 'Upload Submission') :
+                                        'Submission Closed' }}
                                     </button>
                                 </div>
                             </ng-template>
