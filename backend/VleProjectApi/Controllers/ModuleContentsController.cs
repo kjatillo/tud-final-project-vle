@@ -141,7 +141,7 @@ public class ModuleContentsController : ControllerBase
         var content = _mapper.Map<ModuleContent>(contentDto);
         content.PageId = pageId;
 
-        if (!contentDto.IsLink && contentDto.File != null)
+        if (!contentDto.IsLink && !contentDto.IsUpload && contentDto.File != null)
         {
             using var stream = contentDto.File.OpenReadStream();
             var filePath = $"modules/{moduleId}/pages/{pageId}/resource/{contentDto.File.FileName}";
@@ -211,9 +211,32 @@ public class ModuleContentsController : ControllerBase
         content.Title = contentDto.Title;
         content.Description = contentDto.Description;
         content.IsLink = contentDto.IsLink;
-        content.LinkUrl = contentDto.LinkUrl;
+        content.IsUpload = contentDto.IsUpload;
 
-        if (contentDto.File != null)
+        if ((contentDto.IsLink || contentDto.IsUpload) && !string.IsNullOrEmpty(content.FileUrl))
+        {
+            await _blobStorageService.DeleteFileAsync(content.FileUrl);
+
+            content.FileUrl = string.Empty;
+            content.FileType = string.Empty;
+        }
+
+        if (contentDto.IsUpload)
+        {
+            if (contentDto.Deadline != null)
+            {
+                content.Deadline = (DateTime)contentDto.Deadline;
+            }
+
+            content.LinkUrl = string.Empty;
+        }
+
+        if (contentDto.IsLink)
+        {
+            content.LinkUrl = contentDto.LinkUrl;
+        }
+
+        if (!contentDto.IsLink && !contentDto.IsUpload && contentDto.File != null)
         {
             if (!string.IsNullOrEmpty(content.FileUrl))
             {

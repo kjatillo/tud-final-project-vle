@@ -44,4 +44,8 @@ export class CreateModuleComponent {
       });
     }
   }
+
+  onCancel(): void {
+    this.router.navigate(['/']);
+  }
 }

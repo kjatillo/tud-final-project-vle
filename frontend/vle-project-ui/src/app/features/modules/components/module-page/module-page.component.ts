@@ -101,28 +101,6 @@ export class ModulePageComponent implements OnInit {
     });
   }
 
-  getSubmissionFileName(contentId: string): void {
-    if (!this.isInstructor) {
-      this.assignmentService.getSubmission(contentId).subscribe(response => {
-        const content = this.contents.find(c => c.contentId === contentId);
-        if (content) {
-          content.submissionFileName = response.fileName;
-          content.submissionFileUrl = response.fileUrl;
-          content.submissionDate = response.submittedDate;
-        }
-      });
-    }
-  }
-
-  isPastDeadline(deadline: Date | null): boolean {
-    const currentDate = new Date();
-    if (deadline != null) {
-      return new Date(deadline) < currentDate;
-    }
-
-    return false;
-  }
-
   addPage(): void {
     this.showAddPageForm = true;
     this.showEditPageForm = false;
@@ -201,6 +179,19 @@ export class ModulePageComponent implements OnInit {
     });
   }
 
+  getSubmissionFileName(contentId: string): void {
+    if (!this.isInstructor) {
+      this.assignmentService.getSubmission(contentId).subscribe(response => {
+        const content = this.contents.find(c => c.contentId === contentId);
+        if (content) {
+          content.submissionFileName = response.fileName;
+          content.submissionFileUrl = response.fileUrl;
+          content.submissionDate = response.submittedDate;
+        }
+      });
+    }
+  }
+
   uploadSubmission(contentId: string): void {
     const input = document.createElement('input');
     input.type = 'file';
@@ -227,6 +218,15 @@ export class ModulePageComponent implements OnInit {
     };
     
     input.click();
+  }
+
+  isPastDeadline(deadline: Date | null): boolean {
+    const currentDate = new Date();
+    if (deadline != null) {
+      return new Date(deadline) < currentDate;
+    }
+
+    return false;
   }
 
   onPageAdded(): void {
