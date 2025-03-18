@@ -1,0 +1,57 @@
+<div class="container mt-5 p-0">
+    <h2>Grade Submissions</h2>
+    <form [formGroup]="gradeForm">
+        <div class="mb-3">
+            <select id="contentId" class="form-control" formControlName="contentId">
+                <option value="" disabled selected>-- Select Assignment --</option>
+                <option *ngFor="let assignment of assignments" [value]="assignment.contentId">{{ assignment.title }}
+                </option>
+            </select>
+        </div>
+    </form>
+
+    <div *ngIf="submissions.length === 0 && selectedContentId" class="alert alert-info mt-3">
+        No submissions found.
+    </div>
+
+    <div class="table-responsive mt-3" *ngIf="submissions.length > 0">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student Email</th>
+                    <th>Submission File</th>
+                    <th>Grade</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let submission of submissions">
+                    <td>{{ submission.userName }}</td>
+                    <td>{{ submission.userEmail }}</td>
+                    <td>
+                        <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
+                    </td>
+                    <td>
+                        <input type="number" [(ngModel)]="submission.grade" min="0" max="100" step="0.01"
+                            class="form-control" (ngModelChange)="onGradeChange(submission)">
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" type="button"
+                            (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
+                            [disabled]="!submission.isGradeChanged">Update Grade</button>
+                        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" type="button" (click)="openFeedbackDialog(submission)">Update Feedback</a></li>
+                            <li><a class="dropdown-item text-danger" type="button"
+                                    (click)="removeGrade(submission.submissionId)">Remove Grade</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

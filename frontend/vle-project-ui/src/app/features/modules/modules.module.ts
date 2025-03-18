@@ -12,8 +12,11 @@ import { EditContentComponent } from './components/edit-content/edit-content.com
 import { EditModuleComponent } from './components/edit-module/edit-module.component';
 import { EditPageComponent } from './components/edit-page/edit-page.component';
 import { ExploreModulesComponent } from './components/explore-modules/explore-modules.component';
+import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-dialog.component';
+import { GradeSubmissionsComponent } from './components/grade-submissions/grade-submissions.component';
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
 import { ModulePageComponent } from './components/module-page/module-page.component';
+import { ViewGradesComponent } from './components/view-grades/view-grades.component';
 
 @NgModule({
   declarations: [
@@ -23,10 +26,13 @@ import { ModulePageComponent } from './components/module-page/module-page.compon
     DeleteConfirmationDialogComponent,
     EditContentComponent,
     EditModuleComponent,
+    EditPageComponent,
     ExploreModulesComponent,
+    FeedbackDialogComponent,
+    GradeSubmissionsComponent,
     ModuleDetailComponent,
     ModulePageComponent,
-    EditPageComponent
+    ViewGradesComponent
   ],
   imports: [
     CommonModule,
@@ -43,10 +49,13 @@ import { ModulePageComponent } from './components/module-page/module-page.compon
     DeleteConfirmationDialogComponent,
     EditContentComponent,
     EditModuleComponent,
+    EditPageComponent,
     ExploreModulesComponent,
+    FeedbackDialogComponent,
+    GradeSubmissionsComponent,
     ModuleDetailComponent,
     ModulePageComponent,
-    EditPageComponent
+    ViewGradesComponent
   ]
 })
 export class ModulesModule { }

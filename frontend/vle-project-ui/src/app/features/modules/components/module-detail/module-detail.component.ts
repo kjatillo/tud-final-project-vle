@@ -18,6 +18,8 @@ export class ModuleDetailComponent implements OnInit {
   moduleCreator!: string;
   currentUser!: string;
   isEnroled!: boolean;
+  showGradeSubmissions: boolean = false;
+  showViewGrades: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -71,6 +73,12 @@ export class ModuleDetailComponent implements OnInit {
     }
   }
 
+  gradeAndFeedback(): void {
+    if (this.module) {
+      this.router.navigate([`/module/${this.moduleId}/grade-submissions`]);
+    }
+  }
+
   editModule(): void {
     if (this.module) {
       this.router.navigate([`/module/${this.moduleId}/edit`]);
@@ -98,5 +106,15 @@ export class ModuleDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  toggleGradeAndFeedback(): void {
+    this.showGradeSubmissions = !this.showGradeSubmissions;
+    this.showViewGrades = false;
+  }
+
+  toggleViewGrades(): void {
+    this.showViewGrades = !this.showViewGrades;
+    this.showGradeSubmissions = false;
   }
 }

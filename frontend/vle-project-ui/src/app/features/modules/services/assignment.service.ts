@@ -16,6 +16,26 @@ export class AssignmentService {
   }
 
   getSubmission(contentId: string): Observable<any> {
-    return this.http.get(`${this.assignmentsBaseEndpoint}/${contentId}`);
+    return this.http.get(`${this.assignmentsBaseEndpoint}/submissions/content/${contentId}`);
+  }
+
+  getStudentSubmissions(moduleId: string): Observable<any> {
+    return this.http.get(`${this.assignmentsBaseEndpoint}/submissions/student/${moduleId}`);
+  }
+
+  getModuleAssignments(moduleId: string): Observable<any> {
+    return this.http.get(`${this.assignmentsBaseEndpoint}/module/${moduleId}`);
+  }
+
+  getGrades(contentId: string): Observable<any> {
+    return this.http.get(`${this.assignmentsBaseEndpoint}/grades/${contentId}`);
+  }
+
+  updateGrade(submissionId: string, updateGradeDto: { grade: number, feedback: string }): Observable<any> {
+    return this.http.put(`${this.assignmentsBaseEndpoint}/grades/${submissionId}`, updateGradeDto);
+  }
+
+  deleteGrade(submissionId: string): Observable<any> {
+    return this.http.delete(`${this.assignmentsBaseEndpoint}/grades/${submissionId}`);
   }
 }
