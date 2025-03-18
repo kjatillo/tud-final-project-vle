@@ -13,15 +13,18 @@ namespace VleProjectApi.Controllers;
 [ApiController]
 public class AssignmentsController : ControllerBase
 {
+    private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
     private readonly BlobStorageService _blobStorageService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public AssignmentsController(
+        IModuleContentRepository moduleContentRepository,
         IModuleSubmissionRepository moduleSubmissionRepository,
         BlobStorageService blobStorageService,
         UserManager<ApplicationUser> userManager)
     {
+        _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _moduleSubmissionRepository = moduleSubmissionRepository ?? throw new ArgumentNullException(nameof(moduleSubmissionRepository));
         _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -33,7 +36,7 @@ public class AssignmentsController : ControllerBase
     /// <param name="addSubmissionDto">The data transfer object containing the details of the submission.</param>
     /// <returns>A success message with the file URL if the submission is uploaded successfully, otherwise an error message.</returns>
     [HttpPost]
-    [Authorize(Roles = nameof(Role.Student))]
+    [Authorize]
     public async Task<IActionResult> AddSubmission([FromForm] AddSubmissionDto addSubmissionDto)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -79,11 +82,44 @@ public class AssignmentsController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves the assignments for a specific module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>A list of assignments if found, otherwise a NotFound result.</returns>
+    [HttpGet("module/{moduleId}")]
+    [Authorize]
+    public async Task<IActionResult> GetAssignmentsByModuleId(Guid moduleId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var assignments = await _moduleSubmissionRepository.GetAssignmentsByModuleIdAsync(moduleId);
+        if (assignments == null || !assignments.Any())
+        {
+            return NotFound(new { Status = "Error", Message = "No assignments found for the specified module." });
+        }
+
+        var response = assignments
+            .OrderBy(a => a.Title)
+            .Select(a => new
+            {
+                a.ContentId,
+                a.Title,
+                a.FileUrl
+            });
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Retrieves the submission for the specified content by the current user.
     /// </summary>
     /// <param name="contentId">The ID of the content.</param>
     /// <returns>The submission if found, otherwise a NotFound result.</returns>
-    [HttpGet("{contentId}")]
+    [HttpGet("submissions/content/{contentId}")]
     [Authorize]
     public async Task<IActionResult> GetSubmissionByContentId(Guid contentId)
     {
@@ -103,6 +139,47 @@ public class AssignmentsController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves the submissions for the specified module by the current student.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>A list of submissions if found, otherwise a NotFound result.</returns>
+    [HttpGet("submissions/student/{moduleId}")]
+    [Authorize]
+    public async Task<IActionResult> GetStudentSubmissions(Guid moduleId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var submissions = await _moduleSubmissionRepository.GetSubmissionsByStudentAndModuleAsync(user.Id, moduleId);
+
+        if (submissions == null || !submissions.Any())
+        {
+            return NotFound("No submissions found for the specified module.");
+        }
+
+        var response = new List<object>();
+        foreach (var submission in submissions)
+        {
+            var content = await _moduleContentRepository.GetContentByIdAsync(submission.ContentId);
+            response.Add(new
+            {
+                submission.SubmissionId,
+                submission.FileName,
+                submission.FileUrl,
+                submission.Grade,
+                submission.Feedback,
+                submission.SubmittedDate,
+                ContentTitle = content?.Title
+            });
+        }
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Retrieves the grades for all submissions for the specified content.
     /// </summary>
     /// <param name="contentId">The ID of the content.</param>
@@ -111,8 +188,8 @@ public class AssignmentsController : ControllerBase
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> GetGrades(Guid contentId)
     {
-        var contentExists = await _moduleSubmissionRepository.ContentExistsAsync(contentId);
-        if (!contentExists)
+        var content = await _moduleSubmissionRepository.ContentExistsAsync(contentId);
+        if (!content)
         {
             return NotFound(new { Status = "Error", Message = "Content not found." });
         }
