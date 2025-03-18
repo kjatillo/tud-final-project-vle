@@ -15,26 +15,18 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     }
 
     /// <summary>
-    /// Retrieves a module submission by its ID.
+    /// Retrieves all module assignments for the specified module.
     /// </summary>
-    /// <param name="submissionId">The ID of the submission to retrieve.</param>
-    /// <returns>The module submission with the specified ID, or null if not found.</returns>
-    public async Task<ModuleSubmission?> GetSubmissionByIdAsync(Guid submissionId)
+    /// <param name="moduleId">The ID of the module to retrieve contents for.</param>
+    /// <returns>A list of module assignments matching the moduleId.</returns>
+    public async Task<IEnumerable<ModuleContent>> GetAssignmentsByModuleIdAsync(Guid moduleId)
     {
-        return await _context.ModuleSubmissions
-            .FirstOrDefaultAsync(s => s.SubmissionId == submissionId);
-    }
-
-    /// <summary>
-    /// Adds a new module submission to the database.
-    /// </summary>
-    /// <param name="submission">The module submission to add.</param>
-    /// <returns>The added module submission.</returns>
-    public async Task<ModuleSubmission> AddSubmissionAsync(ModuleSubmission submission)
-    {
-        _context.ModuleSubmissions.Add(submission);
-        await _context.SaveChangesAsync();
-        return submission;
+        return await _context.ModuleContents
+            .Where(mc => mc.IsUpload && _context.ModulePages
+                .Where(mp => mp.PageId == mc.PageId)
+                .Select(mp => mp.ModuleId)
+                .Any(m => m == moduleId))
+            .ToListAsync();
     }
 
     /// <summary>
@@ -50,6 +42,36 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     }
 
     /// <summary>
+    /// Retrieves all module submissions for a specific student and module.
+    /// </summary>
+    /// <param name="userId">The ID of the student to retrieve submissions for.</param>
+    /// <param name="moduleId">The ID of the module to retrieve submissions for.</param>
+    /// <returns>A list of module submissions for the specified student and module.</returns>
+    public async Task<IEnumerable<ModuleSubmission>> GetSubmissionsByStudentAndModuleAsync(string userId, Guid moduleId)
+    {
+        return await _context.ModuleSubmissions
+            .Where(s => s.UserId == userId && _context.ModuleContents
+                .Where(mc => mc.ContentId == s.ContentId)
+                .Select(mc => mc.PageId)
+                .Any(pageId => _context.ModulePages
+                    .Where(mp => mp.PageId == pageId)
+                    .Select(mp => mp.ModuleId)
+                    .Any(m => m == moduleId)))
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Retrieves a module submission by its ID.
+    /// </summary>
+    /// <param name="submissionId">The ID of the submission to retrieve.</param>
+    /// <returns>The module submission with the specified ID, or null if not found.</returns>
+    public async Task<ModuleSubmission?> GetSubmissionByIdAsync(Guid submissionId)
+    {
+        return await _context.ModuleSubmissions
+            .FirstOrDefaultAsync(s => s.SubmissionId == submissionId);
+    } 
+
+    /// <summary>
     /// Retrieves a module submission for a specific content ID and user ID.
     /// </summary>
     /// <param name="contentId">The ID of the content to retrieve the submission for.</param>
@@ -59,6 +81,18 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     {
         return await _context.ModuleSubmissions
             .FirstOrDefaultAsync(s => s.ContentId == contentId && s.UserId == userId);
+    }
+
+    /// <summary>
+    /// Adds a new module submission to the database.
+    /// </summary>
+    /// <param name="submission">The module submission to add.</param>
+    /// <returns>The added module submission.</returns>
+    public async Task<ModuleSubmission> AddSubmissionAsync(ModuleSubmission submission)
+    {
+        _context.ModuleSubmissions.Add(submission);
+        await _context.SaveChangesAsync();
+        return submission;
     }
 
     /// <summary>
