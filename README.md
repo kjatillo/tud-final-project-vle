@@ -177,6 +177,8 @@ CREATE TABLE ModuleSubmissions (
     FileName NVARCHAR(255) NULL,
     FileUrl NVARCHAR(MAX) NOT NULL,
     SubmittedDate DATETIME2 NOT NULL,
+    Grade FLOAT NULL,
+    Feedback NVARCHAR(MAX) NULL,
     FOREIGN KEY (ContentId) REFERENCES ModuleContents(ContentId),
     FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
 );
