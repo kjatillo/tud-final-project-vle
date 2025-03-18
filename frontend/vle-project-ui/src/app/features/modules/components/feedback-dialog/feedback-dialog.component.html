@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Feedback</h1>
+<div mat-dialog-content>
+    <textarea [(ngModel)]="data.feedback" rows="5" class="form-control" [disabled]="!isInstructor"></textarea>
+</div>
+<div mat-dialog-actions>
+    <div *ngIf="isInstructor">
+        <button mat-button [mat-dialog-close]="data.feedback">Save</button>
+        <button mat-button (click)="onCancel()">Cancel</button>
+    </div>
+    
+    <button mat-button (click)="onCancel()" *ngIf="!isInstructor">OK</button>
+</div>

@@ -1,0 +1,33 @@
+<div class="container mt-5 p-0">
+    <h2>My Submissions - Grades</h2>
+
+    <div class="table-responsive mt-3" *ngIf="submissions.length > 0; else noSubmissions">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Assignment Title</th>
+                    <th>Submission File</th>
+                    <th>Grade %</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let submission of submissions">
+                    <td>{{ submission.contentTitle }}</td>
+                    <td>
+                        <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
+                    </td>
+                    <td>{{ submission.grade == null ? 'N/A' : submission.grade }}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" (click)="openFeedbackDialog(submission.feedback)"
+                            [disabled]="!submission.feedback">View Feedback</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <ng-template #noSubmissions>
+        <p>No submissions submitted for grading.</p>
+    </ng-template>
+</div>
