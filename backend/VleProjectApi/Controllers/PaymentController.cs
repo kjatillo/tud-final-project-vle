@@ -27,6 +27,11 @@ public class PaymentController : ControllerBase
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
+    /// <summary>
+    /// Creates a Stripe Checkout session for the payment of a module.
+    /// </summary>
+    /// <param name="paymentRequest">The payment request details including module name, amount, success URL, and cancel URL.</param>
+    /// <returns>Returns an Ok result with the session ID if successful, otherwise returns Unauthorized if the user is not authenticated.</returns>
     [HttpPost("checkout")]
     [Authorize]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] PaymentRequestDto paymentRequest)
@@ -48,7 +53,7 @@ public class PaymentController : ControllerBase
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (paymentRequest.Amount * 100), // Convert to cents
+                        UnitAmount = paymentRequest.Amount,  // Amount converted to cents in frontend
                         Currency = "eur",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -74,6 +79,10 @@ public class PaymentController : ControllerBase
         return Ok(new { sessionId = session.Id });
     }
 
+    /// <summary>
+    /// Handles Stripe webhook events.
+    /// </summary>
+    /// <returns>Returns an Ok result if the event is processed successfully, otherwise returns BadRequest.</returns>
     [HttpPost("webhook")]
     public async Task<IActionResult> StripeWebhook()
     {
@@ -115,4 +124,3 @@ public class PaymentController : ControllerBase
         return Ok();
     }
 }
-

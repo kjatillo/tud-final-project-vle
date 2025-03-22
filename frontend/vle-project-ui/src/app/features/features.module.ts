@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home.component';
 import { ModulesModule } from './modules/modules.module';
 import { UsersModule } from './users/users.module';
+import { PaymentModule } from './payment/payment.module';
 
 @NgModule({
   declarations: [
@@ -13,8 +14,9 @@ import { UsersModule } from './users/users.module';
   ],
   exports: [
     HomeComponent,
-    UsersModule,
     ModulesModule,
+    UsersModule,
+    PaymentModule
   ]
 })
 export class FeaturesModule { }

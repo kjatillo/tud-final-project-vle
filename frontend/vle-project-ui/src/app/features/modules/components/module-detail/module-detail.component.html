@@ -14,10 +14,18 @@
         </ul>
     </div>
 
-    <p>{{ module.description }}</p>
+    <div class="price-badge-container d-flex align-items-center my-2" *ngIf="!isEnroled && (currentUser != moduleCreator)">
+        <span class="badge bg-secondary text-white px-2 py-1 fs-6 price-badge">
+            Price: {{ module.price | currency:'EUR' }}
+        </span>
+    </div>
 
-    <button class="btn btn-primary me-2" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
-        (click)="enrol()">Enroll</button>
+    <div class="module-info">
+        <p class="text-muted">{{ module.description }}</p>
+    </div>
+
+    <button class="btn btn-primary" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
+    (click)="payAndEnrol()">Pay & Enrol</button>
 
     <ng-template #modulePage>
         <app-module-page *ngIf="!showGradeSubmissions && !showViewGrades"></app-module-page>
