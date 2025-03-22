@@ -13,6 +13,7 @@ Built using **Angular** for the frontend and **.NET Core** for the backend, this
 * [Project Structure](#project-structure)
 * [Technologies Used](#technologies-used)
 * [Installation Guide](#installation-guide)
+* [Stripe CLI Setup](#stripe-cli-setup)
 * [Database](#database)
 * [Developer](#developer)
 * [Documentation](#documentation)
@@ -91,9 +92,21 @@ The repository is organized as follows:
    ```bash
    npm install
    ```
+   Install Anguar JWT:
+   ```bash
+   npm install @auth0/angular-jwt
+   ```
+   Install Stripe:
+   ```bash
+   npm install @stripe/stripe-js
+   ```
+   Add Angular Material:
+   ```bash
+   ng add @angular/material
+   ```
    Run the Angular development server:
    ```bash
-   ng serve
+   npm start
    ```
 3. **Backend Setup**
    - Open the backend solution in **Visual Studio**.
@@ -110,7 +123,23 @@ The repository is organized as follows:
    ```bash
    dotnet run
    ```
-   - The API will be available at http://localhost:1234/api (port number will vary per machine).
+   - The API will be available at http://localhost:7036/api (port number will vary per machine).
+
+---
+
+## Stripe CLI Setup
+
+The Stripe CLI is required for handling webhooks locally. Follow these steps to set it up:
+
+1. Download the Stripe CLI from the official website: [Stripe CLI](https://stripe.com/docs/stripe-cli).
+2. Place the executable (`stripe.exe`) in the `tools/stripe-cli/` directory (or any directory of your choice).
+3. Add the directory to your system's PATH environment variable for easy access.
+4. Start the webhook listener, run the following command:
+```bash
+stripe listen --forward-to http://localhost:7036/api/webhook
+```
+
+Note: The webhook must be running along with the API and UI.
 
 ---
 
@@ -122,6 +151,7 @@ CREATE TABLE Modules (
     ModuleID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     ModuleName NVARCHAR(150) NOT NULL,
     Description NVARCHAR(MAX),
+    Price DECIMAL(18, 2) NOT NULL DEFAULT 0.00,
     CreatedBy NVARCHAR(450) NOT NULL,
     CreatedDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CreatedBy) REFERENCES AspNetUsers(Id)
