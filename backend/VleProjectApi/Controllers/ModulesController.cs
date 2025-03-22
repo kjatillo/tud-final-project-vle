@@ -122,6 +122,7 @@ public class ModulesController : ControllerBase
 
         module.ModuleName = updateModuleDto.ModuleName;
         module.Description = updateModuleDto.Description;
+        module.Price = updateModuleDto.Price;
 
         var updatedModule = await _moduleRepository.EditModuleAsync(module);
 
