@@ -7,6 +7,5 @@ public class Module
     public string Description { get; set; } = string.Empty;
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
-
-    public ICollection<ModulePage> ModulePages { get; set; } = new List<ModulePage>();
+    public decimal Price { get; set; }
 }

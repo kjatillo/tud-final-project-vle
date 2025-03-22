@@ -26,18 +26,17 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
             .HasIndex(e => new { e.UserId, e.ModuleId })
             .IsUnique();
 
-        builder.Entity<ModulePage>()
-            .HasKey(p => p.PageId);
-
-        builder.Entity<ModulePage>()
-            .HasMany(p => p.Contents)
-            .WithOne()
-            .HasForeignKey(c => c.PageId);
+        builder.Entity<Module>()
+            .Property(m => m.Price)
+            .HasPrecision(18, 2);
 
         builder.Entity<ModuleContent>()
             .HasKey(c => c.ContentId);
 
+        builder.Entity<ModulePage>()
+            .HasKey(p => p.PageId);
+
         builder.Entity<ModuleSubmission>()
-        .HasKey(ms => ms.SubmissionId);
+            .HasKey(ms => ms.SubmissionId);
     }
 }

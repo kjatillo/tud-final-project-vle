@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using VleProjectApi.Configurations;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Entities;
 using VleProjectApi.Profiles;
@@ -85,6 +86,8 @@ public class Startup
                            .AllowCredentials();
                 });
         });
+
+        services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
         services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
