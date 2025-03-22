@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { PaymentService } from '../../../payment/services/payment.service';
 import { Module } from '../../models/module.model';
 import { EnrolmentService } from '../../services/enrolment.service';
 import { ModuleService } from '../../services/module.service';
@@ -26,6 +27,7 @@ export class ModuleDetailComponent implements OnInit {
     private dialog: MatDialog,
     private enrolmentService: EnrolmentService,
     private moduleService: ModuleService,
+    private paymentService: PaymentService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -59,23 +61,13 @@ export class ModuleDetailComponent implements OnInit {
     });
   }
 
-  enrol(): void {
+  payAndEnrol(): void {
     if (this.module) {
-      this.enrolmentService.enrolInModule(this.moduleId).subscribe({
-        next: (response) => {
-          console.log('Enroled successfully', response);
-          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            this.router.navigate([`/module/${this.moduleId}`]);
-          });
-        },
-        error: (error) => console.error('Error enroling in module', error),
-      });
-    }
-  }
-
-  gradeAndFeedback(): void {
-    if (this.module) {
-      this.router.navigate([`/module/${this.moduleId}/grade-submissions`]);
+      this.paymentService.createCheckoutSession(
+        this.module.moduleName,
+        this.module.price,
+        this.moduleId
+      );
     }
   }
 

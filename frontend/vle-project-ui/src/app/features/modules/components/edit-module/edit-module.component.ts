@@ -24,6 +24,7 @@ export class EditModuleComponent implements OnInit {
     this.editModuleForm = this.fb.group({
       moduleName: ['', Validators.required],
       description: ['', Validators.required],
+      price: [0.00, Validators.required]
     });
   }
 
@@ -39,6 +40,7 @@ export class EditModuleComponent implements OnInit {
         this.editModuleForm.patchValue({
           moduleName: module.moduleName,
           description: module.description,
+          price: module.price
         });
       },
       error: (error) => console.error('Error fetching module', error),

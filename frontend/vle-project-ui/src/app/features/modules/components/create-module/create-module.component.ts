@@ -22,6 +22,7 @@ export class CreateModuleComponent {
     this.createModuleForm = this.fb.group({
       moduleName: ['', Validators.required],
       description: ['', Validators.required],
+      price: [0.00, Validators.required]
     });
   }
 
