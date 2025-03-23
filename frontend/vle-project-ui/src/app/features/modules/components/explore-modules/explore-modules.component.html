@@ -1,15 +1,23 @@
 <div class="container mt-5">
-    <h2 class="mb-4">Explore Modules</h2>
-    <div class="mb-3">
-        <input type="text" class="form-control mb-5" placeholder="Search modules..." [(ngModel)]="searchQuery"
-            (input)="onSearch()">
+    <div *ngIf="!(isAuthResolved$ | async); else content" class="spinner-container">
+        <mat-spinner></mat-spinner>
     </div>
-    <div class="list-group">
-        <p>{{ filteredModules.length }} results</p>
-        <a *ngFor="let module of filteredModules" class="list-group-item list-group-item-action"
-            (click)="navigateToModule(module.moduleId)">
-            <h5 class="mb-1">{{ module.moduleName }}</h5>
-            <p class="mb-1">{{ module.description }}</p>
-        </a>
-    </div>
+
+    <ng-template #content>
+        <h2 class="mb-4">Explore Modules</h2>
+        
+        <div class="mb-3">
+            <input type="text" class="form-control mb-5" placeholder="Search modules..." [(ngModel)]="searchQuery"
+                (input)="onSearch()">
+        </div>
+
+        <div class="list-group">
+            <p>{{ filteredModules.length }} results</p>
+            <a *ngFor="let module of filteredModules" type="button" class="list-group-item list-group-item-action"
+                (click)="navigateToModule(module.moduleId)">
+                <h5 class="mb-1">{{ module.moduleName }}</h5>
+                <p class="mb-1">{{ module.description }}</p>
+            </a>
+        </div>
+    </ng-template>
 </div>

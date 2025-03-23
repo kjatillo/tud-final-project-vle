@@ -1,23 +1,30 @@
 <div class="container mt-5">
-    <div *ngIf="isLoggedIn; else notLoggedIn">
-        <h2 class="mb-4">My Modules</h2>
-        <p *ngIf="enroledModules.length == 0">You have not enroled to any modules yet.</p>
-        <div class="row">
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3" *ngFor="let module of enroledModules">
-                <div class="card mb-4" style="width: 100%; height: 100%;">
-                    <!-- <img class="card-img-top" src="" alt="Card image cap"> -->
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ module.moduleName }}</h5>
-                        <p class="card-text flex-grow-1">{{ module.description }}</p>
-                        <a href="/module/{{ module.moduleId }}" class="btn btn-primary mt-auto">Module Details</a>
+    <div *ngIf="!(isAuthResolved$ | async); else content" class="spinner-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <ng-template #content>
+        <div *ngIf="isLoggedIn$ | async; else notLoggedIn">
+            <h2 class="mb-4">My Modules</h2>
+            
+            <p *ngIf="(enroledModules$ | async)?.length === 0">You have not enroled to any modules yet.</p>
+            
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3" *ngFor="let module of (enroledModules$ | async)">
+                    <div class="card mb-4" style="width: 100%; height: 100%;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ module.moduleName }}</h5>
+                            <p class="card-text flex-grow-1">{{ module.description }}</p>
+                            <a href="/module/{{ module.moduleId }}" class="btn btn-primary mt-auto">Module Details</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <ng-template #notLoggedIn>
-        <h2>Virtual Learning Environment (VLE)</h2>
-        <p>Please log in to access more features.</p>
+        <ng-template #notLoggedIn>
+            <h2>Virtual Learning Environment (VLE)</h2>
+            <p>Please log in to access more features.</p>
+        </ng-template>
     </ng-template>
 </div>

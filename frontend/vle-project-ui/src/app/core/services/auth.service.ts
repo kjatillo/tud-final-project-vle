@@ -15,6 +15,7 @@ export class AuthService {
   private loggedIn$ = new BehaviorSubject<boolean>(false);
   private roles$ = new BehaviorSubject<string[]>([]);
   private user$ = new BehaviorSubject<User | null>(null);
+  private isAuthResolved$ = new BehaviorSubject<boolean>(false);
   private isLoggingOut = false;
 
   constructor(
@@ -28,12 +29,12 @@ export class AuthService {
     if (this.isLoggingOut) {
       return;
     }
-
+  
     this.http.get(`${this.usersBaseEndpoint}/verify`)
       .pipe(
         catchError((error) => {
           this.clearAuthState();
-          
+          this.isAuthResolved$.next(true); // Mark as resolved even on error
           return throwError(() => error);
         })
       )
@@ -42,9 +43,12 @@ export class AuthService {
           if (response && response.isValid) {
             this.loggedIn$.next(true);
             this.roles$.next(response.roles || []);
-            this.getCurrentUser().subscribe();
+            this.getCurrentUser().subscribe(() => {
+              this.isAuthResolved$.next(true); // Mark as resolved after fetching user
+            });
           } else {
             this.clearAuthState();
+            this.isAuthResolved$.next(true); // Mark as resolved
           }
         }
       });
@@ -66,6 +70,10 @@ export class AuthService {
 
   get currentUser$(): Observable<User | null> {
     return this.user$.asObservable();
+  }
+
+  get isAuthResolved(): Observable<boolean> {
+    return this.isAuthResolved$.asObservable();
   }
 
   register(registerData: Register): Observable<any> {
