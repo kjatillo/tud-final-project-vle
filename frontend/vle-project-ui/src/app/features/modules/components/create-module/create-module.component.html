@@ -1,29 +1,35 @@
 <div class="container mt-5">
-    <div *ngIf="isInstructor; else unauthorised">
-        <h2>Create Module</h2>
-        <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
-            <div class="mb-3">
-                <label for="moduleName" class="form-label">Module Name</label>
-                <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
-            </div>
-    
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" class="form-control" formControlName="description"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
-            </div>
-    
-            <button type="submit" class="btn btn-primary">Create Module</button>
-            <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-        </form>
+    <div *ngIf="!(isAuthResolved$ | async); else content" class="spinner-container">
+        <mat-spinner></mat-spinner>
     </div>
 
-    <ng-template #unauthorised>
-        <h2>Unauthorised!</h2>
-        <p>You are not authorised to access this page.</p>
+    <ng-template #content>
+        <div *ngIf="isInstructor; else unauthorised">
+            <h2>Create Module</h2>
+            <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                    <label for="moduleName" class="form-label">Module Name</label>
+                    <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
+                </div>
+        
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" class="form-control" formControlName="description"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
+                </div>
+        
+                <button type="submit" class="btn btn-primary">Create Module</button>
+                <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+            </form>
+        </div>
+
+        <ng-template #unauthorised>
+            <h2>Unauthorised!</h2>
+            <p>You are not authorised to access this page.</p>
+        </ng-template>
     </ng-template>
 </div>

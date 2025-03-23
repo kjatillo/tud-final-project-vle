@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ModuleService } from '../../services/module.service';
 
@@ -12,6 +13,7 @@ import { ModuleService } from '../../services/module.service';
 export class CreateModuleComponent {
   createModuleForm!: FormGroup;
   isInstructor = false;
+  isAuthResolved$: Observable<boolean>;
 
   constructor(
     private authService: AuthService,
@@ -19,6 +21,8 @@ export class CreateModuleComponent {
     private moduleService: ModuleService,
     private router: Router
   ) {
+    this.isAuthResolved$ = this.authService.isAuthResolved;
+
     this.createModuleForm = this.fb.group({
       moduleName: ['', Validators.required],
       description: ['', Validators.required],

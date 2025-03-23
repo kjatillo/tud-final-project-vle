@@ -1,7 +1,7 @@
 <div class="container mt-5" *ngIf="module">
     <div class="dropdown me-2 d-flex justify-content-between">
         <h2>{{ module.moduleName }}</h2>
-        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (currentUser == moduleCreator)">
             <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -9,7 +9,7 @@
             <div *ngIf="(currentUser == moduleCreator)">
                 <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()">Grade & Feedback</a></li>
                 <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
-                <li><a class="dropdown-item text-danger" (click)="deleteModule()">Delete Module</a></li>
+                <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
             </div>
         </ul>
     </div>
@@ -24,7 +24,7 @@
         <p class="text-muted">{{ module.description }}</p>
     </div>
 
-    <button class="btn btn-primary" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
+    <button class="btn btn-primary mt-3" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
     (click)="payAndEnrol()">Pay & Enrol</button>
 
     <ng-template #modulePage>

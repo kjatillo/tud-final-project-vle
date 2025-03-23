@@ -136,7 +136,7 @@ The Stripe CLI is required for handling webhooks locally. Follow these steps to 
 3. Add the directory to your system's PATH environment variable for easy access.
 4. Start the webhook listener, run the following command:
 ```bash
-stripe listen --forward-to http://localhost:7036/api/webhook
+stripe listen --forward-to https://localhost:7036/api/payment/webhook
 ```
 
 Note: The webhook must be running along with the API and UI.

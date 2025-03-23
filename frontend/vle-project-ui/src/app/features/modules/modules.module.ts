@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AddContentComponent } from './components/add-content/add-content.component';
 import { AddPageComponent } from './components/add-page/add-page.component';
@@ -39,6 +40,7 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     FormsModule,
     MatButtonModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
     ReactiveFormsModule,
     RouterModule
   ],

@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark" *ngIf="isAuthResolved$ | async; else loading">
+    <div class="container">
         <a class="navbar-brand" href="/">VLE</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
@@ -7,28 +7,41 @@
         </button>
 
         <div class="collapse navbar-collapse" id="mynavbar">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/">Home</a>
-                </li>
-                <li class="nav-item" *ngIf="isLoggedIn">
-                    <a class="nav-link" aria-current="page" href="/explore">Explore</a>
-                </li>
-                <li class="nav-item" *ngIf="isLoggedIn && isInstructor">
-                    <a class="nav-link" aria-current="page" href="/create-module">Create Module</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item" *ngIf="!isLoggedIn">
-                    <a class="nav-link" href="/register">Register</a>
-                </li>
-                <li class="nav-item" *ngIf="!isLoggedIn">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>
-                <li class="nav-item" *ngIf="isLoggedIn">
-                    <a class="nav-link" href="#" (click)="logout()">Logout</a>
-                </li>
-            </ul>
+            <ng-container>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item" *ngIf="(isLoggedIn$ | async)">
+                        <a class="nav-link" aria-current="page" href="/explore">Explore</a>
+                    </li>
+                    <li class="nav-item" *ngIf="(isLoggedIn$ | async) && (isInstructor$ | async)">
+                        <a class="nav-link" aria-current="page" href="/create-module">Create Module</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    <ng-container *ngIf="(isLoggedIn$ | async); else loggedOut">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" (click)="logout()">Logout</a>
+                        </li>
+                    </ng-container>
+                    <ng-template #loggedOut>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                    </ng-template>
+                </ul>
+            </ng-container>
         </div>
     </div>
 </nav>
+
+<ng-template #loading>
+    <div class="spinner-container">
+        <mat-spinner></mat-spinner>
+    </div>
+</ng-template>
