@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModuleContentService } from '../../services/module-content.service';
 
@@ -19,7 +19,6 @@ export class EditContentComponent implements OnInit {
   constructor(
     private moduleContentService: ModuleContentService,
     private route: ActivatedRoute,
-    private router: Router,
     private fb: FormBuilder
   ) {}
 
@@ -99,7 +98,6 @@ export class EditContentComponent implements OnInit {
       .subscribe({
         next: () => {
           this.contentUpdated.emit();
-          this.router.navigate([`/module/${this.moduleId}/page/${this.content.pageId}`]);
         },
         error: (error) => console.error('Error updating content', error)
       });

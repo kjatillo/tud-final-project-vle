@@ -152,6 +152,7 @@ CREATE TABLE Modules (
     ModuleName NVARCHAR(150) NOT NULL,
     Description NVARCHAR(MAX),
     Price DECIMAL(18, 2) NOT NULL DEFAULT 0.00,
+    ModuleInstructor NVARCHAR(450) NOT NULL,
     CreatedBy NVARCHAR(450) NOT NULL,
     CreatedDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CreatedBy) REFERENCES AspNetUsers(Id)

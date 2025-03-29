@@ -8,6 +8,8 @@ using System.Security.Claims;
 using System.Text;
 using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
+using VleProjectApi.Enums;
+using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi.Controllers;
 
@@ -18,6 +20,7 @@ public class UsersController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
 
@@ -25,12 +28,14 @@ public class UsersController : ControllerBase
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
+        IUserRepository userRepository,
         IConfiguration configuration,
         IMapper mapper)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
@@ -197,6 +202,28 @@ public class UsersController : ControllerBase
         userDto.RoleName = roles.FirstOrDefault();
 
         return Ok(userDto);
+    }
+
+    /// <summary>
+    /// Retrieves a list of instructors.
+    /// </summary>
+    /// <returns>An action result containing a list of instructors with their IDs and usernames.</returns>
+    /// <response code="200">Returns the list of instructors.</response>
+    /// <response code="401">If the user is not authorized.</response>
+    [HttpGet("instructors")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetInstructors()
+    {
+        var instructors = await _userRepository.GetInstructorsAsync();
+        var result = instructors.Select(i => 
+            new 
+            { 
+                i.Id, 
+                i.Name, 
+                i.Email
+            });
+
+        return Ok(result);
     }
 
     /// <summary>

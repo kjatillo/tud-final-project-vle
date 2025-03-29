@@ -15,7 +15,7 @@
                     <li class="nav-item" *ngIf="(isLoggedIn$ | async)">
                         <a class="nav-link" aria-current="page" href="/explore">Explore</a>
                     </li>
-                    <li class="nav-item" *ngIf="(isLoggedIn$ | async) && (isInstructor$ | async)">
+                    <li class="nav-item" *ngIf="(isLoggedIn$ | async) && (isAdmin$ | async)">
                         <a class="nav-link" aria-current="page" href="/create-module">Create Module</a>
                     </li>
                 </ul>

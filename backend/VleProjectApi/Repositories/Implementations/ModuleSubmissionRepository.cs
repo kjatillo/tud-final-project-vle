@@ -92,6 +92,7 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     {
         _context.ModuleSubmissions.Add(submission);
         await _context.SaveChangesAsync();
+
         return submission;
     }
 

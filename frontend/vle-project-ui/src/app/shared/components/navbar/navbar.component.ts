@@ -10,14 +10,21 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NavbarComponent {
   isLoggedIn$: Observable<boolean>;
+  isAdmin$: Observable<boolean>;
   isInstructor$: Observable<boolean>;
   isAuthResolved$: Observable<boolean>;
 
   constructor(private authService: AuthService) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
+
+    this.isAdmin$ = this.authService.userRoles$.pipe(
+      map(roles => roles.includes('Admin'))
+    );
+
     this.isInstructor$ = this.authService.userRoles$.pipe(
       map(roles => roles.includes('Instructor'))
     );
+
     this.isAuthResolved$ = this.authService.isAuthResolved;
   }
 

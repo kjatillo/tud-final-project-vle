@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
+import { Instructor } from '../../features/modules/models/instructor.model';
 import { Login } from '../../features/users/models/login.model';
 import { Register } from '../../features/users/models/register.model';
 import { User } from '../../features/users/models/user.model';
@@ -12,10 +13,10 @@ import { User } from '../../features/users/models/user.model';
 })
 export class AuthService {
   private usersBaseEndpoint = environment.usersApiEndpoint;
+  private isAuthResolved$ = new BehaviorSubject<boolean>(false);
   private loggedIn$ = new BehaviorSubject<boolean>(false);
   private roles$ = new BehaviorSubject<string[]>([]);
   private user$ = new BehaviorSubject<User | null>(null);
-  private isAuthResolved$ = new BehaviorSubject<boolean>(false);
   private isLoggingOut = false;
 
   constructor(
@@ -34,7 +35,7 @@ export class AuthService {
       .pipe(
         catchError((error) => {
           this.clearAuthState();
-          this.isAuthResolved$.next(true); // Mark as resolved even on error
+          this.isAuthResolved$.next(true);
           return throwError(() => error);
         })
       )
@@ -44,11 +45,11 @@ export class AuthService {
             this.loggedIn$.next(true);
             this.roles$.next(response.roles || []);
             this.getCurrentUser().subscribe(() => {
-              this.isAuthResolved$.next(true); // Mark as resolved after fetching user
+              this.isAuthResolved$.next(true);
             });
           } else {
             this.clearAuthState();
-            this.isAuthResolved$.next(true); // Mark as resolved
+            this.isAuthResolved$.next(true);
           }
         }
       });
@@ -131,5 +132,9 @@ export class AuthService {
           return throwError(() => error);
         })
       );
+  }
+
+  getInstructors(): Observable<Instructor[]> {
+    return this.http.get<Instructor[]>(`${this.usersBaseEndpoint}/instructors`);
   }
 }

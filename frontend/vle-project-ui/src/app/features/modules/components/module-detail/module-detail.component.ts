@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PaymentService } from '../../../payment/services/payment.service';
 import { Module } from '../../models/module.model';
@@ -16,9 +17,10 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
 export class ModuleDetailComponent implements OnInit {
   module!: Module;
   moduleId!: string;
-  moduleCreator!: string;
-  currentUser!: string;
   isEnroled!: boolean;
+  isAdmin$: Observable<boolean>;
+  isModuleInstructor!: boolean;
+  showEditModuleForm: boolean = false;
   showGradeSubmissions: boolean = false;
   showViewGrades: boolean = false;
 
@@ -30,16 +32,14 @@ export class ModuleDetailComponent implements OnInit {
     private paymentService: PaymentService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    this.isAdmin$ = this.authService.userRoles$.pipe(
+      map(roles => roles.includes('Admin'))
+    );
+  }
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
-
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.currentUser = user.userId;
-      }
-    });
 
     this.checkEnrolment();
 
@@ -47,7 +47,12 @@ export class ModuleDetailComponent implements OnInit {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
           this.module = module;
-          this.moduleCreator = module.createdBy;
+
+          this.authService.currentUser$.pipe(
+            map(user => user?.userId === module.moduleInstructor)
+          ).subscribe(isInstructor => {
+            this.isModuleInstructor = isInstructor;
+          });
         },
         error: (error) => console.error('Error fetching module', error),
       });
@@ -73,7 +78,7 @@ export class ModuleDetailComponent implements OnInit {
 
   editModule(): void {
     if (this.module) {
-      this.router.navigate([`/module/${this.moduleId}/edit`]);
+      this.showEditModuleForm = true;
     }
   }
 
@@ -108,5 +113,18 @@ export class ModuleDetailComponent implements OnInit {
   toggleViewGrades(): void {
     this.showViewGrades = !this.showViewGrades;
     this.showGradeSubmissions = false;
+  }
+
+  onEditModuleCancel(refresh: boolean = false): void {
+    this.showEditModuleForm = false;
+    
+    if (refresh) {
+      this.moduleService.getModuleById(this.moduleId).subscribe({
+        next: (module) => {
+          this.module = module;
+        },
+        error: (error) => console.error('Error fetching updated module', error),
+      });
+    }
   }
 }

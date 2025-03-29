@@ -103,7 +103,6 @@ export class AddContentComponent implements OnInit {
       this.moduleContentService.addContent(this.moduleId, this.pageId, formData).subscribe({
         next: () => {
           this.contentAdded.emit();
-          this.router.navigate([`/module/${this.moduleId}/page/${this.pageId}`]);
         },
         error: (error) => console.error('Error adding content', error)
       });

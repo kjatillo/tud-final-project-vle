@@ -1,7 +1,7 @@
 <div class="container mt-5 p-0">
     <div class="row">
         <div class="col-12 col-md-3 mb-3">
-            <button *ngIf="isInstructor" class="btn btn-primary mb-3" (click)="addPage()">Add New Page</button>
+            <button *ngIf="isModuleInstructor" class="btn btn-primary mb-3" (click)="addPage()">Add New Page</button>
             <div *ngIf="pages.length > 0; else noModuleContentsTemplate">
                 <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
                 <ul class="list-group">
@@ -9,7 +9,7 @@
                         <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
                         <div class="dropdown me-2">
                             <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                aria-expanded="false" *ngIf="moduleCreator == currentUser">
+                                aria-expanded="false" *ngIf="isModuleInstructor">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -30,7 +30,7 @@
 
         <div class="col-12 col-md-9">
             <div *ngIf="showContents && selectedPageId">
-                <button *ngIf="isInstructor && !showAddContentForm && !showEditContentForm" class="btn btn-primary mb-3"
+                <button *ngIf="isModuleInstructor && !showAddContentForm && !showEditContentForm" class="btn btn-primary mb-3"
                     (click)="addContent()">Add New Content</button>
                 <div *ngIf="!showAddContentForm && !showEditContentForm">
                     <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
@@ -40,7 +40,7 @@
                                 <h5 class="content-title">{{ content.title }}</h5>
 
                                 <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                    aria-expanded="false" *ngIf="moduleCreator == currentUser">
+                                    aria-expanded="false" *ngIf="isModuleInstructor">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -60,16 +60,16 @@
 
                             <ng-template #fileTemplate>
                                 <div *ngIf="!content.isUpload">
-                                    <p><b>Type</b>: {{ content.fileType }}</p>
+                                    <p><b>File Type</b>: {{ getFileType(content.fileType) }}</p>
                                     <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary">Download
                                         File</a>
                                 </div>
 
                                 <div *ngIf="content.isUpload">
                                     <p><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
-                                    <p *ngIf="!isInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
+                                    <p *ngIf="!isModuleInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
                                         content.submissionFileName : 'N/A' }}</p>
-                                    <button *ngIf="!isInstructor" class="btn"
+                                    <button *ngIf="!isModuleInstructor" class="btn"
                                         [ngClass]="isPastDeadline(content.deadline) ? 'btn-outline-danger' : 'btn-outline-primary'"
                                         (click)="uploadSubmission(content.contentId)"
                                         [disabled]="isPastDeadline(content.deadline)">

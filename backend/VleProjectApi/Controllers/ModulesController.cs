@@ -75,7 +75,7 @@ public class ModulesController : ControllerBase
     /// <param name="createModuleDto">The data transfer object containing the details of the module to be created.</param>
     /// <returns>A success message with the created module details if the module is created successfully, otherwise an error message.</returns>
     [HttpPost]
-    [Authorize(Roles = nameof(Role.Instructor))]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> CreateModule(CreateModuleDto createModuleDto)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -100,7 +100,7 @@ public class ModulesController : ControllerBase
     /// <param name="updateModuleDto">The data transfer object containing the updated details of the module.</param>
     /// <returns>A success message with the updated module details if the module is edited successfully, otherwise an error message.</returns>
     [HttpPut("{moduleId}")]
-    [Authorize(Roles = nameof(Role.Instructor))]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> EditModule(Guid moduleId, EditModuleDto updateModuleDto)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -122,6 +122,7 @@ public class ModulesController : ControllerBase
 
         module.ModuleName = updateModuleDto.ModuleName;
         module.Description = updateModuleDto.Description;
+        module.ModuleInstructor = updateModuleDto.ModuleInstructor;
         module.Price = updateModuleDto.Price;
 
         var updatedModule = await _moduleRepository.EditModuleAsync(module);
@@ -135,7 +136,7 @@ public class ModulesController : ControllerBase
     /// <param name="moduleId">The ID of the module to be deleted.</param>
     /// <returns>A success message if the module and its associated pages and contents are deleted successfully, otherwise an error message.</returns>
     [HttpDelete("{moduleId}")]
-    [Authorize(Roles = nameof(Role.Instructor))]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> DeleteModule(Guid moduleId)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -173,6 +174,7 @@ public class ModulesController : ControllerBase
                             {
                                 await _blobStorageService.DeleteFileAsync(submission.FileUrl);
                             }
+
                             await _moduleSubmissionRepository.DeleteSubmissionAsync(submission.SubmissionId);
                         }
 

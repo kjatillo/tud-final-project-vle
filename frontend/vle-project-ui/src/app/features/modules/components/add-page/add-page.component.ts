@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModulePageService } from '../../services/module-page.service';
 
 @Component({
@@ -17,7 +17,6 @@ export class AddPageComponent implements OnInit {
   constructor(
     private modulePageService: ModulePageService,
     private route: ActivatedRoute,
-    private router: Router,
     private fb: FormBuilder
   ) { }
 
@@ -36,7 +35,6 @@ export class AddPageComponent implements OnInit {
       this.modulePageService.addPage(this.moduleId, pageData).subscribe({
         next: () => {
           this.pageAdded.emit();
-          this.router.navigate([`/module/${this.moduleId}`]);
         },
         error: (error) => console.error('Error adding page', error)
       });

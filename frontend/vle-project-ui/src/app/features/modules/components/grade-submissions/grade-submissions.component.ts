@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
+import { ModuleAssignment } from '../../models/module-assignment.model';
+import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
-import { AuthService } from '../../../../core/services/auth.service';
-import { ActivatedRoute } from '@angular/router';
-import { ModuleSubmission } from '../../models/module-submission.model';
-import { ModuleAssignment } from '../../models/module-assignment.model';
 
 @Component({
   selector: 'app-grade-submissions',
@@ -15,18 +14,17 @@ import { ModuleAssignment } from '../../models/module-assignment.model';
 })
 export class GradeSubmissionsComponent implements OnInit {
   gradeForm!: FormGroup;
+  moduleId!: string;
+  selectedContentId!: string;
+  isModuleInstructor!: boolean;
   submissions: ModuleSubmission[] = [];
   assignments: ModuleAssignment[] = [];
-  selectedContentId!: string;
-  moduleId!: string;
-  isInstructor!: boolean;
 
   constructor(
     private assignmentService: AssignmentService,
-    private authService: AuthService,
     private fb: FormBuilder,
     public dialog: MatDialog,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -35,10 +33,6 @@ export class GradeSubmissionsComponent implements OnInit {
     });
 
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
-
-    this.authService.userRoles$.subscribe(roles => {
-      this.isInstructor = roles.includes('Instructor');
-    });
 
     this.assignmentService.getModuleAssignments(this.moduleId).subscribe(assignments => {
       this.assignments = assignments;
