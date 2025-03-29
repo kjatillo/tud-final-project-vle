@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Instructor } from '../../models/instructor.model';
 import { ModuleService } from '../../services/module.service';
 
 @Component({
@@ -10,20 +12,26 @@ import { ModuleService } from '../../services/module.service';
   styleUrls: ['./edit-module.component.scss'],
 })
 export class EditModuleComponent implements OnInit {
+  @Output() cancelEdit = new EventEmitter<void>();
   editModuleForm!: FormGroup;
   moduleId!: string;
-  isInstructor = false;
+  isAdmin$: Observable<boolean>;
+  instructors: Instructor[] = [];
 
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
     private moduleService: ModuleService,
     private route: ActivatedRoute,
-    private router: Router
   ) {
+    this.isAdmin$ = this.authService.userRoles$.pipe(
+      map(roles => roles.includes('Admin'))
+    );
+
     this.editModuleForm = this.fb.group({
       moduleName: ['', Validators.required],
       description: ['', Validators.required],
+      moduleInstructor: ['', Validators.required],
       price: [0.00, Validators.required]
     });
   }
@@ -31,8 +39,8 @@ export class EditModuleComponent implements OnInit {
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
 
-    this.authService.userRoles$.subscribe(roles => {
-      this.isInstructor = roles.includes('Instructor');
+    this.authService.getInstructors().subscribe(instructors => {
+      this.instructors = instructors;
     });
 
     this.moduleService.getModuleById(this.moduleId).subscribe({
@@ -40,6 +48,7 @@ export class EditModuleComponent implements OnInit {
         this.editModuleForm.patchValue({
           moduleName: module.moduleName,
           description: module.description,
+          moduleInstructor: module.moduleInstructor,
           price: module.price
         });
       },
@@ -49,10 +58,11 @@ export class EditModuleComponent implements OnInit {
 
   onSubmit(): void {
     if (this.editModuleForm.valid) {
+      console.log(this.editModuleForm.value)
       this.moduleService.editModule(this.moduleId, this.editModuleForm.value).subscribe({
         next: (response) => {
           console.log('Module updated successfully', response);
-          this.router.navigate([`/module/${this.moduleId}`]);
+          this.cancelEdit.emit();
         },
         error: (error) => {
           console.error('Error updating module', error);
@@ -62,8 +72,6 @@ export class EditModuleComponent implements OnInit {
   }
 
   onCancel(): void {
-    if (this.moduleId) {
-      this.router.navigate([`/module/${this.moduleId}`]);
-    }
+    this.cancelEdit.emit();
   }
 }

@@ -94,6 +94,7 @@ public class Startup
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
         services.AddScoped<IModuleRepository, ModuleRepository>();
         services.AddScoped<IModuleSubmissionRepository, ModuleSubmissionRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddSingleton<BlobStorageService>();
 
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
@@ -107,6 +108,7 @@ public class Startup
 
         services.AddAuthorization(options =>
         {
+            options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
             options.AddPolicy("InstructorPolicy", policy => policy.RequireRole("Instructor"));
         });
     }

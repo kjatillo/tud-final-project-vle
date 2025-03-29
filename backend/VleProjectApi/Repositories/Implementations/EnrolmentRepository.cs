@@ -30,6 +30,7 @@ public class EnrolmentRepository : IEnrolmentRepository
 
         _context.Enrolments.Add(enrolment);
         await _context.SaveChangesAsync();
+
         return enrolment;
     }
 

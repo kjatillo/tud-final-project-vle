@@ -73,7 +73,7 @@ public class ModulePagesController : ControllerBase
             return NotFound();
         }
 
-        if (module.CreatedBy != user.Id)
+        if (module.ModuleInstructor != user.Id)
         {
             return Forbid();
         }
@@ -112,7 +112,7 @@ public class ModulePagesController : ControllerBase
             return NotFound();
         }
 
-        if (module.CreatedBy != user.Id)
+        if (module.ModuleInstructor != user.Id)
         {
             return Forbid();
         }
@@ -152,7 +152,7 @@ public class ModulePagesController : ControllerBase
             return NotFound();
         }
 
-        if (module.CreatedBy != user.Id)
+        if (module.ModuleInstructor != user.Id)
         {
             return Forbid();
         }

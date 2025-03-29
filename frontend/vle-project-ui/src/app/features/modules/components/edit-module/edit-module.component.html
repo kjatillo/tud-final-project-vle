@@ -1,5 +1,5 @@
-<div class="container mt-5">
-    <div *ngIf="isInstructor; else unauthorised">
+<div class="container mt-5 p-0">
+    <div *ngIf="isAdmin$ | async; else unauthorised">
         <h2>Edit Module</h2>
         <form [formGroup]="editModuleForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
@@ -10,6 +10,15 @@
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea id="description" class="form-control" formControlName="description"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="moduleInstructor" class="form-label">Assign Instructor</label>
+                <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                    <option *ngFor="let instructor of instructors" [value]="instructor.id">
+                        {{ instructor.name }} --- {{ instructor.email }}
+                    </option>
+                </select>
             </div>
 
             <div class="mb-3">

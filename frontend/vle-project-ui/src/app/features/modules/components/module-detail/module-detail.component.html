@@ -1,20 +1,22 @@
 <div class="container mt-5" *ngIf="module">
     <div class="dropdown me-2 d-flex justify-content-between">
         <h2>{{ module.moduleName }}</h2>
-        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (currentUser == moduleCreator)">
+        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
             <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li *ngIf="(currentUser != moduleCreator)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
-            <div *ngIf="(currentUser == moduleCreator)">
-                <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()">Grade & Feedback</a></li>
-                <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
-                <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
+            <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
+            <div>
+                <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
+                <div *ngIf="(isAdmin$ | async)">
+                    <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
+                    <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
+                </div>
             </div>
         </ul>
     </div>
 
-    <div class="price-badge-container d-flex align-items-center my-2" *ngIf="!isEnroled && (currentUser != moduleCreator)">
+    <div class="price-badge-container d-flex align-items-center my-2" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor)">
         <span class="badge bg-secondary text-white px-2 py-1 fs-6 price-badge">
             Price: {{ module.price | currency:'EUR' }}
         </span>
@@ -24,14 +26,16 @@
         <p class="text-muted">{{ module.description }}</p>
     </div>
 
-    <button class="btn btn-primary mt-3" *ngIf="!isEnroled && (currentUser != moduleCreator); else modulePage"
+    <button class="btn btn-primary mt-3" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage"
     (click)="payAndEnrol()">Pay & Enrol</button>
 
     <ng-template #modulePage>
-        <app-module-page *ngIf="!showGradeSubmissions && !showViewGrades"></app-module-page>
+        <app-module-page *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm"></app-module-page>
     </ng-template>
 
-    <app-grade-submissions *ngIf="showGradeSubmissions && (currentUser == moduleCreator)"></app-grade-submissions>
+    <app-grade-submissions *ngIf="showGradeSubmissions && isModuleInstructor"></app-grade-submissions>
 
-    <app-view-grades *ngIf="showViewGrades && (currentUser != moduleCreator)"></app-view-grades>
+    <app-view-grades *ngIf="showViewGrades && !isModuleInstructor"></app-view-grades>
+
+    <app-edit-module *ngIf="(isAdmin$ | async) && showEditModuleForm" (cancelEdit)="onEditModuleCancel(true)"></app-edit-module>
 </div>
