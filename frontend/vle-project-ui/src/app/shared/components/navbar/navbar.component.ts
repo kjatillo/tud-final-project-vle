@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -13,8 +14,9 @@ export class NavbarComponent {
   isAdmin$: Observable<boolean>;
   isInstructor$: Observable<boolean>;
   isAuthResolved$: Observable<boolean>;
+  mobileMenuOpen: boolean = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
 
     this.isAdmin$ = this.authService.userRoles$.pipe(
@@ -26,6 +28,14 @@ export class NavbarComponent {
     );
 
     this.isAuthResolved$ = this.authService.isAuthResolved;
+  }
+
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
   logout(): void {

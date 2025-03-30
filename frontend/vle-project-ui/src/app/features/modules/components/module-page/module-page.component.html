@@ -5,7 +5,7 @@
             <div *ngIf="pages.length > 0; else noModuleContentsTemplate">
                 <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
                 <ul class="list-group">
-                    <li *ngFor="let page of pages" class="list-group-item d-flex justify-content-between">
+                    <li id="page-list" *ngFor="let page of pages" class="list-group-item d-flex justify-content-between">
                         <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
                         <div class="dropdown me-2">
                             <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
@@ -54,22 +54,22 @@
                             <p class="content-description"><b>Description</b>: {{ content.description }}</p>
 
                             <ng-container *ngIf="content.isLink; else fileTemplate">
-                                <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary">Go to
+                                <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary my-2">Go to
                                     link</a>
                             </ng-container>
 
                             <ng-template #fileTemplate>
                                 <div *ngIf="!content.isUpload">
-                                    <p><b>File Type</b>: {{ getFileType(content.fileType) }}</p>
-                                    <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary">Download
+                                    <p class="content-description"><b>File Type</b>: {{ getFileType(content.fileType) }}</p>
+                                    <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary my-2">Download
                                         File</a>
                                 </div>
 
                                 <div *ngIf="content.isUpload">
-                                    <p><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
-                                    <p *ngIf="!isModuleInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
+                                    <p class="content-description"><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
+                                    <p class="content-description" *ngIf="!isModuleInstructor"><b>Uploaded File</b>: {{ content.submissionFileName ?
                                         content.submissionFileName : 'N/A' }}</p>
-                                    <button *ngIf="!isModuleInstructor" class="btn"
+                                    <button *ngIf="!isModuleInstructor" class="btn my-2"
                                         [ngClass]="isPastDeadline(content.deadline) ? 'btn-outline-danger' : 'btn-outline-primary'"
                                         (click)="uploadSubmission(content.contentId)"
                                         [disabled]="isPastDeadline(content.deadline)">
@@ -89,24 +89,24 @@
             </div>
 
             <div *ngIf="showAddContentForm">
-                <h4>Add Content - {{ selectedPageTitle }}</h4>
+                <h4 class="mb-3">Add Content - {{ selectedPageTitle }}</h4>
                 <app-add-content [pageId]="selectedPageId" (contentAdded)="onContentAdded()"
                     (cancel)="onCancelAddContent()"></app-add-content>
             </div>
 
             <div *ngIf="showEditContentForm">
-                <h4>Edit Content - {{ selectedPageTitle }}</h4>
+                <h4 class="mb-3">Edit Content - {{ selectedPageTitle }}</h4>
                 <app-edit-content [content]="selectedContent" (contentUpdated)="onContentUpdated()"
                     (cancel)="onCancelEditContent()"></app-edit-content>
             </div>
 
             <div *ngIf="showAddPageForm">
-                <h4>Add Page</h4>
+                <h4 class="mb-3">Add Page</h4>
                 <app-add-page (pageAdded)="onPageAdded()" (cancel)="onCancelAddPage()"></app-add-page>
             </div>
 
             <div *ngIf="showEditPageForm">
-                <h4>Edit Page - {{ selectedPageTitle }}</h4>
+                <h4 class="mb-3">Edit Page - {{ selectedPageTitle }}</h4>
                 <app-edit-page [page]="selectedPage" (pageUpdated)="onPageUpdated()"
                     (cancel)="onCancelEditPage()"></app-edit-page>
             </div>
