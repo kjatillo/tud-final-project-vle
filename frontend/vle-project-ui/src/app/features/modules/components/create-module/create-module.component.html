@@ -5,7 +5,7 @@
 
     <ng-template #content>
         <div *ngIf="isAdmin$ | async; else unauthorised">
-            <h2>Create Module</h2>
+            <h2 class="mb-3">Create Module</h2>
             <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
                     <label for="moduleName" class="form-label">Module Name</label>

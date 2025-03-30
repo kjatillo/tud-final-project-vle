@@ -1,44 +1,77 @@
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark" *ngIf="isAuthResolved$ | async; else loading">
-    <div class="container">
-        <a class="navbar-brand" href="/">VLE</a>
+<header id="header" class="header d-flex align-items-center sticky-top p-0"
+    *ngIf="isAuthResolved$ | async; else loading">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+        <a href="/" class="logo d-flex align-items-center">
+            <h1>VLE</h1>
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
+        <!-- Desktop Navigation -->
+        <nav id="navmenu" class="navmenu d-flex w-100 justify-content-between">
+            <ul class="navmenu-center d-flex justify-content-center d-none d-lg-flex">
+                <li *ngIf="(isLoggedIn$ | async)">
+                    <a aria-current="page" href="/">Home</a>
+                </li>
+                <li *ngIf="(isLoggedIn$ | async)">
+                    <a aria-current="page" href="/explore">Explore</a>
+                </li>
+                <li *ngIf="(isLoggedIn$ | async) && (isAdmin$ | async)">
+                    <a aria-current="page" href="/create-module">Create Module</a>
+                </li>
+            </ul>
+
+            <ul class="navmenu-right d-flex justify-content-end d-none d-lg-flex">
+                <ng-container *ngIf="(isLoggedIn$ | async); else loggedOut">
+                    <li>
+                        <button class="btn btn-primary" (click)="logout()">Logout</button>
+                    </li>
+                </ng-container>
+
+                <ng-template #loggedOut>
+                    <li class="pe-0">
+                        <button class="btn btn-outline-primary" (click)="navigateTo('/register')">Register</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" (click)="navigateTo('/login')">Login</button>
+                    </li>
+                </ng-template>
+            </ul>
+        </nav>
+
+        <!-- Mobile Navigation -->
+        <button class="mobile-nav-toggle d-lg-none" (click)="toggleMobileMenu()">
+            <span [class]="mobileMenuOpen ? 'bi bi-x' : 'bi bi-list'"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <ng-container>
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/">Home</a>
-                    </li>
-                    <li class="nav-item" *ngIf="(isLoggedIn$ | async)">
-                        <a class="nav-link" aria-current="page" href="/explore">Explore</a>
-                    </li>
-                    <li class="nav-item" *ngIf="(isLoggedIn$ | async) && (isAdmin$ | async)">
-                        <a class="nav-link" aria-current="page" href="/create-module">Create Module</a>
-                    </li>
-                </ul>
+        <div class="mobile-nav-overlay" *ngIf="mobileMenuOpen" (click)="toggleMobileMenu()"></div>
+        <div class="mobile-nav-menu d-lg-none" *ngIf="mobileMenuOpen">
+            <ul>
+                <li *ngIf="(isLoggedIn$ | async)">
+                    <a aria-current="page" href="/">Home</a>
+                </li>
+                <li *ngIf="(isLoggedIn$ | async)">
+                    <a aria-current="page" href="/explore">Explore</a>
+                </li>
+                <li *ngIf="(isLoggedIn$ | async) && (isAdmin$ | async)">
+                    <a aria-current="page" href="/create-module">Create Module</a>
+                </li>
 
-                <ul class="navbar-nav ms-auto">
-                    <ng-container *ngIf="(isLoggedIn$ | async); else loggedOut">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" (click)="logout()">Logout</a>
-                        </li>
-                    </ng-container>
-                    <ng-template #loggedOut>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/register">Register</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">Login</a>
-                        </li>
-                    </ng-template>
-                </ul>
-            </ng-container>
+                <hr *ngIf="(isLoggedIn$ | async)">
+
+                <li *ngIf="(isLoggedIn$ | async)">
+                    <a (click)="logout()">Logout</a>
+                </li>
+                <ng-container *ngIf="!(isLoggedIn$ | async)">
+                    <li>
+                        <a href="/register">Register</a>
+                    </li>
+                    <li>
+                        <a href="/login">Login</a>
+                    </li>
+                </ng-container>
+            </ul>
         </div>
     </div>
-</nav>
+</header>
 
 <ng-template #loading>
     <div class="spinner-container">
