@@ -26,7 +26,7 @@ import { SharedModule } from './shared/shared.module';
         },
         allowedDomains: ['localhost:7036'],
         disallowedRoutes: [
-          'localhost:7036/api/users/login', 
+          'localhost:7036/api/users/login',
           'localhost:7036/api/users/register'
         ]
       }

@@ -4,10 +4,21 @@ body {
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    color: #333;
+    color: #111;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    height: 100%;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+app-footer {
+    margin-top: auto;
 }
 
 h1,
@@ -26,9 +37,11 @@ a,
 li,
 span,
 button,
+label,
 input,
 textarea {
     font-family: 'Poppins', sans-serif;
+    color: #333;
 }
 
 a {
@@ -93,7 +106,7 @@ label {
     color: #fff;
 }
 
-button.btn-primary:disabled, 
+button.btn-primary:disabled,
 a.btn-primary:disabled {
     background-color: #007e82;
     color: #fff;
@@ -101,7 +114,8 @@ a.btn-primary:disabled {
     cursor: not-allowed;
 }
 
-button.btn-outline-primary, a.btn-outline-primary {
+button.btn-outline-primary,
+a.btn-outline-primary {
     background-color: transparent;
     color: #007e82;
     border: 2px solid #007e82 !important;
@@ -114,13 +128,15 @@ button.btn-outline-primary, a.btn-outline-primary {
     transition: all 0.3s ease;
 }
 
-button.btn-outline-primary:hover, a.btn-outline-primary:hover {
+button.btn-outline-primary:hover,
+a.btn-outline-primary:hover {
     background-color: #007e82;
     color: #fff;
     border-color: #007e82;
 }
 
-button.btn-outline-danger, a.btn-outline-danger {
+button.btn-outline-danger,
+a.btn-outline-danger {
     background-color: transparent;
     color: #dc3545;
     border: 2px solid #dc3545 !important;
