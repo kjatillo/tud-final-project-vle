@@ -10,7 +10,8 @@ using VleProjectApi.Entities;
 using VleProjectApi.Profiles;
 using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
-using VleProjectApi.Services;
+using VleProjectApi.Services.Implementations;
+using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi;
 
@@ -89,13 +90,13 @@ public class Startup
 
         services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
+        services.AddScoped<IBlobStorageService, BlobStorageService>();
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
         services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
         services.AddScoped<IModuleRepository, ModuleRepository>();
         services.AddScoped<IModuleSubmissionRepository, ModuleSubmissionRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddSingleton<BlobStorageService>();
 
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
 
