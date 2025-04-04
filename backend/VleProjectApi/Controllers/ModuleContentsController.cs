@@ -6,7 +6,7 @@ using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
-using VleProjectApi.Services;
+using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi.Controllers;
 
@@ -14,19 +14,19 @@ namespace VleProjectApi.Controllers;
 [ApiController]
 public class ModuleContentsController : ControllerBase
 {
+    private readonly IBlobStorageService _blobStorageService;
     private readonly IMapper _mapper;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
     private readonly IModuleRepository _moduleRepository;
-    private readonly BlobStorageService _blobStorageService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public ModuleContentsController(
+        IBlobStorageService blobStorageService,
         IMapper mapper,
         IModuleContentRepository moduleContentRepository,
         IModulePageRepository modulePageRepository,
         IModuleRepository moduleRepository, 
-        BlobStorageService blobStorageService,
         UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper;

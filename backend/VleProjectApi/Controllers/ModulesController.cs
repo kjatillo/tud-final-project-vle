@@ -6,7 +6,7 @@ using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
-using VleProjectApi.Services;
+using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi.Controllers;
 
@@ -14,21 +14,21 @@ namespace VleProjectApi.Controllers;
 [ApiController]
 public class ModulesController : ControllerBase
 {
-    private readonly BlobStorageService _blobStorageService;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IBlobStorageService _blobStorageService;
+    private readonly IMapper _mapper;
     private readonly IModuleRepository _moduleRepository;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
     private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
-    private readonly IMapper _mapper;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public ModulesController(
+        IBlobStorageService blobStorageService,
         IMapper mapper,
         IModuleContentRepository moduleContentRepository,
         IModulePageRepository modulePageRepository,
         IModuleRepository moduleRepository,
         IModuleSubmissionRepository moduleSubmissionsRepository,
-        BlobStorageService blobStorageService,
         UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

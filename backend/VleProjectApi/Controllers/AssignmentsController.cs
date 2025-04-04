@@ -5,7 +5,7 @@ using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
-using VleProjectApi.Services;
+using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi.Controllers;
 
@@ -13,15 +13,15 @@ namespace VleProjectApi.Controllers;
 [ApiController]
 public class AssignmentsController : ControllerBase
 {
+    private readonly IBlobStorageService _blobStorageService;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
-    private readonly BlobStorageService _blobStorageService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public AssignmentsController(
+        IBlobStorageService blobStorageService,
         IModuleContentRepository moduleContentRepository,
         IModuleSubmissionRepository moduleSubmissionRepository,
-        BlobStorageService blobStorageService,
         UserManager<ApplicationUser> userManager)
     {
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
