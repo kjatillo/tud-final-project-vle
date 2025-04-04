@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { User } from '../../../features/users/models/user.model';
 
 @Component({
   selector: 'app-navbar',
@@ -14,9 +15,11 @@ export class NavbarComponent {
   isAdmin$: Observable<boolean>;
   isInstructor$: Observable<boolean>;
   isAuthResolved$: Observable<boolean>;
+  currentUser$: Observable<User | null>;
   mobileMenuOpen: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {
+    this.currentUser$ = this.authService.currentUser$;
     this.isLoggedIn$ = this.authService.isLoggedIn$;
 
     this.isAdmin$ = this.authService.userRoles$.pipe(
