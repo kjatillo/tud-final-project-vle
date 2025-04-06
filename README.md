@@ -40,7 +40,7 @@ The repository is organized as follows:
 
 **/backend** <br />
 &nbsp;&nbsp;&nbsp;├── **VleProjectApi**  &nbsp;# .NET Core API for core application logic <br />
-&nbsp;&nbsp;&nbsp;├── **BackgroundJobs** &nbsp;# Background jobs for notifications and reports
+&nbsp;&nbsp;&nbsp;├── **VleProjectBackgroundJob** &nbsp;# Background jobs for notifications and reports
 
 **/docs** <br />
 &nbsp;&nbsp;&nbsp;├── **Research Document.docx** &nbsp;# Research and analysis of the project <br />
@@ -111,7 +111,7 @@ The repository is organized as follows:
 3. **Backend Setup**
    - Open the backend solution in **Visual Studio**.
    - Update the database connection string in connected services or `appsettings.json` to point to your local or Azure SQL Server.
-   - Navigate to the backend directory:
+   - Navigate to the API directory:
    ```bash
    cd backend/VleProjectApi
    ```
@@ -123,7 +123,14 @@ The repository is organized as follows:
    ```bash
    dotnet run
    ```
-   - The API will be available at http://localhost:7036/api (port number will vary per machine).
+   - Navigate to the Background Job directory:
+   ```bash
+   cd VleProjectBackgroundJob
+   ```
+   - Start the Background Job project:
+   ```bash
+   dotnet run
+   ```
 
 ---
 
