@@ -88,8 +88,6 @@ public class Startup
                 });
         });
 
-        services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
-
         services.AddScoped<IBlobStorageService, BlobStorageService>();
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
         services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
@@ -98,8 +96,8 @@ public class Startup
         services.AddScoped<IModuleSubmissionRepository, ModuleSubmissionRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
+        services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
         services.AddAutoMapper(typeof(UserProfile), typeof(ModuleProfile));
-
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
