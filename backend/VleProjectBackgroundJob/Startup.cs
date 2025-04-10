@@ -11,23 +11,23 @@ namespace VleProjectBackgroundJob;
 
 public class Startup
 {
-    private readonly IConfiguration _configuration;
+    public IConfiguration Configuration { get; }
 
     public Startup(IConfiguration configuration)
     {
-        _configuration = configuration;
+        Configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<VleDbContext>(options =>
-            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddHangfire(config =>
             config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                   .UseSimpleAssemblyNameTypeSerializer()
                   .UseDefaultTypeSerializer()
-                  .UseSqlServerStorage(_configuration.GetConnectionString("DefaultConnection")));
+                  .UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddHangfireServer();
 
