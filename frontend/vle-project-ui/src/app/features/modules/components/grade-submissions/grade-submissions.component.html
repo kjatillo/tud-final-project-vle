@@ -2,11 +2,13 @@
     <h2>Grade Submissions</h2>
     <form [formGroup]="gradeForm">
         <div class="mb-3">
-            <select id="contentId" class="form-control" formControlName="contentId">
-                <option value="" disabled selected>-- Select Assignment --</option>
-                <option *ngFor="let assignment of assignments" [value]="assignment.contentId">{{ assignment.title }}
-                </option>
-            </select>
+            <div class="col-12 col-lg-6">
+                <select id="contentId" class="form-control" formControlName="contentId">
+                    <option value="" disabled selected>-- Select Assignment --</option>
+                    <option *ngFor="let assignment of assignments" [value]="assignment.contentId">{{ assignment.title }}
+                    </option>
+                </select>
+            </div>
         </div>
     </form>
 
@@ -37,18 +39,42 @@
                             class="form-control" (ngModelChange)="onGradeChange(submission)">
                     </td>
                     <td>
-                        <button class="btn btn-primary" type="button"
-                            (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
-                            [disabled]="!submission.isGradeChanged">Update Grade</button>
-                        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" type="button" (click)="openFeedbackDialog(submission)">Update Feedback</a></li>
-                            <li><a class="dropdown-item text-danger" type="button"
-                                    (click)="removeGrade(submission.submissionId)">Remove Grade</a></li>
-                        </ul>
+                        <!-- Desktop view buttons -->
+                        <div class="d-none d-md-block">
+                            <button class="btn btn-primary me-2" type="button"
+                                (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
+                                [disabled]="!submission.isGradeChanged">Update Grade</button>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" type="button" (click)="openFeedbackDialog(submission)">Update Feedback</a></li>
+                                    <li><a class="dropdown-item text-danger" type="button"
+                                            (click)="removeGrade(submission.submissionId)">Remove Grade</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile view vertical ellipsis -->
+                        <div class="d-md-none">
+                            <div class="dropdown">
+                                <button class="btn text-dark p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" type="button"
+                                            (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
+                                            [disabled]="!submission.isGradeChanged">Update Grade</button>
+                                    </li>
+                                    <li><a class="dropdown-item" type="button" (click)="openFeedbackDialog(submission)">Update Feedback</a></li>
+                                    <li><a class="dropdown-item text-danger" type="button"
+                                            (click)="removeGrade(submission.submissionId)">Remove Grade</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tbody>

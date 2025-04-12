@@ -4,41 +4,51 @@
     </div>
 
     <ng-template #content>
-        <div *ngIf="isAdmin$ | async; else unauthorised">
-            <h2 class="mb-3">Create Module</h2>
-            <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
-                <div class="mb-3">
-                    <label for="moduleName" class="form-label">Module Name</label>
-                    <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
-                </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <div *ngIf="isAdmin$ | async; else unauthorised">
+                            <h2 class="text-center mb-4">Create Module</h2>
+                            <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
+                                <div class="mb-3">
+                                    <label for="moduleName" class="form-label">Module Name</label>
+                                    <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
+                                </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" class="form-control" formControlName="description"></textarea>
-                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea id="description" class="form-control" rows="4" formControlName="description"></textarea>
+                                </div>
 
-                <div class="mb-3">
-                    <label for="moduleInstructor" class="form-label">Assign Instructor</label>
-                    <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
-                        <option *ngFor="let instructor of instructors" [value]="instructor.id">
-                            {{ instructor.name }} --- {{ instructor.email }}
-                        </option>
-                    </select>
-                </div>
+                                <div class="mb-3">
+                                    <label for="moduleInstructor" class="form-label">Assign Instructor</label>
+                                    <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                                        <option *ngFor="let instructor of instructors" [value]="instructor.id">
+                                            {{ instructor.name }} --- {{ instructor.email }}
+                                        </option>
+                                    </select>
+                                </div>
 
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
-                </div>
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
+                                </div>
 
-                <button type="submit" class="btn btn-primary">Create Module</button>
-                <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-            </form>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Create Module</button>
+                                    <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <ng-template #unauthorised>
+                            <h2 class="text-center">Unauthorised!</h2>
+                            <p class="text-center">You are not authorised to access this page.</p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <ng-template #unauthorised>
-            <h2>Unauthorised!</h2>
-            <p>You are not authorised to access this page.</p>
-        </ng-template>
     </ng-template>
 </div>

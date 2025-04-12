@@ -1,19 +1,40 @@
 <div class="container mt-5" *ngIf="module">
     <div class="dropdown me-2 d-flex justify-content-between">
         <h2>{{ module.moduleName }}</h2>
-        <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
-            <i class="bi bi-three-dots-vertical"></i>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
-            <div>
-                <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
-                <div *ngIf="(isAdmin$ | async)">
-                    <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
-                    <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
-                </div>
+        <!-- Desktop view -->
+        <div class="d-none d-md-block">
+            <div class="dropdown" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
+                    <div>
+                        <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
+                        <div *ngIf="(isAdmin$ | async)">
+                            <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
+                            <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
+                        </div>
+                    </div>
+                </ul>
             </div>
-        </ul>
+        </div>
+        <!-- Mobile view -->
+        <div class="d-md-none">
+            <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
+                <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
+                <div>
+                    <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
+                    <div *ngIf="(isAdmin$ | async)">
+                        <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
+                        <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
+                    </div>
+                </div>
+            </ul>
+        </div>
     </div>
 
     <div class="price-badge-container d-flex align-items-center my-2" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor)">

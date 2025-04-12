@@ -3,3 +3,18 @@
 .btn {
     margin-right: .75rem;
 }
+
+.btn-group {
+    display: inline-flex;
+    width: auto;
+
+    .dropdown-toggle {
+        width: 100%;
+    }
+}
+
+@media (min-width: 992px) {
+    .btn-group {
+        width: 50%;
+    }
+}
