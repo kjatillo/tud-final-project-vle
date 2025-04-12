@@ -4,20 +4,29 @@
     </div>
 
     <ng-template #content>
-        <h2 class="mb-3">Explore Modules</h2>
-        
-        <div class="mb-3">
-            <input type="text" class="form-control mb-5" placeholder="Search modules..." [(ngModel)]="searchQuery"
-                (input)="onSearch()">
-        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Explore Modules</h2>
 
-        <div class="list-group">
-            <p>{{ filteredModules.length }} results</p>
-            <a *ngFor="let module of filteredModules" type="button" class="list-group-item list-group-item-action"
-                (click)="navigateToModule(module.moduleId)">
-                <h5 class="mb-1">{{ module.moduleName }}</h5>
-                <p class="mb-1">{{ module.description }}</p>
-            </a>
+                        <div class="mb-4">
+                            <input type="text" class="form-control" placeholder="Search modules..."
+                                [(ngModel)]="searchQuery" (input)="onSearch()">
+                        </div>
+
+                        <div class="list-group">
+                            <p class="text-muted mb-3">{{ filteredModules.length }} results</p>
+                            <a *ngFor="let module of filteredModules" type="button"
+                                class="list-group-item list-group-item-action mb-2 rounded"
+                                (click)="navigateToModule(module.moduleId)">
+                                <h5 class="mb-2">{{ module.moduleName }}</h5>
+                                <p class="mb-0 text-muted">{{ module.description }}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </ng-template>
 </div>
