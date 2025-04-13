@@ -2,4 +2,119 @@
     <h2 class="mb-5">Admin Dashboard</h2>
 </div>
 
-<p>This page is a work in progress.</p>
+<div class="row mt-4">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Total Modules</h6>
+                <p class="card-text h4">{{ totalModules }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Total enrolments</h6>
+                <p class="card-text h4">{{ totalenrolments }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Average Module Price</h6>
+                <p class="card-text h4">€{{ averageModulePrice | number:'1.2-2' }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Total Instructors</h6>
+                <p class="card-text h4">{{ totalInstructors }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas #priceDistributionChart></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas #enrolmentChart></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas #assignmentDistributionChart></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Module Analytics</h5>
+                <div class="mb-3">
+                    <select [formControl]="selectedModule" class="form-control">
+                        <option value="" disabled selected>-- Select a module --</option>
+                        <option *ngFor="let module of (modules$ | async)" [value]="module.moduleId">
+                            {{ module.moduleName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="row" *ngIf="selectedModule.value">
+                    <div class="col-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Total enrolments</h6>
+                                <p class="card-text h4">{{ selectedModuleAnalytics.totalenrolments }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Average Grade</h6>
+                                <p class="card-text h4">{{ selectedModuleAnalytics.averageGrade }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Submissions</h6>
+                                <p class="card-text h4">{{ selectedModuleAnalytics.submissionCount }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Completion Rate</h6>
+                                <p class="card-text h4">{{ selectedModuleAnalytics.completionRate }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
