@@ -5,6 +5,11 @@
 
     <ng-template #content>
         <div *ngIf="isLoggedIn$ | async; else notLoggedIn">
+            <!-- Instructor Dashboard -->
+            <app-instructor-dashboard
+                *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Instructor'">
+            </app-instructor-dashboard>
+            
             <!-- Student Dashboard -->
             <app-student-dashboard
                 *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Student'">

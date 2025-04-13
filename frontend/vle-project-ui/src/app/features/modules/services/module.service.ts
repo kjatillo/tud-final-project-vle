@@ -16,6 +16,10 @@ export class ModuleService {
     return this.http.get<Module[]>(this.modulesBaseEndpoint);
   }
 
+  getInstructorModules(): Observable<Module[]> {
+    return this.http.get<Module[]>(`${this.modulesBaseEndpoint}/instructor-modules`);
+  }
+
   getModuleById(moduleId: string): Observable<Module> {
     return this.http.get<Module>(`${this.modulesBaseEndpoint}/${moduleId}`);
   }
