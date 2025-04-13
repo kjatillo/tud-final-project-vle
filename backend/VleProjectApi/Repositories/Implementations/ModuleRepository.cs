@@ -62,6 +62,19 @@ public class ModuleRepository : IModuleRepository
     }
 
     /// <summary>
+    /// Retrieves all modules assigned to a specific instructor.
+    /// </summary>
+    /// <param name="instructorId">The unique identifier of the instructor.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of modules assigned to the instructor, ordered by module name.</returns>
+    public async Task<IEnumerable<Module>> GetModulesByInstructorIdAsync(string instructorId)
+    {
+        return await _context.Modules
+            .Where(m => m.ModuleInstructor == instructorId)
+            .OrderBy(m => m.ModuleName)
+            .ToListAsync();
+    }
+
+    /// <summary>
     /// Deletes a module by its unique identifier.
     /// </summary>
     /// <param name="moduleId">The unique identifier of the module to delete.</param>
