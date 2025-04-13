@@ -1,6 +1,4 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AuthService } from '../../../../core/services/auth.service';
+import { Component, ElementRef, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-feedback-dialog',
@@ -8,21 +6,33 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrls: ['./feedback-dialog.component.scss']
 })
 export class FeedbackDialogComponent {
-  isInstructor!: boolean;
+  @ViewChild('feedbackModal') modal!: ElementRef;
+  @Input() isInstructor: boolean = false;
+  @Input() feedback: string = '';
+  @Output() feedbackChange = new EventEmitter<string>();
+  @Output() save = new EventEmitter<string>();
+  
+  private bootstrapModal: any;
 
-  constructor(
-    private authService: AuthService,
-    public dialogRef: MatDialogRef<FeedbackDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { feedback: string }
-  ) { }
+  ngAfterViewInit() {
+    // @ts-ignore
+    this.bootstrapModal = new bootstrap.Modal(this.modal.nativeElement);
+  }
 
-  ngOnInit(): void {
-    this.authService.userRoles$.subscribe(roles => {
-      this.isInstructor = roles.includes('Instructor');
-    });
+  show() {
+    this.bootstrapModal.show();
+  }
+
+  hide() {
+    this.bootstrapModal.hide();
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    this.hide();
+  }
+
+  onSave(): void {
+    this.save.emit(this.feedback);
+    this.hide();
   }
 }

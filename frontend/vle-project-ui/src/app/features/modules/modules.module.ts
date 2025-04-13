@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AddContentComponent } from './components/add-content/add-content.component';
@@ -39,7 +38,6 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatDialogModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
     RouterModule

@@ -1,10 +1,11 @@
 <div class="container mt-5 p-0">
-    <h2>Grade Submissions</h2>
+    <h4 class="mb-3">Grade Submissions</h4>
+
     <form [formGroup]="gradeForm">
         <div class="mb-3">
             <div class="col-12 col-lg-6">
                 <select id="contentId" class="form-control" formControlName="contentId">
-                    <option value="" disabled selected>-- Select Assignment --</option>
+                    <option value="" disabled selected>-- Select an assignment --</option>
                     <option *ngFor="let assignment of assignments" [value]="assignment.contentId">{{ assignment.title }}
                     </option>
                 </select>
@@ -81,3 +82,10 @@
         </table>
     </div>
 </div>
+
+<app-feedback-dialog
+    #feedbackDialog
+    [isInstructor]="true"
+    [(feedback)]="currentFeedback"
+    (save)="onFeedbackSave($event)">
+</app-feedback-dialog>

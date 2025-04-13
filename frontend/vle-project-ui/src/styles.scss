@@ -148,3 +148,8 @@ a.btn-outline-danger {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
+/* Default Spinner Styling */
+.mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #007e82;
+}

@@ -10,6 +10,7 @@
                     <div class="card-body p-4">
                         <div *ngIf="isAdmin$ | async; else unauthorised">
                             <h2 class="text-center mb-4">Create Module</h2>
+                            
                             <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
                                 <div class="mb-3">
                                     <label for="moduleName" class="form-label">Module Name</label>
@@ -24,8 +25,9 @@
                                 <div class="mb-3">
                                     <label for="moduleInstructor" class="form-label">Assign Instructor</label>
                                     <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                                        <option value="" disabled selected>-- Select an instructor --</option>
                                         <option *ngFor="let instructor of instructors" [value]="instructor.id">
-                                            {{ instructor.name }} --- {{ instructor.email }}
+                                            {{ instructor.name }} ({{ instructor.email }})
                                         </option>
                                     </select>
                                 </div>

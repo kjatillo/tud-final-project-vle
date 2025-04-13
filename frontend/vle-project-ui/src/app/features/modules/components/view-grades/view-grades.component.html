@@ -1,5 +1,5 @@
 <div class="container mt-5 p-0">
-    <h2>My Submissions - Grades</h2>
+    <h4 class="mb-3">My Submissions</h4>
 
     <div class="table-responsive mt-3" *ngIf="submissions.length > 0; else noSubmissions">
         <table class="table table-hover">
@@ -11,6 +11,7 @@
                     <th>Feedback</th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr *ngFor="let submission of submissions">
                     <td>{{ submission.contentTitle }}</td>
@@ -19,7 +20,7 @@
                     </td>
                     <td>{{ submission.grade == null ? 'N/A' : submission.grade }}</td>
                     <td>
-                        <button class="btn btn-secondary btn-sm" (click)="openFeedbackDialog(submission.feedback)"
+                        <button class="btn btn-secondary btn-sm" (click)="openFeedbackDialog(submission)"
                             [disabled]="!submission.feedback">View Feedback</button>
                     </td>
                 </tr>
@@ -31,3 +32,9 @@
         <p>No submissions submitted for grading.</p>
     </ng-template>
 </div>
+
+<app-feedback-dialog
+    #feedbackDialog
+    [isInstructor]="false"
+    [(feedback)]="currentFeedback">
+</app-feedback-dialog>

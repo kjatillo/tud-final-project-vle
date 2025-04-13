@@ -1,6 +1,23 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
-<mat-dialog-content>{{ data.message }}</mat-dialog-content>
-<mat-dialog-actions class="mb-2">
-  <button mat-button color="warn" (click)="onConfirm()">Delete</button>
-  <button mat-button (click)="onCancel()">Cancel</button>
-</mat-dialog-actions>
+<div class="modal fade" tabindex="-1" #deleteModal>
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title d-flex align-items-center">
+                  <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                  {{ title }}
+              </h5>
+
+              <button type="button" class="btn-close" (click)="onCancel()"></button>
+          </div>
+
+          <div class="modal-body">
+              {{ message }}
+          </div>
+          
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" (click)="onConfirm()">Delete</button>
+              <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+          </div>
+      </div>
+  </div>
+</div>

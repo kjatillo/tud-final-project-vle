@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
@@ -13,17 +12,19 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
   styleUrls: ['./grade-submissions.component.scss']
 })
 export class GradeSubmissionsComponent implements OnInit {
+  @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
   gradeForm!: FormGroup;
   moduleId!: string;
   selectedContentId!: string;
   isModuleInstructor!: boolean;
   submissions: ModuleSubmission[] = [];
   assignments: ModuleAssignment[] = [];
+  currentFeedback: string = '';
+  currentSubmissionId: string = '';
 
   constructor(
     private assignmentService: AssignmentService,
     private fb: FormBuilder,
-    public dialog: MatDialog,
     private route: ActivatedRoute
   ) { }
 
@@ -69,17 +70,19 @@ export class GradeSubmissionsComponent implements OnInit {
   }
 
   openFeedbackDialog(submission: ModuleSubmission): void {
-    const dialogRef = this.dialog.open(FeedbackDialogComponent, {
-      width: '400px',
-      data: { feedback: submission.feedback }
-    });
+    this.currentFeedback = submission.feedback;
+    this.currentSubmissionId = submission.submissionId;
+    this.feedbackDialog.show();
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        submission.feedback = result;
-        this.updateGrade(submission.submissionId, submission.grade, submission.feedback);
+  onFeedbackSave(feedback: string): void {
+    if (this.currentSubmissionId) {
+      const submission = this.submissions.find(s => s.submissionId === this.currentSubmissionId);
+      if (submission) {
+        submission.feedback = feedback;
+        this.updateGrade(submission.submissionId, submission.grade, feedback);
       }
-    });
+    }
   }
 
   onGradeChange(submission: ModuleSubmission): void {
