@@ -53,6 +53,28 @@ public class ModulesController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves all modules created by the currently logged-in instructor.
+    /// </summary>
+    /// <returns>
+    /// A list of modules associated with the instructor if the user is authenticated and authorized.
+    /// Returns Unauthorized if the user is not logged in.
+    /// </returns>
+    [HttpGet("instructor-modules")]
+    [Authorize(Roles = nameof(Role.Instructor))]
+    public async Task<IActionResult> GetInstructorModules()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var modules = await _moduleRepository.GetModulesByInstructorIdAsync(user.Id);
+
+        return Ok(modules);
+    }
+
+    /// <summary>
     /// Get a module by its ID.
     /// </summary>
     /// <param name="moduleId">The ID of the module.</param>
