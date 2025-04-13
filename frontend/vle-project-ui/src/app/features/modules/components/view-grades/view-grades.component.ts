@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { AssignmentService } from '../../services/assignment.service';
-import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModuleSubmission } from '../../models/module-submission.model';
+import { AssignmentService } from '../../services/assignment.service';
+import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
 
 @Component({
   selector: 'app-view-grades',
@@ -11,12 +10,14 @@ import { ModuleSubmission } from '../../models/module-submission.model';
   styleUrls: ['./view-grades.component.scss']
 })
 export class ViewGradesComponent implements OnInit {
+  @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
   submissions: ModuleSubmission[] = [];
   moduleId!: string;
+  currentFeedback: string = '';
+  currentSubmissionId: string = '';
 
   constructor(
     private assignmentService: AssignmentService,
-    public dialog: MatDialog,
     private route: ActivatedRoute,
   ) { }
 
@@ -34,10 +35,8 @@ export class ViewGradesComponent implements OnInit {
     });
   }
 
-  openFeedbackDialog(feedback: string): void {
-    this.dialog.open(FeedbackDialogComponent, {
-      width: '400px',
-      data: { feedback }
-    });
+  openFeedbackDialog(submission: ModuleSubmission): void {
+    this.currentFeedback = submission.feedback;
+    this.feedbackDialog.show();
   }
 }

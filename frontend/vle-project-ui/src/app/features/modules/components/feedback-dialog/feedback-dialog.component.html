@@ -1,12 +1,23 @@
-<h1 mat-dialog-title>Feedback</h1>
-<div mat-dialog-content>
-    <textarea [(ngModel)]="data.feedback" rows="5" class="form-control" [disabled]="!isInstructor"></textarea>
-</div>
-<div mat-dialog-actions>
-    <div *ngIf="isInstructor">
-        <button mat-button [mat-dialog-close]="data.feedback">Save</button>
-        <button mat-button (click)="onCancel()">Cancel</button>
+<div class="modal fade" tabindex="-1" #feedbackModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Feedback</h5>
+                <button type="button" class="btn-close" (click)="onCancel()"></button>
+            </div>
+
+            <div class="modal-body">
+                <textarea [(ngModel)]="feedback" rows="5" class="form-control" [disabled]="!isInstructor"></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <div *ngIf="isInstructor">
+                    <button type="button" class="btn btn-primary me-2" (click)="onSave()">Save</button>
+                    <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+                </div>
+
+                <button type="button" class="btn btn-primary" (click)="onCancel()" *ngIf="!isInstructor">OK</button>
+            </div>
+        </div>
     </div>
-    
-    <button mat-button (click)="onCancel()" *ngIf="!isInstructor">OK</button>
 </div>

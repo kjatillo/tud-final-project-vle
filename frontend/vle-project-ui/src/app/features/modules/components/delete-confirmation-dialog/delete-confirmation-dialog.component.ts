@@ -1,5 +1,4 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-delete-confirmation-dialog',
@@ -7,16 +6,33 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./delete-confirmation-dialog.component.scss']
 })
 export class DeleteConfirmationDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<DeleteConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
-  ) { }
+  @ViewChild('deleteModal') modal!: ElementRef;
+  @Input() title: string = '';
+  @Input() message: string = '';
+  @Output() confirmed = new EventEmitter<boolean>();
+
+  private bootstrapModal: any;
+
+  ngAfterViewInit() {
+    // @ts-ignore
+    this.bootstrapModal = new bootstrap.Modal(this.modal.nativeElement);
+  }
+
+  show() {
+    this.bootstrapModal.show();
+  }
+
+  hide() {
+    this.bootstrapModal.hide();
+  }
 
   onConfirm(): void {
-    this.dialogRef.close(true);
+    this.confirmed.emit(true);
+    this.hide();
   }
 
   onCancel(): void {
-    this.dialogRef.close(false);
+    this.confirmed.emit(false);
+    this.hide();
   }
 }

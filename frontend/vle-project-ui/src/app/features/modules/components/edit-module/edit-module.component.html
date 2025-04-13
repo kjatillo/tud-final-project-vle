@@ -1,6 +1,7 @@
 <div class="container mt-5 p-0">
-    <div *ngIf="isAdmin$ | async; else unauthorised">
-        <h2>Edit Module</h2>
+    <div *ngIf="isAdmin$ | async; else unauthorised" class="col-12 col-lg-6">
+        <h4 class="mb-3">Edit Module</h4>
+        
         <form [formGroup]="editModuleForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
                 <label for="moduleName" class="form-label">Module Name</label>
@@ -15,8 +16,9 @@
             <div class="mb-3">
                 <label for="moduleInstructor" class="form-label">Assign Instructor</label>
                 <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                    <option value="" disabled selected>-- Select an instructor --</option>
                     <option *ngFor="let instructor of instructors" [value]="instructor.id">
-                        {{ instructor.name }} --- {{ instructor.email }}
+                        {{ instructor.name }} ({{ instructor.email }})
                     </option>
                 </select>
             </div>

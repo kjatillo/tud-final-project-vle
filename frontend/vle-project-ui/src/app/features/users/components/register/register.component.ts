@@ -10,6 +10,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class RegisterComponent {
   registerForm!: FormGroup;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,14 +26,20 @@ export class RegisterComponent {
 
   onSubmit(): void {
     if (this.registerForm.valid) {
+      this.isLoading = true;
+      
       this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
-          console.log('User registed successfully', response);
+          console.log('User registered successfully', response);
           this.router.navigate(['/login']);
         },
         error: (error) => {
           console.error('Error registering user', error);
+          this.isLoading = false;
         },
+        complete: () => {
+          this.isLoading = false;
+        }
       });
     }
   }

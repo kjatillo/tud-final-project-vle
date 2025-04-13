@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -17,6 +16,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   styleUrls: ['./module-page.component.scss']
 })
 export class ModulePageComponent implements OnInit {
+  @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
   moduleId!: string;
   pages: ModulePage[] = [];
   contents: ModuleContent[] = [];
@@ -32,13 +32,16 @@ export class ModulePageComponent implements OnInit {
   showAddPageForm = false;
   showEditPageForm = false;
   showContents = true;
+  deleteDialogTitle: string = '';
+  deleteDialogMessage: string = '';
+  pendingDeleteId: string = '';
+  deleteType: 'page' | 'content' = 'page';
 
   constructor(
     private assignmentService: AssignmentService,
     private authService: AuthService,
     private moduleContentService: ModuleContentService,
     private modulePageService: ModulePageService,
-    private dialog: MatDialog,
     private moduleService: ModuleService,
     private route: ActivatedRoute
   ) { }
@@ -123,28 +126,11 @@ export class ModulePageComponent implements OnInit {
   }
 
   deletePage(pageId: string): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      data: {
-        title: "Confirm Page Deletion",
-        message: "Deleting a page will also delete any associated content permanently. Are you sure you want to do this?"
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.modulePageService.deletePage(this.moduleId, pageId).subscribe({
-          next: () => {
-            this.loadPages();
-
-            this.selectedPageId = '';
-            this.selectedPageTitle = '';
-            this.contents = [];
-            this.showContents = false;
-          },
-          error: (error) => console.error('Error deleting page', error)
-        });
-      }
-    });
+    this.deleteType = 'page';
+    this.pendingDeleteId = pageId;
+    this.deleteDialogTitle = 'Confirm Page Deletion';
+    this.deleteDialogMessage = 'Deleting a page will also delete any associated content permanently. Are you sure you want to do this?';
+    this.deleteDialog.show();
   }
 
   addContent(): void {
@@ -164,23 +150,35 @@ export class ModulePageComponent implements OnInit {
   }
 
   deleteContent(contentId: string): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      data: {
-        title: "Confirm Content Deletion",
-        message: "Deleting content permanently. Are you sure you want to do this?"
-      }
-    });
+    this.deleteType = 'content';
+    this.pendingDeleteId = contentId;
+    this.deleteDialogTitle = 'Confirm Content Deletion';
+    this.deleteDialogMessage = 'Deleting content permanently. Are you sure you want to do this?';
+    this.deleteDialog.show();
+  }
 
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.moduleContentService.deleteContent(this.moduleId, this.selectedPageId, contentId).subscribe({
-          next: () => {
-            this.loadContents(this.selectedPageId);
-          },
-          error: (error) => console.error('Error deleting content', error)
-        });
-      }
-    });
+  onDeleteConfirmed(confirmed: boolean): void {
+    if (!confirmed) return;
+
+    if (this.deleteType === 'page') {
+      this.modulePageService.deletePage(this.moduleId, this.pendingDeleteId).subscribe({
+        next: () => {
+          this.loadPages();
+          this.selectedPageId = '';
+          this.selectedPageTitle = '';
+          this.contents = [];
+          this.showContents = false;
+        },
+        error: (error) => console.error('Error deleting page', error)
+      });
+    } else {
+      this.moduleContentService.deleteContent(this.moduleId, this.selectedPageId, this.pendingDeleteId).subscribe({
+        next: () => {
+          this.loadContents(this.selectedPageId);
+        },
+        error: (error) => console.error('Error deleting content', error)
+      });
+    }
   }
 
   getSubmissionFileName(contentId: string): void {

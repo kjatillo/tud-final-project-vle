@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -15,6 +14,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   styleUrls: ['./module-detail.component.scss'],
 })
 export class ModuleDetailComponent implements OnInit {
+  @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
   module!: Module;
   moduleId!: string;
   isEnroled!: boolean;
@@ -23,10 +23,11 @@ export class ModuleDetailComponent implements OnInit {
   showEditModuleForm: boolean = false;
   showGradeSubmissions: boolean = false;
   showViewGrades: boolean = false;
+  deleteDialogTitle: string = '';
+  deleteDialogMessage: string = '';
 
   constructor(
     private authService: AuthService,
-    private dialog: MatDialog,
     private enrolmentService: EnrolmentService,
     private moduleService: ModuleService,
     private paymentService: PaymentService,
@@ -83,24 +84,21 @@ export class ModuleDetailComponent implements OnInit {
   }
 
   deleteModule(): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      data: {
-        title: "Confirm Module Deletion",
-        message: "Deleting a module will also delete associated pages and contents permanently. Are you sure you want to do this?"
-      }
-    });
+    this.deleteDialogTitle = "Confirm Module Deletion";
+    this.deleteDialogMessage = "Deleting a module will also delete associated pages and contents permanently. Are you sure you want to do this?";
+    this.deleteDialog.show();
+  }
 
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.moduleService.deleteModule(this.moduleId).subscribe({
-          next: (response) => {
-            console.log('Module deleted successfully', response);
-            this.router.navigate(['/explore']);
-          },
-          error: (error) => {
-            console.error('Error deleting module', error);
-          }
-        });
+  onDeleteConfirmed(confirmed: boolean): void {
+    if (!confirmed) return;
+
+    this.moduleService.deleteModule(this.moduleId).subscribe({
+      next: (response) => {
+        console.log('Module deleted successfully', response);
+        this.router.navigate(['/explore']);
+      },
+      error: (error) => {
+        console.error('Error deleting module', error);
       }
     });
   }

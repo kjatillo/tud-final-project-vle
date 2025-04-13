@@ -10,6 +10,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -23,6 +24,8 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
+      this.isLoading = true;
+      
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           console.log('Login successful', response);
@@ -30,6 +33,10 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Login failed', error);
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
         }
       });
     }
