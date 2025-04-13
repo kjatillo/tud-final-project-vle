@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Entities;
+using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi.Repositories.Implementations;
@@ -25,7 +26,8 @@ public class EnrolmentRepository : IEnrolmentRepository
         var enrolment = new Enrolment
         {
             UserId = userId,
-            ModuleId = moduleId
+            ModuleId = moduleId,
+            EnrolmentDate = DateTime.Now
         };
 
         _context.Enrolments.Add(enrolment);
@@ -61,5 +63,45 @@ public class EnrolmentRepository : IEnrolmentRepository
     {
         return await _context.Enrolments
             .AnyAsync(e => e.UserId == userId && e.ModuleId == moduleId);
+    }
+
+    /// <summary>
+    /// Gets the total number of enrolments across all modules.
+    /// </summary>
+    /// <returns>The total number of enrolments.</returns>
+    public async Task<int> GetTotalEnrolmentsCountAsync()
+    {
+        return await _context.Enrolments.CountAsync();
+    }
+
+    /// <summary>
+    /// Gets the number of enrolments for a specific module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>The number of enrolments for the specified module.</returns>
+    public async Task<int> GetModuleEnrolmentsCountAsync(Guid moduleId)
+    {
+        return await _context.Enrolments
+            .CountAsync(e => e.ModuleId == moduleId);
+    }
+
+    /// <summary>
+    /// Gets monthly enrolment trends for a specific year.
+    /// </summary>
+    /// <param name="year">The year to get trends for. Defaults to current year if not specified.</param>
+    /// <returns>A collection of tuples containing month names and enrolment counts.</returns>
+    public async Task<IEnumerable<(string Month, int Count)>> GetMonthlyEnrolmentTrendsAsync(int year)
+    {
+        var enrolments = await _context.Enrolments
+            .Where(e => e.EnrolmentDate.Year == year)
+            .OrderBy(e => e.EnrolmentDate)
+            .ToListAsync();
+
+        return Enum.GetValues<Month>().Select(month => {
+            var monthNumber = (int)month + 1;
+            var monthlyCount = enrolments.Count(e => e.EnrolmentDate.Month == monthNumber);
+
+            return (Month: month.ToString(), Count: monthlyCount);
+        });
     }
 }

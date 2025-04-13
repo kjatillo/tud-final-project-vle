@@ -135,4 +135,42 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
     {
         return await _context.ModuleContents.AnyAsync(c => c.ContentId == contentId);
     }
+
+    /// <summary>
+    /// Gets all assignments across all modules.
+    /// </summary>
+    /// <returns>A list of all assignments.</returns>
+    public async Task<IEnumerable<ModuleContent>> GetAllAssignmentsAsync()
+    {
+        return await _context.ModuleContents
+            .Where(mc => mc.IsUpload)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Gets all submissions across all modules.
+    /// </summary>
+    /// <returns>A list of all submissions.</returns>
+    public async Task<IEnumerable<ModuleSubmission>> GetAllSubmissionsAsync()
+    {
+        return await _context.ModuleSubmissions.ToListAsync();
+    }
+
+    /// <summary>
+    /// Gets all submissions for a specific module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>A list of all submissions for the module.</returns>
+    public async Task<IEnumerable<ModuleSubmission>> GetSubmissionsByModuleIdAsync(Guid moduleId)
+    {
+        return await _context.ModuleSubmissions
+            .Where(s => _context.ModuleContents
+                .Where(mc => mc.ContentId == s.ContentId)
+                .Select(mc => mc.PageId)
+                .Any(pageId => _context.ModulePages
+                    .Where(mp => mp.PageId == pageId)
+                    .Select(mp => mp.ModuleId)
+                    .Any(m => m == moduleId)))
+            .ToListAsync();
+    }
 }
