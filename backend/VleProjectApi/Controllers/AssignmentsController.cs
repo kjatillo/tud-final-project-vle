@@ -14,17 +14,20 @@ namespace VleProjectApi.Controllers;
 public class AssignmentsController : ControllerBase
 {
     private readonly IBlobStorageService _blobStorageService;
+    private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public AssignmentsController(
         IBlobStorageService blobStorageService,
+        IEnrolmentRepository enrolmentRepository,
         IModuleContentRepository moduleContentRepository,
         IModuleSubmissionRepository moduleSubmissionRepository,
         UserManager<ApplicationUser> userManager)
     {
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
+        _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleSubmissionRepository = moduleSubmissionRepository ?? throw new ArgumentNullException(nameof(moduleSubmissionRepository));
         _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -258,5 +261,97 @@ public class AssignmentsController : ControllerBase
         await _moduleSubmissionRepository.UpdateSubmissionAsync(submission);
 
         return Ok(submission);
+    }
+
+    /// <summary>
+    /// Gets submission statistics for all assignments.
+    /// </summary>
+    /// <returns>Statistics about assignment submissions.</returns>
+    [HttpGet("stats")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetAssignmentStats()
+    {
+        var assignments = await _moduleSubmissionRepository.GetAllAssignmentsAsync();
+        var moduleIds = assignments
+            .Select(a => _moduleContentRepository.GetModuleIdByContentIdAsync(a.ContentId))
+            .ToList();
+        await Task.WhenAll(moduleIds);
+
+        var distinctModuleIds = moduleIds
+            .Select(t => t.Result)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct();
+
+        var enrollmentCountTasks = distinctModuleIds
+            .Select(id => _enrolmentRepository.GetModuleEnrolmentsCountAsync(id))
+            .ToList();
+        await Task.WhenAll(enrollmentCountTasks);
+        var totalEnrollments = enrollmentCountTasks.Sum(t => t.Result);
+
+        var submissions = await _moduleSubmissionRepository.GetAllSubmissionsAsync();
+        var totalPossibleSubmissions = assignments.Count() * totalEnrollments;
+        var actualSubmissions = submissions.Count();
+
+        var stats = new
+        {
+            Submitted = actualSubmissions,
+            Unsubmitted = totalPossibleSubmissions - actualSubmissions,
+            Total = totalPossibleSubmissions
+        };
+
+        return Ok(stats);
+    }
+
+    /// <summary>
+    /// Gets analytics for a specific module including submission counts and average grades.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module to get analytics for.</param>
+    /// <returns>Module analytics including submission counts and grades.</returns>
+    [HttpGet("module-analytics/{moduleId}")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetModuleAnalytics(Guid moduleId)
+    {
+        var assignments = await _moduleSubmissionRepository.GetAssignmentsByModuleIdAsync(moduleId);
+        if (assignments == null || !assignments.Any())
+        {
+            return Ok(new
+            {
+                TotalAssignments = 0,
+                SubmissionCount = 0,
+                AverageGrade = 0.0,
+                CompletionRate = 0.0
+            });
+        }
+
+        var enrollmentCount = await _enrolmentRepository.GetModuleEnrolmentsCountAsync(moduleId);
+        if (enrollmentCount == 0)
+        {
+            return Ok(new
+            {
+                TotalAssignments = assignments.Count(),
+                SubmissionCount = 0,
+                AverageGrade = 0.0,
+                CompletionRate = 0.0
+            });
+        }
+
+        var submissions = await _moduleSubmissionRepository.GetSubmissionsByModuleIdAsync(moduleId);
+        var totalAssignments = assignments.Count();
+        var submissionCount = submissions.Count();
+        var averageGrade = submissions.Any(s => s.Grade.HasValue)
+            ? submissions.Where(s => s.Grade.HasValue).Average(s => s.Grade!.Value) : 0;
+
+        var totalPossibleSubmissions = totalAssignments * enrollmentCount;
+        var completionRate = totalPossibleSubmissions > 0
+            ? (double)submissionCount / totalPossibleSubmissions * 100 : 0;
+
+        return Ok(new
+        {
+            TotalAssignments = totalAssignments,
+            SubmissionCount = submissionCount,
+            AverageGrade = Math.Round(averageGrade, 2),
+            CompletionRate = Math.Round(completionRate, 2)
+        });
     }
 }

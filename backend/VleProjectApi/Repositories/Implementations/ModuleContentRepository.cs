@@ -77,4 +77,29 @@ public class ModuleContentRepository : IModuleContentRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    /// <summary>
+    /// Gets the module ID for a given content ID by traversing the content -> page -> module relationship
+    /// </summary>
+    /// <param name="contentId">The ID of the content</param>
+    /// <returns>The module ID if found, null otherwise</returns>
+    public async Task<Guid?> GetModuleIdByContentIdAsync(Guid contentId)
+    {
+        var content = await _context.ModuleContents
+            .Where(mc => mc.ContentId == contentId)
+            .Select(mc => mc.PageId)
+            .FirstOrDefaultAsync();
+
+        if (content == Guid.Empty)
+        {
+            return null;
+        }
+
+        var moduleId = await _context.ModulePages
+            .Where(mp => mp.PageId == content)
+            .Select(mp => mp.ModuleId)
+            .FirstOrDefaultAsync();
+
+        return moduleId == Guid.Empty ? null : moduleId;
+    }
 }

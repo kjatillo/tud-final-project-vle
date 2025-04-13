@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VleProjectApi.Entities;
+using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi.Controllers;
@@ -93,5 +94,50 @@ public class EnrolmentsController : ControllerBase
         var isEnroled = await _enrolmentRepository.IsUserEnroledInModuleAsync(user.Id, moduleId);
 
         return Ok(isEnroled);
+    }
+
+    /// <summary>
+    /// Gets the total number of enrolments across all modules.
+    /// </summary>
+    /// <returns>The total number of enrolments.</returns>
+    [HttpGet("count/total")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetTotalEnrolmentsCount()
+    {
+        var count = await _enrolmentRepository.GetTotalEnrolmentsCountAsync();
+
+        return Ok(count);
+    }
+
+    /// <summary>
+    /// Gets the number of enrolments for a specific module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module.</param>
+    /// <returns>The number of enrolments for the specified module.</returns>
+    [HttpGet("count/module/{moduleId}")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetModuleEnrolmentsCount(Guid moduleId)
+    {
+        var count = await _enrolmentRepository.GetModuleEnrolmentsCountAsync(moduleId);
+
+        return Ok(count);
+    }
+
+    /// <summary>
+    /// Gets monthly enrolment trends for a specific year.
+    /// </summary>
+    /// <param name="year">The year to get trends for. Defaults to current year if not specified.</param>
+    /// <returns>A collection of monthly enrolment counts.</returns>
+    [HttpGet("trends/monthly")]
+    [Authorize(Roles = nameof(Role.Admin))]
+    public async Task<IActionResult> GetMonthlyEnrolmentTrends([FromQuery] int? year = null)
+    {
+        var targetYear = year ?? DateTime.Now.Year;
+        var trendsTuples = await _enrolmentRepository.GetMonthlyEnrolmentTrendsAsync(targetYear);
+
+        // Convert tuples to objects for proper JSON serialization
+        var trends = trendsTuples.Select(t => new { month = t.Month, count = t.Count }).ToList();
+
+        return Ok(trends);
     }
 }

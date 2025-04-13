@@ -13,4 +13,7 @@ public interface IModuleSubmissionRepository
     Task UpdateSubmissionAsync(ModuleSubmission? submission);
     Task DeleteSubmissionAsync(Guid submissionId);
     Task<bool> ContentExistsAsync(Guid contentId);
+    Task<IEnumerable<ModuleContent>> GetAllAssignmentsAsync();
+    Task<IEnumerable<ModuleSubmission>> GetAllSubmissionsAsync();
+    Task<IEnumerable<ModuleSubmission>> GetSubmissionsByModuleIdAsync(Guid moduleId);
 }
