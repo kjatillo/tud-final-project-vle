@@ -1,0 +1,77 @@
+:host {
+    display: block;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.card-body {
+    min-height: 100px;
+}
+
+canvas {
+    width: 100% !important;
+}
+
+.chart-container {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.module-analytics {
+    .card {
+        background-color: #f8f9fa;
+
+        .card-body {
+            min-height: 80px;
+            padding: 1rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+        }
+
+        .card-text {
+            margin: 0;
+            color: #2c3e50;
+        }
+    }
+}
+
+.form-select {
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+
+    &:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+}
+
+// KPI Cards
+.display-6 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0;
+}
+
+// Center doughnut chart
+.card:has(#assignmentDistributionChart) {
+    .chart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+}

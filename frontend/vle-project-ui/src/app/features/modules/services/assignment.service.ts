@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
+import { AssignmentStats } from '../models/assignment-stats.model';
+import { ModuleAnalytics } from '../models/module-analytics.model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +39,13 @@ export class AssignmentService {
 
   deleteGrade(submissionId: string): Observable<any> {
     return this.http.delete(`${this.assignmentsBaseEndpoint}/grades/${submissionId}`);
+  }
+
+  getAssignmentStats(): Observable<AssignmentStats> {
+    return this.http.get<AssignmentStats>(`${this.assignmentsBaseEndpoint}/stats`);
+  }
+
+  getModuleAnalytics(moduleId: string): Observable<ModuleAnalytics> {
+    return this.http.get<ModuleAnalytics>(`${this.assignmentsBaseEndpoint}/module-analytics/${moduleId}`);
   }
 }
