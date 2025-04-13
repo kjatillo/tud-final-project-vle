@@ -9,7 +9,9 @@
                 <div class="card shadow">
                     <div class="card-body p-4">
                         <div *ngIf="isAdmin$ | async; else unauthorised">
-                            <h2 class="text-center mb-4">Create Module</h2>
+                            <div class="section-title">
+                                <h2 class="text-center centered mb-4">Create Module</h2>
+                            </div>
                             
                             <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
                                 <div class="mb-3">
