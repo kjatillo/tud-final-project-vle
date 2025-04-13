@@ -1,19 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { catchError, Observable, of, switchMap } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
-import { Module } from '../modules/models/module.model';
-import { EnrolmentService } from '../modules/services/enrolment.service';
-import { User } from '../users/models/user.model';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Module } from '../../../modules/models/module.model';
+import { EnrolmentService } from '../../../modules/services/enrolment.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: 'app-student-dashboard',
+  templateUrl: './student-dashboard.component.html',
+  styleUrls: ['./student-dashboard.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class StudentDashboardComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
-  isAuthResolved$: Observable<boolean>;
-  currentUser$: Observable<User | null>;
   enroledModules$: Observable<Module[]>;
 
   constructor(
@@ -21,8 +18,6 @@ export class HomeComponent implements OnInit {
     private enrolmentService: EnrolmentService
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
-    this.isAuthResolved$ = this.authService.isAuthResolved;
-    this.currentUser$ = this.authService.currentUser$;
     this.enroledModules$ = of([]);
   }
 
