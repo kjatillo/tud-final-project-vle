@@ -45,7 +45,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="registerDto">The data transfer object containing user registration details.</param>
     /// <returns>The created user DTO if successful; otherwise, an error response.</returns>
-    /// <response code="201">Returns the newly created user.</response>
+    /// <response code="200">Returns the newly created user.</response>
     /// <response code="400">If the role is invalid or user data is null.</response>
     /// <response code="500">If the user already exists or an error occurs while processing the request.</response>
     [HttpPost("register")]
@@ -54,6 +54,16 @@ public class UsersController : ControllerBase
         if (registerDto == null)
         {
             return BadRequest("User data is null.");
+        }
+
+        if (registerDto.Email != registerDto.ConfirmEmail)
+        {
+            return BadRequest(new { Status = "Error", Message = "Email and confirmation email do not match." });
+        }
+
+        if (registerDto.Password != registerDto.ConfirmPassword)
+        {
+            return BadRequest(new { Status = "Error", Message = "Password and confirmation password do not match." });
         }
 
         var userExists = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -72,19 +82,14 @@ public class UsersController : ControllerBase
                 new { Status = "Error", Message = "Invalid role!" });
         }
 
-        var user = new ApplicationUser
-        {
-            UserName = registerDto.Email,
-            Email = registerDto.Email,
-            Name = registerDto.Name
-        };
-
+        var user = _mapper.Map<ApplicationUser>(registerDto);
         var result = await _userManager.CreateAsync(user, registerDto.Password);
+
         if (!result.Succeeded)
         {
             return StatusCode(
                 StatusCodes.Status500InternalServerError,
-                new { Status = "Error", Message = "User creation failed!", result.Errors });
+                new { Status = "Error", Message = "User creation failed!", Errors = result.Errors });
         }
 
         var roleResult = await _userManager.AddToRoleAsync(user, registerDto.RoleName);
@@ -92,7 +97,7 @@ public class UsersController : ControllerBase
         {
             return StatusCode(
                 StatusCodes.Status500InternalServerError,
-                new { Status = "Error", Message = "Adding role failed!", roleResult.Errors });
+                new { Status = "Error", Message = "Adding role failed!", Errors = roleResult.Errors });
         }
 
         var userDto = _mapper.Map<UserDto>(user);
@@ -218,8 +223,9 @@ public class UsersController : ControllerBase
         var result = instructors.Select(i => 
             new 
             { 
-                i.Id, 
-                i.Name, 
+                i.Id,
+                i.FirstName,
+                i.LastName,
                 i.Email
             });
 
@@ -269,7 +275,7 @@ public class UsersController : ControllerBase
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
         };
 
         if (role != null)
