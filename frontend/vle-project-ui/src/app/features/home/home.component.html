@@ -6,15 +6,15 @@
     <ng-template #content>
         <div *ngIf="isLoggedIn$ | async; else notLoggedIn">
             <!-- Admin Dashboard -->
-            <app-admin-dashboard
+             <app-admin-dashboard
                 *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Admin'">
-            </app-admin-dashboard>
+             </app-admin-dashboard>
 
             <!-- Instructor Dashboard -->
             <app-instructor-dashboard
                 *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Instructor'">
             </app-instructor-dashboard>
-            
+
             <!-- Student Dashboard -->
             <app-student-dashboard
                 *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Student'">
@@ -22,8 +22,11 @@
         </div>
 
         <ng-template #notLoggedIn>
-            <h2 class="mb-3">Virtual Learning Environment (VLE)</h2>
-            <p>Please log in to access more features.</p>
+            <div class="section-title">
+                <h2 class="mb-5">Virtual Learning Environment (VLE)</h2>
+            </div>
+
+            <p>Please <span><a href="/login">login here</a></span> to access more features.</p>
         </ng-template>
     </ng-template>
 </div>

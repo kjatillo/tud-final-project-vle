@@ -41,15 +41,17 @@
         </div>
     </div>
 
-    <div class="price-badge-container d-flex align-items-center my-2" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor)">
-        <span class="badge bg-secondary text-white px-2 py-1 fs-6 price-badge">
-            Price: {{ module.price | currency:'EUR' }}
-        </span>
+    <div *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor)">
+        <div class="price-badge-container d-flex align-items-center my-2">
+            <span class="badge bg-secondary text-white px-2 py-1 fs-6 price-badge">
+                Price: {{ module.price | currency:'EUR' }}
+            </span>
+        </div>
+    
+        <div>
+            <p class="text-muted">{{ module.description }}</p>
+        </div>
     </div>
-
-    <!-- <div class="module-info">
-        <p class="text-muted">{{ module.description }}</p>
-    </div> -->
 
     <button class="btn btn-primary mt-3" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage"
     (click)="payAndEnrol()">Pay & Enrol</button>

@@ -10,7 +10,8 @@ export interface ModuleSubmission {
 
     // Additional properties
     contentTitle: string,
-    userName: string,
+    firstName: string,
+    lastName: string,
     userEmail: string
     originalGrade: number,
     isGradeChanged: boolean

@@ -9,30 +9,91 @@
 
                     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" id="name" class="form-control" formControlName="name">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" id="firstName" class="form-control" formControlName="firstName"
+                                [ngClass]="{'is-invalid': registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+                                First name is required
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" id="lastName" class="form-control" formControlName="lastName"
+                                [ngClass]="{'is-invalid': registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+                                Last name is required
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select id="gender" class="form-control" formControlName="gender"
+                                [ngClass]="{'is-invalid': registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched}">
+                                <option value="" disabled selected>-- Select gender --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">
+                                Please select a gender
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" class="form-control" formControlName="email">
+                            <input type="email" id="email" class="form-control" formControlName="email"
+                                [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                                <span class="text-danger" *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
+                                <span class="text-danger" *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmEmail" class="form-label">Confirm Email</label>
+                            <input type="email" id="confirmEmail" class="form-control" formControlName="confirmEmail"
+                                [ngClass]="{'is-invalid': registerForm.get('confirmEmail')?.invalid && registerForm.get('confirmEmail')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('confirmEmail')?.invalid && registerForm.get('confirmEmail')?.touched">
+                                <span class="text-danger" *ngIf="registerForm.get('confirmEmail')?.errors?.['required']">Confirm email is required</span>
+                                <span class="text-danger" *ngIf="registerForm.get('confirmEmail')?.errors?.['matching']">Emails do not match</span>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="roleName" class="form-label">Role</label>
-                            <select id="roleName" class="form-select" formControlName="roleName">
+                            <select id="roleName" class="form-control" formControlName="roleName"
+                                [ngClass]="{'is-invalid': registerForm.get('roleName')?.invalid && registerForm.get('roleName')?.touched}">
                                 <option value="" disabled selected>-- Select a role --</option>
                                 <option value="Student">Student</option>
                                 <option value="Instructor">Instructor</option>
                             </select>
+                            <div class="invalid-feedback" *ngIf="registerForm.get('roleName')?.invalid && registerForm.get('roleName')?.touched">
+                                Please select a role
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" class="form-control" formControlName="password">
+                            <input type="password" id="password" class="form-control" formControlName="password"
+                                [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                                <span class="text-danger" *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
+                                <span class="text-danger" *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword"
+                                [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                                <span class="text-danger" *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Confirm password is required</span>
+                                <span class="text-danger" *ngIf="registerForm.get('confirmPassword')?.errors?.['matching']">Passwords do not match</span>
+                            </div>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+                        <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading || registerForm.invalid">
                             <span class="d-flex align-items-center justify-content-center text-white">
                                 Register
                                 <mat-spinner *ngIf="isLoading" [diameter]="20" class="ms-2"></mat-spinner>
