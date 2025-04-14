@@ -79,27 +79,23 @@ public class ModuleContentRepository : IModuleContentRepository
     }
 
     /// <summary>
-    /// Gets the module ID for a given content ID by traversing the content -> page -> module relationship
+    /// Gets module IDs for a collection of content IDs in a single query
     /// </summary>
-    /// <param name="contentId">The ID of the content</param>
-    /// <returns>The module ID if found, null otherwise</returns>
-    public async Task<Guid?> GetModuleIdByContentIdAsync(Guid contentId)
+    /// <param name="contentIds">The collection of content IDs</param>
+    /// <returns>A dictionary mapping content IDs to their module IDs</returns>
+    public async Task<Dictionary<Guid, Guid>> GetModuleIdsByContentIdsAsync(IEnumerable<Guid> contentIds)
     {
-        var content = await _context.ModuleContents
-            .Where(mc => mc.ContentId == contentId)
-            .Select(mc => mc.PageId)
-            .FirstOrDefaultAsync();
-
-        if (content == Guid.Empty)
-        {
-            return null;
-        }
-
-        var moduleId = await _context.ModulePages
-            .Where(mp => mp.PageId == content)
-            .Select(mp => mp.ModuleId)
-            .FirstOrDefaultAsync();
-
-        return moduleId == Guid.Empty ? null : moduleId;
+        return await _context.ModuleContents
+            .Where(mc => contentIds.Contains(mc.ContentId))
+            .Join(
+                _context.ModulePages,
+                content => content.PageId,
+                page => page.PageId,
+                (content, page) => new { content.ContentId, page.ModuleId }
+            )
+            .ToDictionaryAsync(
+                x => x.ContentId,
+                x => x.ModuleId
+            );
     }
 }
