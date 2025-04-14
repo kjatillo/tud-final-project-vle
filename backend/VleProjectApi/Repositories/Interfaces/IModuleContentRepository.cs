@@ -9,5 +9,5 @@ public interface IModuleContentRepository
     Task<ModuleContent?> GetContentByIdAsync(Guid contentId);
     Task<ModuleContent> EditContentAsync(ModuleContent content);
     Task DeleteContentAsync(Guid contentId);
-    Task<Guid?> GetModuleIdByContentIdAsync(Guid contentId);
+    Task<Dictionary<Guid, Guid>> GetModuleIdsByContentIdsAsync(IEnumerable<Guid> contentIds);
 }

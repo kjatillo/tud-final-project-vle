@@ -86,6 +86,22 @@ public class EnrolmentRepository : IEnrolmentRepository
     }
 
     /// <summary>
+    /// Gets the number of enrolments for multiple modules in a single query.
+    /// </summary>
+    /// <param name="moduleIds">The collection of module IDs to get enrollment counts for.</param>
+    /// <returns>A dictionary with module IDs as keys and their enrollment counts as values.</returns>
+    public async Task<Dictionary<Guid, int>> GetModuleEnrolmentCountsAsync(IEnumerable<Guid> moduleIds)
+    {
+        return await _context.Enrolments
+            .Where(e => moduleIds.Contains(e.ModuleId))
+            .GroupBy(e => e.ModuleId)
+            .ToDictionaryAsync(
+                g => g.Key,
+                g => g.Count()
+            );
+    }
+
+    /// <summary>
     /// Gets monthly enrolment trends for a specific year.
     /// </summary>
     /// <param name="year">The year to get trends for. Defaults to current year if not specified.</param>

@@ -273,22 +273,12 @@ public class AssignmentsController : ControllerBase
     public async Task<IActionResult> GetAssignmentStats()
     {
         var assignments = await _moduleSubmissionRepository.GetAllAssignmentsAsync();
-        var moduleIds = assignments
-            .Select(a => _moduleContentRepository.GetModuleIdByContentIdAsync(a.ContentId))
-            .ToList();
-        await Task.WhenAll(moduleIds);
-
-        var distinctModuleIds = moduleIds
-            .Select(t => t.Result)
-            .Where(id => id.HasValue)
-            .Select(id => id!.Value)
-            .Distinct();
-
-        var enrollmentCountTasks = distinctModuleIds
-            .Select(id => _enrolmentRepository.GetModuleEnrolmentsCountAsync(id))
-            .ToList();
-        await Task.WhenAll(enrollmentCountTasks);
-        var totalEnrollments = enrollmentCountTasks.Sum(t => t.Result);
+        var contentIds = assignments.Select(a => a.ContentId).ToList();
+        var moduleIdMap = await _moduleContentRepository.GetModuleIdsByContentIdsAsync(contentIds);
+        
+        var distinctModuleIds = moduleIdMap.Values.Distinct();
+        var moduleEnrollmentCounts = await _enrolmentRepository.GetModuleEnrolmentCountsAsync(distinctModuleIds);
+        var totalEnrollments = moduleEnrollmentCounts.Values.Sum();
 
         var submissions = await _moduleSubmissionRepository.GetAllSubmissionsAsync();
         var totalPossibleSubmissions = assignments.Count() * totalEnrollments;

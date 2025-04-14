@@ -59,7 +59,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   private loadAnalytics() {
     const currentYear = new Date().getFullYear();
-    console.log('Loading analytics for year:', currentYear);
     
     forkJoin({
       modules: this.moduleService.getModules(),
