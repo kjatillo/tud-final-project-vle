@@ -30,7 +30,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let submission of submissions">
-                    <td>{{ submission.userName }}</td>
+                    <td>{{ submission.firstName }} {{ submission.lastName }}</td>
                     <td>{{ submission.userEmail }}</td>
                     <td>
                         <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>

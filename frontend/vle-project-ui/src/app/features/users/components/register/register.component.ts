@@ -9,19 +9,46 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  registerForm!: FormGroup;
+  registerForm: FormGroup;
   isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router) {
+    private router: Router
+  ) {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      gender: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      confirmEmail: ['', [Validators.required, Validators.email]],
       roleName: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, {
+      validators: [
+        this.matchValidator('email', 'confirmEmail'),
+        this.matchValidator('password', 'confirmPassword')
+      ]
     });
+  }
+
+  matchValidator(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+      const control = formGroup.controls[controlName];
+      const matchingControl = formGroup.controls[matchingControlName];
+
+      if (matchingControl.errors && !matchingControl.errors['matching']) {
+        return;
+      }
+
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ matching: true });
+      } else {
+        matchingControl.setErrors(null);
+      }
+    };
   }
 
   onSubmit(): void {
@@ -39,6 +66,13 @@ export class RegisterComponent {
         },
         complete: () => {
           this.isLoading = false;
+        }
+      });
+    } else {
+      Object.keys(this.registerForm.controls).forEach(key => {
+        const control = this.registerForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
         }
       });
     }

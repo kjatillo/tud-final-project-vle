@@ -11,6 +11,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
+  errorMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +26,7 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
+      this.errorMessage = '';
       
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
@@ -33,10 +35,19 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Login failed', error);
+          this.errorMessage = 'Invalid email or password. Please try again.';
           this.isLoading = false;
         },
         complete: () => {
           this.isLoading = false;
+        }
+      });
+    } else {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      Object.keys(this.loginForm.controls).forEach(key => {
+        const control = this.loginForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
         }
       });
     }

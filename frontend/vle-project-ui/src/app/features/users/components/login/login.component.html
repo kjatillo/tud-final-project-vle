@@ -7,15 +7,29 @@
                         <h2 class="text-center centered mb-4">Login</h2>
                     </div>
 
+                    <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+                        {{ errorMessage }}
+                    </div>
+
                     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" class="form-control" formControlName="email">
+                            <input type="email" id="email" class="form-control" formControlName="email"
+                                [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}">
+                            <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                                <span class="text-danger" *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+                                <span class="text-danger" *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" class="form-control" formControlName="password">
+                            <input type="password" id="password" class="form-control" formControlName="password"
+                                [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}">
+                            <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                                <span class="text-danger" *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+                                <span class="text-danger" *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
@@ -24,6 +38,11 @@
                                 <mat-spinner *ngIf="isLoading" [diameter]="20" class="ms-2"></mat-spinner>
                             </span>
                         </button>
+
+                        <div class="text-center mt-3">
+                            <span>Don't have an account? </span>
+                            <a href="/register">Register here</a>
+                        </div>
                     </form>
                 </div>
             </div>

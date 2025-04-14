@@ -29,7 +29,7 @@
                                     <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
                                         <option value="" disabled selected>-- Select an instructor --</option>
                                         <option *ngFor="let instructor of instructors" [value]="instructor.id">
-                                            {{ instructor.name }} ({{ instructor.email }})
+                                            {{ instructor.firstName }} {{ instructor.lastName }} ({{ instructor.email }})
                                         </option>
                                     </select>
                                 </div>
