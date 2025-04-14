@@ -5,6 +5,7 @@ export interface ModuleContent {
     description: string;
     file: File;
     fileUrl: string;
+    fileName: string;
     fileType: string;
     isLink: boolean;
     linkUrl: string;

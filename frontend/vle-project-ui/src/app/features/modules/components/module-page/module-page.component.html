@@ -63,8 +63,7 @@
 
                             <ng-template #fileTemplate>
                                 <div *ngIf="!content.isUpload">
-                                    <p class="content-description"><b>File Type</b>: {{ getFileType(content.fileType) }}
-                                    </p>
+                                    <p class="content-description"><b>File</b>: {{ content.fileName }}</p>
                                     <a [href]="content.fileUrl" target="_blank"
                                         class="btn btn-outline-primary my-2">Download
                                         File</a>
