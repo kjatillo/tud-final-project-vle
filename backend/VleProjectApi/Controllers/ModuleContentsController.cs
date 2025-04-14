@@ -152,6 +152,7 @@ public class ModuleContentsController : ControllerBase
 
             content.FileUrl = fileUrl;
             content.FileType = contentDto.File.ContentType;
+            content.FileName = contentDto.File.FileName;
         }
 
         if (contentDto.IsUpload)
@@ -219,6 +220,7 @@ public class ModuleContentsController : ControllerBase
 
             content.FileUrl = string.Empty;
             content.FileType = string.Empty;
+            content.FileName = string.Empty;
         }
 
         if (contentDto.IsUpload)
@@ -252,6 +254,7 @@ public class ModuleContentsController : ControllerBase
 
             content.FileUrl = fileUrl;
             content.FileType = contentDto.File.ContentType;
+            content.FileName = contentDto.File.FileName;
         }
 
         await _moduleContentRepository.EditContentAsync(content);
