@@ -7,6 +7,7 @@ public class ModuleContent
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string FileUrl { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public bool IsLink { get; set; }
     public string LinkUrl { get; set; } = string.Empty;
