@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModuleContentService } from '../../services/module-content.service';
 
 @Component({
@@ -18,7 +18,6 @@ export class AddContentComponent implements OnInit {
   constructor(
     private moduleContentService: ModuleContentService,
     private route: ActivatedRoute,
-    private router: Router,
     private fb: FormBuilder
   ) { }
 
@@ -46,7 +45,7 @@ export class AddContentComponent implements OnInit {
 
   getDefaultDeadline(): string {
     const now = new Date();
-    now.setHours(now.getHours() + 1);
+    now.setHours(now.getHours() + 3);
     return now.toISOString().slice(0, 16);
   }
 
@@ -77,8 +76,11 @@ export class AddContentComponent implements OnInit {
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      this.addContentForm.patchValue({ file: file });
-      this.addContentForm.patchValue({ fileType: file.type });
+      this.addContentForm.patchValue({ 
+        file: file,
+        fileType: file.type,
+        fileName: file.name 
+      });
     }
   }
 
@@ -95,7 +97,9 @@ export class AddContentComponent implements OnInit {
       if (contentType === 'link') {
         formData.append('linkUrl', this.addContentForm.get('linkUrl')?.value);
       } else if (contentType === 'file') {
-        formData.append('file', this.addContentForm.get('file')?.value);
+        const file = this.addContentForm.get('file')?.value;
+        formData.append('file', file);
+        formData.append('fileName', file.name);
       } else if (contentType === 'upload') {
         formData.append('deadline', this.addContentForm.get('deadline')?.value);
       }

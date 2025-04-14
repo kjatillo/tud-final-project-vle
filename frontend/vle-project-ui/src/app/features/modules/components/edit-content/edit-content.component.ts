@@ -15,12 +15,13 @@ export class EditContentComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   moduleId!: string;
   editContentForm!: FormGroup;
+  selectedFile: File | null = null;
 
   constructor(
     private moduleContentService: ModuleContentService,
     private route: ActivatedRoute,
     private fb: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
@@ -28,13 +29,19 @@ export class EditContentComponent implements OnInit {
     this.editContentForm = this.fb.group({
       title: [this.content.title, Validators.required],
       description: [this.content.description, Validators.required],
-      file: [this.content.file],
       fileType: [this.content.fileType],
       isLink: [this.content.isLink],
       linkUrl: [this.content.linkUrl],
-      deadline: [this.content.deadline, Validators.required],
-      contentType: [null, Validators.required]
+      isUpload: [this.content.isUpload],
+      deadline: [this.content.deadline],
+      contentType: ['file', Validators.required]
     });
+
+    // Set initial content type based on existing content
+    let initialContentType = 'file';
+    if (this.content.isLink) initialContentType = 'link';
+    if (this.content.isUpload) initialContentType = 'upload';
+    this.editContentForm.patchValue({ contentType: initialContentType });
 
     this.editContentForm.get('contentType')?.valueChanges.subscribe((contentType: string) => {
       this.updateValidators(contentType);
@@ -45,33 +52,27 @@ export class EditContentComponent implements OnInit {
 
   updateValidators(contentType: string): void {
     const linkUrlControl = this.editContentForm.get('linkUrl');
-    const fileControl = this.editContentForm.get('file');
     const deadlineControl = this.editContentForm.get('deadline');
 
     if (contentType === 'link') {
       linkUrlControl?.setValidators([Validators.required]);
-      fileControl?.clearValidators();
       deadlineControl?.clearValidators();
     } else if (contentType === 'file') {
       linkUrlControl?.clearValidators();
-      // fileControl?.setValidators([Validators.required]);
       deadlineControl?.clearValidators();
     } else if (contentType === 'upload') {
       linkUrlControl?.clearValidators();
-      fileControl?.clearValidators();
       deadlineControl?.setValidators([Validators.required]);
     }
 
     linkUrlControl?.updateValueAndValidity();
-    fileControl?.updateValueAndValidity();
     deadlineControl?.updateValueAndValidity();
   }
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      this.editContentForm.patchValue({ file: file });
-      this.editContentForm.patchValue({ fileType: file.type });
+      this.selectedFile = file;
     }
   }
 
@@ -88,19 +89,22 @@ export class EditContentComponent implements OnInit {
       if (contentType === 'link') {
         formData.append('linkUrl', this.editContentForm.get('linkUrl')?.value);
       } else if (contentType === 'file') {
-        formData.append('file', this.editContentForm.get('file')?.value);
+        if (this.selectedFile) {
+          formData.append('file', this.selectedFile);
+          formData.append('fileName', this.selectedFile.name);
+        }
       } else if (contentType === 'upload') {
         formData.append('deadline', this.editContentForm.get('deadline')?.value);
       }
 
       this.moduleContentService
-      .editContent(this.moduleId, this.content.pageId, this.content.contentId, formData)
-      .subscribe({
-        next: () => {
-          this.contentUpdated.emit();
-        },
-        error: (error) => console.error('Error updating content', error)
-      });
+        .editContent(this.moduleId, this.content.pageId, this.content.contentId, formData)
+        .subscribe({
+          next: () => {
+            this.contentUpdated.emit();
+          },
+          error: (error) => console.error('Error updating content', error)
+        });
     }
   }
 
