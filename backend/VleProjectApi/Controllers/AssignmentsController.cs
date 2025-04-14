@@ -211,7 +211,8 @@ public class AssignmentsController : ControllerBase
             s.FileUrl,
             s.Grade,
             s.Feedback,
-            UserName = _userManager.FindByIdAsync(s.UserId).Result?.Name ?? "Unknown",
+            FirstName = _userManager.FindByIdAsync(s.UserId).Result?.FirstName ?? "Unknown",
+            LastName = _userManager.FindByIdAsync(s.UserId).Result?.LastName ?? "Unknown",
             UserEmail = _userManager.FindByIdAsync(s.UserId).Result?.Email ?? "Unknown"
         });
 
