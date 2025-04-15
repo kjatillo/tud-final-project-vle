@@ -2,8 +2,15 @@
     margin-right: .75rem;
 }
 
-.btn {
-    margin-top: .75rem;
+.mat-mdc-paginator {
+    background: transparent;
+    border-radius: 4px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.table-responsive {
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 767.98px) {
@@ -11,7 +18,7 @@
     .btn-secondary {
         width: 100%;
         margin-left: 0;
-        margin-top: .75rem;
+        margin-top: 1rem;
     }
 
     .content-title,

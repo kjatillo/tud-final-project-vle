@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../users/services/user.service';
 import { User } from '../../models/user.model';
@@ -14,6 +15,13 @@ export class ModuleParticipantsComponent implements OnInit {
   moduleId!: string;
   moduleTitle!: string;
   participants: User[] = [];
+  filteredParticipants: User[] = [];
+  displayedParticipants: User[] = [];
+  searchQuery: string = '';
+  
+  pageSize = 5;
+  pageSizeOptions = [5, 10, 25];
+  pageIndex = 0;
 
   constructor(
     private moduleService: ModuleService,
@@ -26,6 +34,8 @@ export class ModuleParticipantsComponent implements OnInit {
 
     this.userService.getModuleParticipants(this.moduleId).subscribe(participants => {
       this.participants = participants;
+      this.filteredParticipants = [...participants];
+      this.updateDisplayedParticipants();
     });
 
     this.moduleService.getModuleById(this.moduleId).subscribe(module => {
@@ -62,6 +72,30 @@ export class ModuleParticipantsComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  onSearch(): void {
+    this.filteredParticipants = this.participants.filter(participant =>
+      participant.id.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      participant.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      participant.lastName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      participant.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+
+    this.pageIndex = 0;
+    this.updateDisplayedParticipants();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updateDisplayedParticipants();
+  }
+
+  private updateDisplayedParticipants(): void {
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+    this.displayedParticipants = this.filteredParticipants.slice(start, end);
   }
 
   onBackToModuleDetail(): void {
