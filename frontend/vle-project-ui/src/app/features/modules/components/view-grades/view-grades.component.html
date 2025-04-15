@@ -1,38 +1,49 @@
 <div class="container mt-5 p-0">
     <h4 class="mb-3">My Submissions</h4>
 
-    <div class="table-responsive mt-3" *ngIf="submissions.length > 0; else noSubmissions">
-        <table class="table table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Assignment Title</th>
-                    <th>Submission File</th>
-                    <th>Grade %</th>
-                    <th>Feedback</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr *ngFor="let submission of submissions">
-                    <td>{{ submission.contentTitle }}</td>
-                    <td>
-                        <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
-                    </td>
-                    <td>{{ submission.grade == null ? 'N/A' : submission.grade }}</td>
-                    <td>
-                        <button class="btn btn-secondary btn-sm" (click)="openFeedbackDialog(submission)"
-                            [disabled]="!submission.feedback">View Feedback</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div *ngIf="submissions.length === 0" class="alert alert-info mt-3">
+        <p>No submissions submitted for grading.</p>
     </div>
 
-    <button class="btn btn-secondary mt-3" (click)="onBackToModuleDetail()">Back to Module Details</button>
+    <div *ngIf="submissions.length > 0">
+        <div class="mb-4">
+            <input type="text" class="form-control" placeholder="Search submissions..." [(ngModel)]="searchQuery" (input)="onSearch()">
+        </div>
 
-    <ng-template #noSubmissions>
-        <p>No submissions submitted for grading.</p>
-    </ng-template>
+        <div class="table-responsive mt-3">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Assignment Title</th>
+                        <th>Submission File</th>
+                        <th>Grade %</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let submission of displayedSubmissions">
+                        <td>{{ submission.contentTitle }}</td>
+                        <td>
+                            <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
+                        </td>
+                        <td>{{ submission.grade == null ? 'N/A' : submission.grade }}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" (click)="openFeedbackDialog(submission)"
+                                [disabled]="!submission.feedback">View Feedback</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <mat-paginator [length]="filteredSubmissions.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page"
+                class="mat-elevation-z0">
+            </mat-paginator>
+        </div>
+
+    </div>
+    
+    <button class="btn btn-secondary" (click)="onBackToModuleDetail()">Back to Module Details</button>
 </div>
 
 <app-feedback-dialog
