@@ -187,7 +187,36 @@ a.btn-outline-danger {
     transition: all 0.3s ease;
 }
 
-/* Default Spinner Styling */
+/* Angular Material Styling */
 .mat-mdc-progress-spinner {
     --mdc-circular-progress-active-indicator-color: #007e82;
+}
+
+.mat-mdc-paginator {
+    .mat-mdc-paginator-container {
+        .mat-mdc-paginator-page-size-select {
+            .mdc-text-field--focused .mdc-notched-outline__leading,
+            .mdc-text-field--focused .mdc-notched-outline__notch,
+            .mdc-text-field--focused .mdc-notched-outline__trailing {
+                border-color: #007e82;
+            }
+        }
+
+        .mat-mdc-select:focus .mat-mdc-select-arrow {
+            color: #007e82;
+        }
+    }
+}
+
+.mat-mdc-select-panel {
+    .mat-mdc-option {
+        &.mat-mdc-option-active,
+        &.mdc-list-item--selected {
+            background-color: rgba(0, 126, 130, 0.1);
+            
+            .mdc-list-item__primary-text {
+                color: #007e82 !important;
+            }
+        }
+    }
 }

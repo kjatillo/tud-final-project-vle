@@ -18,14 +18,24 @@
                         </div>
 
                         <div class="list-group">
-                            <p class="text-muted mb-3">{{ filteredModules.length }} results</p>
-                            <a *ngFor="let module of filteredModules" type="button"
+                            <p class="text-muted mb-3">{{ filteredModules.length }} {{ filteredModules.length > 1 ? 'results' : 'result' }}</p>
+                            <a *ngFor="let module of displayedModules" type="button"
                                 class="list-group-item list-group-item-action mb-2 rounded"
                                 (click)="navigateToModule(module.moduleId)">
                                 <h5 class="mb-2">{{ module.moduleName }}</h5>
                                 <p class="mb-0 text-muted">{{ module.description }}</p>
                             </a>
                         </div>
+
+                        <mat-paginator
+                            [length]="filteredModules.length"
+                            [pageSize]="pageSize"
+                            [pageSizeOptions]="pageSizeOptions"
+                            [pageIndex]="pageIndex"
+                            (page)="onPageChange($event)"
+                            aria-label="Select page"
+                            class="mat-elevation-z0">
+                        </mat-paginator>
                     </div>
                 </div>
             </div>

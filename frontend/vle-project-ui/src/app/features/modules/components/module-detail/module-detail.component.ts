@@ -81,6 +81,7 @@ export class ModuleDetailComponent implements OnInit {
   editModule(): void {
     if (this.module) {
       this.showEditModuleForm = true;
+      this.showParticipants = false;
     }
   }
 
@@ -120,6 +121,7 @@ export class ModuleDetailComponent implements OnInit {
     this.showParticipants = !this.showParticipants;
     this.showViewGrades = false;
     this.showGradeSubmissions = false;
+    this.showEditModuleForm = false;
   }
 
   onBackToModuleDetail(refresh: boolean = false): void {

@@ -20,3 +20,15 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 }
+
+::ng-deep .mat-paginator {
+    background: transparent;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .mat-paginator {
+        margin-top: 0.5rem;
+    }
+}
