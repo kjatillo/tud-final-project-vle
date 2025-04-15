@@ -4,10 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../shared/shared.module';
 import { AddContentComponent } from './components/add-content/add-content.component';
 import { AddPageComponent } from './components/add-page/add-page.component';
 import { CreateModuleComponent } from './components/create-module/create-module.component';
-import { DeleteConfirmationDialogComponent } from './components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { EditContentComponent } from './components/edit-content/edit-content.component';
 import { EditModuleComponent } from './components/edit-module/edit-module.component';
 import { EditPageComponent } from './components/edit-page/edit-page.component';
@@ -24,7 +24,6 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     AddContentComponent,
     AddPageComponent,
     CreateModuleComponent,
-    DeleteConfirmationDialogComponent,
     EditContentComponent,
     EditModuleComponent,
     EditPageComponent,
@@ -42,13 +41,13 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     MatButtonModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    SharedModule
   ],
   exports: [
     AddContentComponent,
     AddPageComponent,
     CreateModuleComponent,
-    DeleteConfirmationDialogComponent,
     EditContentComponent,
     EditModuleComponent,
     EditPageComponent,

@@ -2,13 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModulePage } from '../../models/module-page.model';
 import { AssignmentService } from '../../services/assignment.service';
 import { ModuleContentService } from '../../services/module-content.service';
 import { ModulePageService } from '../../services/module-page.service';
 import { ModuleService } from '../../services/module.service';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-module-page',

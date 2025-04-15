@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { PaymentService } from '../../../payment/services/payment.service';
 import { Module } from '../../models/module.model';
 import { EnrolmentService } from '../../services/enrolment.service';
 import { ModuleService } from '../../services/module.service';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-module-detail',
