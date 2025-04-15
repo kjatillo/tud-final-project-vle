@@ -233,6 +233,22 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves a list of participants enrolled in a specific module.
+    /// </summary>
+    /// <param name="moduleId">The unique identifier of the module.</param>
+    /// <returns>An action result containing the list of participants if successful.</returns>
+    /// <response code="200">Returns the list of participants.</response>
+    /// <response code="401">If the user is not authorized.</response>
+    [HttpGet("{moduleId}/participants")]
+    [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Instructor)}")]
+    public async Task<IActionResult> GetModuleParticipants(Guid moduleId)
+    {
+        var participants = await _userRepository.GetEnroledUsersByModuleIdAsync(moduleId);
+
+        return Ok(participants);
+    }
+
+    /// <summary>
     /// Verifies the validity of the current user's token.
     /// </summary>
     /// <returns>An action result indicating whether the token is valid and the user's roles.</returns>
