@@ -11,12 +11,15 @@
     z-index: 1000;
 }
 
+.btn {
+    margin-top: .5rem;
+}
+
 @media (max-width: 767.98px) {
     .btn-primary,
     .btn-secondary {
         width: 100%;
         margin-left: 0;
-        margin-top: .75rem;
     }
 
     .content-title,
