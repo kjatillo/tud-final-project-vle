@@ -4,19 +4,15 @@
     margin-right: .75rem;
 }
 
-.btn-group {
-    display: inline-flex;
-    width: auto;
-
-    .dropdown-toggle {
-        width: 100%;
-    }
+.table-responsive {
+    margin-bottom: 1rem;
 }
 
-@media (min-width: 992px) {
-    .btn-group {
-        width: 50%;
-    }
+.mat-mdc-paginator {
+    background: transparent;
+    border-radius: 4px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 767.98px) {
@@ -25,10 +21,5 @@
         width: 100%;
         margin-left: 0;
         margin-top: .75rem;
-    }
-
-    .content-title,
-    .content-description {
-        width: 100%;
     }
 }
