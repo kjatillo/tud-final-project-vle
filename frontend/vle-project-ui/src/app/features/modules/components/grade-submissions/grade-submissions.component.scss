@@ -7,10 +7,26 @@
 .btn-group {
     display: inline-flex;
     width: auto;
+    margin-left: 0.5rem;
 
     .dropdown-toggle {
         width: 100%;
     }
+}
+
+.table-responsive {
+    margin-bottom: 1rem;
+}
+
+.mat-mdc-paginator {
+    background: transparent;
+    border-radius: 4px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+td input[type="number"] {
+    width: 100px;
 }
 
 @media (max-width: 767.98px) {
