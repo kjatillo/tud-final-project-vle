@@ -3,41 +3,45 @@
         <div class="section-title">
             <h2>{{ module.moduleName }}</h2>
         </div>
-        
+
+        <!-- Shared dropdown menu template -->
+        <ng-template #dropdownMenu>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)">
+                    <a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a>
+                </li>
+                <li *ngIf="isModuleInstructor">
+                    <a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()">Grade & Feedback</a>
+                </li>
+                <li *ngIf="((isAdmin$ | async) || isModuleInstructor)">
+                    <a class="dropdown-item" type="button" (click)="toggleViewParticipants()">View Participants</a>
+                </li>
+                <ng-container *ngIf="(isAdmin$ | async)">
+                    <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
+                    <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a>
+                    </li>
+                </ng-container>
+            </ul>
+        </ng-template>
+
         <!-- Desktop view -->
         <div class="d-none d-md-block">
             <div class="dropdown" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                     Actions
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
-                    <div>
-                        <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
-                        <div *ngIf="(isAdmin$ | async)">
-                            <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
-                            <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
-                        </div>
-                    </div>
-                </ul>
+                <ng-container *ngTemplateOutlet="dropdownMenu"></ng-container>
             </div>
         </div>
 
         <!-- Mobile view -->
         <div class="d-md-none">
-            <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
+            <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                aria-expanded="false" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
                 <i class="bi bi-three-dots-vertical"></i>
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)"><a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a></li>
-                <div>
-                    <li><a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()" *ngIf="isModuleInstructor">Grade & Feedback</a></li>
-                    <div *ngIf="(isAdmin$ | async)">
-                        <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
-                        <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a></li>
-                    </div>
-                </div>
-            </ul>
+            <ng-container *ngTemplateOutlet="dropdownMenu"></ng-container>
         </div>
     </div>
 
@@ -47,29 +51,34 @@
                 Price: {{ module.price | currency:'EUR' }}
             </span>
         </div>
-    
+
         <div>
             <p class="text-muted">{{ module.description }}</p>
         </div>
     </div>
 
-    <button class="btn btn-primary mt-3" *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage"
-    (click)="payAndEnrol()">Pay & Enrol</button>
+    <button class="btn btn-primary mt-3"
+        *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage" (click)="payAndEnrol()">Pay &
+        Enrol</button>
 
     <ng-template #modulePage>
-        <app-module-page *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm"></app-module-page>
+        <app-module-page
+            *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm && !showParticipants"></app-module-page>
     </ng-template>
 
-    <app-grade-submissions *ngIf="showGradeSubmissions && isModuleInstructor"></app-grade-submissions>
+    <app-grade-submissions *ngIf="showGradeSubmissions && isModuleInstructor"
+        (backToModuleDetails)="onBackToModuleDetail(true)"></app-grade-submissions>
 
-    <app-view-grades *ngIf="showViewGrades && !isModuleInstructor"></app-view-grades>
+    <app-view-grades *ngIf="showViewGrades && !isModuleInstructor"
+        (backToModuleDetails)="onBackToModuleDetail(true)"></app-view-grades>
 
-    <app-edit-module *ngIf="(isAdmin$ | async) && showEditModuleForm" (cancelEdit)="onEditModuleCancel(true)"></app-edit-module>
+    <app-module-participants *ngIf="showParticipants && ((isAdmin$ | async) || isModuleInstructor)"
+        (backToModuleDetails)="onBackToModuleDetail(true)"></app-module-participants>
+
+    <app-edit-module *ngIf="(isAdmin$ | async) && showEditModuleForm"
+        (cancelEdit)="onBackToModuleDetail(true)"></app-edit-module>
 </div>
 
-<app-delete-confirmation-dialog
-    #deleteDialog
-    [title]="deleteDialogTitle"
-    [message]="deleteDialogMessage"
+<app-delete-confirmation-dialog #deleteDialog [title]="deleteDialogTitle" [message]="deleteDialogMessage"
     (confirmed)="onDeleteConfirmed($event)">
 </app-delete-confirmation-dialog>

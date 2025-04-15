@@ -16,6 +16,7 @@ import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-d
 import { GradeSubmissionsComponent } from './components/grade-submissions/grade-submissions.component';
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
 import { ModulePageComponent } from './components/module-page/module-page.component';
+import { ModuleParticipantsComponent } from './components/module-participants/module-participants.component';
 import { ViewGradesComponent } from './components/view-grades/view-grades.component';
 
 @NgModule({
@@ -32,6 +33,7 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     GradeSubmissionsComponent,
     ModuleDetailComponent,
     ModulePageComponent,
+    ModuleParticipantsComponent,
     ViewGradesComponent
   ],
   imports: [
@@ -55,6 +57,7 @@ import { ViewGradesComponent } from './components/view-grades/view-grades.compon
     GradeSubmissionsComponent,
     ModuleDetailComponent,
     ModulePageComponent,
+    ModuleParticipantsComponent,
     ViewGradesComponent
   ]
 })

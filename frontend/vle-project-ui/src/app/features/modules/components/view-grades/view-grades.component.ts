@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
@@ -11,6 +11,7 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
 })
 export class ViewGradesComponent implements OnInit {
   @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
+  @Output() backToModuleDetails = new EventEmitter<void>();
   submissions: ModuleSubmission[] = [];
   moduleId!: string;
   currentFeedback: string = '';
@@ -38,5 +39,9 @@ export class ViewGradesComponent implements OnInit {
   openFeedbackDialog(submission: ModuleSubmission): void {
     this.currentFeedback = submission.feedback;
     this.feedbackDialog.show();
+  }
+
+  onBackToModuleDetail(): void {
+    this.backToModuleDetails.emit();
   }
 }
