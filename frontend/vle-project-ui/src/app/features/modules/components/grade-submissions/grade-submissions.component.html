@@ -1,17 +1,22 @@
 <div class="container mt-5 p-0">
     <h4 class="mb-3">Grade Submissions</h4>
 
-    <form [formGroup]="gradeForm">
-        <div class="mb-3">
-            <div class="col-12 col-lg-6">
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+            <form [formGroup]="gradeForm">
                 <select id="contentId" class="form-control" formControlName="contentId">
                     <option value="" disabled selected>-- Select an assignment --</option>
                     <option *ngFor="let assignment of assignments" [value]="assignment.contentId">{{ assignment.title }}
                     </option>
                 </select>
-            </div>
+            </form>
         </div>
-    </form>
+
+        <div class="col-12 col-lg-6" *ngIf="submissions.length > 0">
+            <input type="text" class="form-control" placeholder="Search by student name or email..." 
+                [(ngModel)]="searchQuery" (input)="onSearch()">
+        </div>
+    </div>
 
     <div *ngIf="submissions.length === 0 && selectedContentId" class="alert alert-info mt-3">
         No submissions found.
@@ -28,8 +33,9 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
-                <tr *ngFor="let submission of submissions">
+                <tr *ngFor="let submission of displayedSubmissions">
                     <td>{{ submission.firstName }} {{ submission.lastName }}</td>
                     <td>{{ submission.userEmail }}</td>
                     <td>
@@ -40,7 +46,7 @@
                             class="form-control" (ngModelChange)="onGradeChange(submission)">
                     </td>
                     <td>
-                        <!-- Desktop view buttons -->
+                        <!-- Desktop View Buttons -->
                         <div class="d-none d-md-block">
                             <button class="btn btn-primary btn-sm me-2" type="button"
                                 (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
@@ -58,7 +64,7 @@
                             </div>
                         </div>
                         
-                        <!-- Mobile view vertical ellipsis -->
+                        <!-- Mobile View Vertical Ellipsis -->
                         <div class="d-md-none">
                             <div class="dropdown">
                                 <button class="btn text-dark p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -80,9 +86,14 @@
                 </tr>
             </tbody>
         </table>
+
+        <mat-paginator [length]="filteredSubmissions.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+            [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page"
+            class="mat-elevation-z0">
+        </mat-paginator>
     </div>
 
-    <button class="btn btn-secondary mt-3" (click)="onBackToModuleDetail()">Back to Module Details</button>
+    <button class="btn btn-secondary" (click)="onBackToModuleDetail()">Back to Module Details</button>
 </div>
 
 <app-feedback-dialog

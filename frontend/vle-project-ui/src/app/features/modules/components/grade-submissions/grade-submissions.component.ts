@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
@@ -19,9 +20,16 @@ export class GradeSubmissionsComponent implements OnInit {
   selectedContentId!: string;
   isModuleInstructor!: boolean;
   submissions: ModuleSubmission[] = [];
+  filteredSubmissions: ModuleSubmission[] = [];
+  displayedSubmissions: ModuleSubmission[] = [];
   assignments: ModuleAssignment[] = [];
   currentFeedback: string = '';
   currentSubmissionId: string = '';
+  searchQuery: string = '';
+  
+  pageSize = 5;
+  pageSizeOptions = [5, 10, 25];
+  pageIndex = 0;
 
   constructor(
     private assignmentService: AssignmentService,
@@ -42,6 +50,7 @@ export class GradeSubmissionsComponent implements OnInit {
 
     this.gradeForm.get('contentId')?.valueChanges.subscribe(contentId => {
       this.selectedContentId = contentId;
+      this.searchQuery = '';
       this.loadSubmissions(contentId);
     });
   }
@@ -55,13 +64,41 @@ export class GradeSubmissionsComponent implements OnInit {
         originalGrade: submission.grade,
         isGradeChanged: false
       }));
+      this.filteredSubmissions = [...this.submissions];
+      this.updateDisplayedSubmissions();
     });
+  }
+
+  onSearch(): void {
+    this.filteredSubmissions = this.submissions.filter(submission =>
+      submission.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      submission.lastName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      submission.userEmail.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+    this.pageIndex = 0;
+    this.updateDisplayedSubmissions();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updateDisplayedSubmissions();
+  }
+
+  private updateDisplayedSubmissions(): void {
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+    this.displayedSubmissions = this.filteredSubmissions.slice(start, end);
   }
 
   updateGrade(submissionId: string, grade: number, feedback: string): void {
     this.assignmentService.updateGrade(submissionId, { grade, feedback }).subscribe(() => {
       this.loadSubmissions(this.selectedContentId);
     });
+  }
+
+  onGradeChange(submission: ModuleSubmission): void {
+    submission.isGradeChanged = submission.grade !== submission.originalGrade;
   }
 
   removeGrade(submissionId: string): void {
@@ -84,10 +121,6 @@ export class GradeSubmissionsComponent implements OnInit {
         this.updateGrade(submission.submissionId, submission.grade, feedback);
       }
     }
-  }
-
-  onGradeChange(submission: ModuleSubmission): void {
-    submission.isGradeChanged = submission.grade !== submission.originalGrade;
   }
 
   onBackToModuleDetail(): void {
