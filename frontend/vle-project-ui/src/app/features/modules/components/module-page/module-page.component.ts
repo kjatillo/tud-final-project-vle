@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { SuccessConfirmationDialogComponent } from '../../../../shared/components/success-confirmation-dialog/success-confirmation-dialog.component';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModulePage } from '../../models/module-page.model';
 import { AssignmentService } from '../../services/assignment.service';
@@ -17,6 +18,7 @@ import { ModuleService } from '../../services/module.service';
 })
 export class ModulePageComponent implements OnInit {
   @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
+  @ViewChild('successDialog') successDialog!: SuccessConfirmationDialogComponent;
   moduleId!: string;
   pages: ModulePage[] = [];
   contents: ModuleContent[] = [];
@@ -209,7 +211,7 @@ export class ModulePageComponent implements OnInit {
 
         this.assignmentService.addSubmission(formData).subscribe({
           next: () => {
-            alert('Submission uploaded successfully');
+            this.successDialog.show('Submission uploaded successfully!');
             this.getSubmissionFileName(contentId);
           },
           error: (error) => {

@@ -4,12 +4,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DeleteConfirmationDialogComponent } from './components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { SuccessConfirmationDialogComponent } from './components/success-confirmation-dialog/success-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
     DeleteConfirmationDialogComponent,
     FooterComponent,
-    NavbarComponent
+    NavbarComponent,
+    SuccessConfirmationDialogComponent
   ],
   imports: [
     CommonModule,
@@ -18,7 +20,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   exports: [
     DeleteConfirmationDialogComponent,
     FooterComponent,
-    NavbarComponent
+    NavbarComponent,
+    SuccessConfirmationDialogComponent
   ]
 })
 export class SharedModule { }
