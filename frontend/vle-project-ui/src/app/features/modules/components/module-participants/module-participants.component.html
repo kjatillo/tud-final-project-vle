@@ -2,7 +2,7 @@
     <h4 class="mb-3">Module Participants</h4>
 
     <div *ngIf="participants.length === 0" class="alert alert-info mt-3">
-        No submissions found.
+        No participants found.
     </div>
 
     <div class="table-responsive mt-3" *ngIf="participants.length > 0">
@@ -28,6 +28,6 @@
         </table>
     </div>
 
-    <button class="btn btn-primary" (click)="downloadParticipants()">Download CSV</button>
+    <button class="btn btn-primary" (click)="downloadParticipants()" *ngIf="participants.length > 0">Download CSV</button>
     <button class="btn btn-secondary" (click)="onBackToModuleDetail()">Back to Module Details</button>
 </div>
