@@ -23,6 +23,7 @@ export class ModuleDetailComponent implements OnInit {
   showEditModuleForm: boolean = false;
   showGradeSubmissions: boolean = false;
   showViewGrades: boolean = false;
+  showParticipants: boolean = false;
   deleteDialogTitle: string = '';
   deleteDialogMessage: string = '';
 
@@ -106,15 +107,26 @@ export class ModuleDetailComponent implements OnInit {
   toggleGradeAndFeedback(): void {
     this.showGradeSubmissions = !this.showGradeSubmissions;
     this.showViewGrades = false;
+    this.showParticipants = false;
   }
 
   toggleViewGrades(): void {
     this.showViewGrades = !this.showViewGrades;
     this.showGradeSubmissions = false;
+    this.showParticipants = false;
   }
 
-  onEditModuleCancel(refresh: boolean = false): void {
+  toggleViewParticipants(): void {
+    this.showParticipants = !this.showParticipants;
+    this.showViewGrades = false;
+    this.showGradeSubmissions = false;
+  }
+
+  onBackToModuleDetail(refresh: boolean = false): void {
     this.showEditModuleForm = false;
+    this.showParticipants = false;
+    this.showGradeSubmissions = false;
+    this.showViewGrades = false;
     
     if (refresh) {
       this.moduleService.getModuleById(this.moduleId).subscribe({

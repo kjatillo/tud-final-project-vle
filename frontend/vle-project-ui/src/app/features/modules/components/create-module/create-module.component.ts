@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { UserService } from '../../../users/services/user.service';
 import { Instructor } from '../../models/instructor.model';
 import { ModuleService } from '../../services/module.service';
 
@@ -21,7 +22,8 @@ export class CreateModuleComponent {
     private authService: AuthService,
     private fb: FormBuilder,
     private moduleService: ModuleService,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {
     this.isAuthResolved$ = this.authService.isAuthResolved;
 
@@ -38,7 +40,7 @@ export class CreateModuleComponent {
   }
 
   ngOnInit(): void {
-    this.authService.getInstructors().subscribe(instructors => {
+    this.userService.getInstructors().subscribe(instructors => {
       this.instructors = instructors;
     });
   }

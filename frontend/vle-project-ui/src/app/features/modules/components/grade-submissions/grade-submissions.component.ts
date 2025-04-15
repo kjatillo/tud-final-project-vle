@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ModuleAssignment } from '../../models/module-assignment.model';
@@ -13,6 +13,7 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
 })
 export class GradeSubmissionsComponent implements OnInit {
   @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
+  @Output() backToModuleDetails = new EventEmitter<void>();
   gradeForm!: FormGroup;
   moduleId!: string;
   selectedContentId!: string;
@@ -37,7 +38,7 @@ export class GradeSubmissionsComponent implements OnInit {
 
     this.assignmentService.getModuleAssignments(this.moduleId).subscribe(assignments => {
       this.assignments = assignments;
-    })
+    });
 
     this.gradeForm.get('contentId')?.valueChanges.subscribe(contentId => {
       this.selectedContentId = contentId;
@@ -87,5 +88,9 @@ export class GradeSubmissionsComponent implements OnInit {
 
   onGradeChange(submission: ModuleSubmission): void {
     submission.isGradeChanged = submission.grade !== submission.originalGrade;
+  }
+
+  onBackToModuleDetail(): void {
+    this.backToModuleDetails.emit();
   }
 }

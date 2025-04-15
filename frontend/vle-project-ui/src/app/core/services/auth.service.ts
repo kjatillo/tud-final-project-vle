@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
-import { Instructor } from '../../features/modules/models/instructor.model';
 import { Login } from '../../features/users/models/login.model';
 import { Register } from '../../features/users/models/register.model';
 import { User } from '../../features/users/models/user.model';
@@ -132,9 +131,5 @@ export class AuthService {
           return throwError(() => error);
         })
       );
-  }
-
-  getInstructors(): Observable<Instructor[]> {
-    return this.http.get<Instructor[]>(`${this.usersBaseEndpoint}/instructors`);
   }
 }
