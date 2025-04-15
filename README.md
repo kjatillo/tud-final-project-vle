@@ -92,18 +92,6 @@ The repository is organized as follows:
    ```bash
    npm install
    ```
-   Install Anguar JWT:
-   ```bash
-   npm install @auth0/angular-jwt
-   ```
-   Install Stripe:
-   ```bash
-   npm install @stripe/stripe-js
-   ```
-   Add Angular Material:
-   ```bash
-   ng add @angular/material
-   ```
    Run the Angular development server:
    ```bash
    npm start
@@ -111,23 +99,18 @@ The repository is organized as follows:
 3. **Backend Setup**
    - Open the backend solution in **Visual Studio**.
    - Update the database connection string in connected services or `appsettings.json` to point to your local or Azure SQL Server.
-   - Navigate to the API directory:
+   - Navigate to the API and Background Job directory:
    ```bash
    cd backend/VleProjectApi
+   ```
+   ```bash
+   cd VleProjectBackgroundJob
    ```
    - Run migrations to set up the database schema:
    ```bash
    dotnet ef database update
    ```
-   - Start the API project:
-   ```bash
-   dotnet run
-   ```
-   - Navigate to the Background Job directory:
-   ```bash
-   cd VleProjectBackgroundJob
-   ```
-   - Start the Background Job project:
+   - Start the API and Background Job project:
    ```bash
    dotnet run
    ```
@@ -157,11 +140,11 @@ Note: The webhook must be running along with the API and UI.
 CREATE TABLE Modules (
     ModuleID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     ModuleName NVARCHAR(150) NOT NULL,
-    Description NVARCHAR(MAX),
+    Description NVARCHAR(MAX) NULL,
     Price DECIMAL(18, 2) NOT NULL DEFAULT 0.00,
     ModuleInstructor NVARCHAR(450) NOT NULL,
     CreatedBy NVARCHAR(450) NOT NULL,
-    CreatedDate DATETIME DEFAULT GETDATE(),
+    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (CreatedBy) REFERENCES AspNetUsers(Id)
 );
 ```
@@ -182,25 +165,27 @@ CREATE TABLE Enrolments (
 **Module Pages Table**
 ```sql
 CREATE TABLE ModulePages (
-    PageId UNIQUEIDENTIFIER PRIMARY KEY,
+    PageId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     ModuleId UNIQUEIDENTIFIER NOT NULL,
-    Title NVARCHAR(255) NOT NULL
+    Title NVARCHAR(255) NOT NULL,
+    FOREIGN KEY (ModuleId) REFERENCES Modules(ModuleID)
 );
 ```
 
 **Module Contents Table**
 ```sql
 CREATE TABLE ModuleContents (
-    ContentId UNIQUEIDENTIFIER PRIMARY KEY,
+    ContentId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     PageId UNIQUEIDENTIFIER NOT NULL,
     Title NVARCHAR(255) NOT NULL,
-    Description NVARCHAR(MAX),
-    FileUrl NVARCHAR(MAX),
-    FileType NVARCHAR(255),
-    IsLink BIT NOT NULL,
-    LinkUrl NVARCHAR(255),
-    IsUpload BIT NOT NULL,
-    Deadline DATETIME,
+    Description NVARCHAR(MAX) NULL,
+    FileUrl NVARCHAR(MAX) NOT NULL DEFAULT '',
+    FileName NVARCHAR(255) NOT NULL DEFAULT '',
+    FileType NVARCHAR(255) NULL,
+    IsLink BIT NOT NULL DEFAULT 0,
+    LinkUrl NVARCHAR(255) NOT NULL DEFAULT '',
+    IsUpload BIT NOT NULL DEFAULT 0,
+    Deadline DATETIME NULL,
     UploadedDate DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (PageId) REFERENCES ModulePages(PageId)
 );
@@ -209,12 +194,12 @@ CREATE TABLE ModuleContents (
 **Module Submissions Table**
 ```sql
 CREATE TABLE ModuleSubmissions (
-    SubmissionId UNIQUEIDENTIFIER PRIMARY KEY,
+    SubmissionId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     ContentId UNIQUEIDENTIFIER NOT NULL,
     UserId NVARCHAR(450) NOT NULL,
-    FileName NVARCHAR(255) NULL,
+    FileName NVARCHAR(255) NOT NULL DEFAULT '',
     FileUrl NVARCHAR(MAX) NOT NULL,
-    SubmittedDate DATETIME2 NOT NULL,
+    SubmittedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
     Grade FLOAT NULL,
     Feedback NVARCHAR(MAX) NULL,
     FOREIGN KEY (ContentId) REFERENCES ModuleContents(ContentId),
