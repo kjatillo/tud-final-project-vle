@@ -31,13 +31,12 @@ export class EditContentComponent implements OnInit {
       description: [this.content.description, Validators.required],
       fileType: [this.content.fileType],
       isLink: [this.content.isLink],
-      linkUrl: [this.content.linkUrl],
+      linkUrl: [this.content.linkUrl, [Validators.required, Validators.pattern('https?://.+')]],
       isUpload: [this.content.isUpload],
       deadline: [this.content.deadline],
       contentType: ['file', Validators.required]
     });
 
-    // Set initial content type based on existing content
     let initialContentType = 'file';
     if (this.content.isLink) initialContentType = 'link';
     if (this.content.isUpload) initialContentType = 'upload';
@@ -55,7 +54,7 @@ export class EditContentComponent implements OnInit {
     const deadlineControl = this.editContentForm.get('deadline');
 
     if (contentType === 'link') {
-      linkUrlControl?.setValidators([Validators.required]);
+      linkUrlControl?.setValidators([Validators.required, Validators.pattern('https?://.+')]);
       deadlineControl?.clearValidators();
     } else if (contentType === 'file') {
       linkUrlControl?.clearValidators();

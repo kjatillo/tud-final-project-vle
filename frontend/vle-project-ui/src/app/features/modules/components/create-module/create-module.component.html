@@ -16,31 +16,48 @@
                             <form [formGroup]="createModuleForm" (ngSubmit)="onSubmit()">
                                 <div class="mb-3">
                                     <label for="moduleName" class="form-label">Module Name</label>
-                                    <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
+                                    <input type="text" id="moduleName" class="form-control" formControlName="moduleName"
+                                        [ngClass]="{'is-invalid': createModuleForm.get('moduleName')?.invalid && createModuleForm.get('moduleName')?.touched}">
+                                    <div class="invalid-feedback" *ngIf="createModuleForm.get('moduleName')?.invalid && createModuleForm.get('moduleName')?.touched">
+                                        Module name is required
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Description</label>
-                                    <textarea id="description" class="form-control" rows="4" formControlName="description"></textarea>
+                                    <textarea id="description" class="form-control" rows="4" formControlName="description"
+                                        [ngClass]="{'is-invalid': createModuleForm.get('description')?.invalid && createModuleForm.get('description')?.touched}">
+                                    </textarea>
+                                    <div class="invalid-feedback" *ngIf="createModuleForm.get('description')?.invalid && createModuleForm.get('description')?.touched">
+                                        Description is required
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="moduleInstructor" class="form-label">Assign Instructor</label>
-                                    <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                                    <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor"
+                                        [ngClass]="{'is-invalid': createModuleForm.get('moduleInstructor')?.invalid && createModuleForm.get('moduleInstructor')?.touched}">
                                         <option value="" disabled selected>-- Select an instructor --</option>
                                         <option *ngFor="let instructor of instructors" [value]="instructor.id">
                                             {{ instructor.firstName }} {{ instructor.lastName }} ({{ instructor.email }})
                                         </option>
                                     </select>
+                                    <div class="invalid-feedback" *ngIf="createModuleForm.get('moduleInstructor')?.invalid && createModuleForm.get('moduleInstructor')?.touched">
+                                        Please select an instructor
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="price" class="form-label">Price</label>
-                                    <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
+                                    <input type="number" class="form-control" id="price" step="0.01" formControlName="price"
+                                        [ngClass]="{'is-invalid': createModuleForm.get('price')?.invalid && createModuleForm.get('price')?.touched}">
+                                    <div class="invalid-feedback" *ngIf="createModuleForm.get('price')?.invalid && createModuleForm.get('price')?.touched">
+                                        Price is required
+                                    </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">Create Module</button>
+                                    <button type="submit" class="btn btn-primary" [disabled]="createModuleForm.invalid">Create Module</button>
                                     <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
                                 </div>
                             </form>

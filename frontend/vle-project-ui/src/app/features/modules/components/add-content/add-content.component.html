@@ -2,12 +2,21 @@
     <form [formGroup]="addContentForm" (ngSubmit)="onSubmit()">
         <div class="mb-3">
             <label for="title" class="form-label">Content Title</label>
-            <input type="text" id="title" class="form-control" formControlName="title">
+            <input type="text" id="title" class="form-control" formControlName="title"
+                [ngClass]="{'is-invalid': addContentForm.get('title')?.invalid && addContentForm.get('title')?.touched}">
+            <div class="invalid-feedback" *ngIf="addContentForm.get('title')?.invalid && addContentForm.get('title')?.touched">
+                Title is required
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" class="form-control" formControlName="description"></textarea>
+            <textarea id="description" class="form-control" formControlName="description"
+                [ngClass]="{'is-invalid': addContentForm.get('description')?.invalid && addContentForm.get('description')?.touched}">
+            </textarea>
+            <div class="invalid-feedback" *ngIf="addContentForm.get('description')?.invalid && addContentForm.get('description')?.touched">
+                Description is required
+            </div>
         </div>
 
         <div class="mb-3">
@@ -28,17 +37,30 @@
 
         <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'link'">
             <label for="linkUrl" class="form-label">Link URL</label>
-            <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl">
+            <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl"
+                [ngClass]="{'is-invalid': addContentForm.get('linkUrl')?.invalid && addContentForm.get('linkUrl')?.touched}">
+            <div class="invalid-feedback" *ngIf="addContentForm.get('linkUrl')?.invalid && addContentForm.get('linkUrl')?.touched">
+                <ng-container *ngIf="addContentForm.get('linkUrl')?.errors?.['required']">URL is required</ng-container>
+                <ng-container *ngIf="addContentForm.get('linkUrl')?.errors?.['pattern']">Please enter a valid URL</ng-container>
+            </div>
         </div>
         
         <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'file'">
             <label for="file" class="form-label">File</label>
-            <input type="file" id="file" (change)="onFileSelected($event)" class="form-control">
+            <input type="file" id="file" (change)="onFileSelected($event)" class="form-control"
+                [ngClass]="{'is-invalid': addContentForm.get('file')?.invalid && addContentForm.get('file')?.touched}">
+            <div class="invalid-feedback" *ngIf="addContentForm.get('file')?.invalid && addContentForm.get('file')?.touched">
+                File is required
+            </div>
         </div>
         
         <div class="mb-3" *ngIf="addContentForm.get('contentType')?.value === 'upload'">
             <label for="deadline" class="form-label">Deadline</label>
-            <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline">
+            <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline"
+                [ngClass]="{'is-invalid': addContentForm.get('deadline')?.invalid && addContentForm.get('deadline')?.touched}">
+            <div class="invalid-feedback" *ngIf="addContentForm.get('deadline')?.invalid && addContentForm.get('deadline')?.touched">
+                Deadline is required
+            </div>
         </div>
         
         <button type="submit" class="btn btn-primary mt-2 me-2" [disabled]="addContentForm.invalid">Add Content</button>

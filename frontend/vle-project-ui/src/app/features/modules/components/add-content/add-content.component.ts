@@ -30,7 +30,7 @@ export class AddContentComponent implements OnInit {
       file: [null],
       fileType: [''],
       isLink: [false],
-      linkUrl: [''],
+      linkUrl: ['', [Validators.required, Validators.pattern('https?://.+')]],
       isUpload: [false],
       deadline: [this.getDefaultDeadline(), Validators.required],
       contentType: ['file', Validators.required]
@@ -55,7 +55,7 @@ export class AddContentComponent implements OnInit {
     const deadlineControl = this.addContentForm.get('deadline');
 
     if (contentType === 'link') {
-      linkUrlControl?.setValidators([Validators.required]);
+      linkUrlControl?.setValidators([Validators.required, Validators.pattern('https?://.+')]);
       fileControl?.clearValidators();
       deadlineControl?.clearValidators();
     } else if (contentType === 'file') {
