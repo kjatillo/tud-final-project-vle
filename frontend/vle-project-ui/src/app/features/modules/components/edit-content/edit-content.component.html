@@ -2,12 +2,21 @@
     <form [formGroup]="editContentForm" (ngSubmit)="onSubmit()">
         <div class="mb-3">
             <label for="title" class="form-label">Content Title</label>
-            <input type="text" id="title" class="form-control" formControlName="title">
+            <input type="text" id="title" class="form-control" formControlName="title"
+                [ngClass]="{'is-invalid': editContentForm.get('title')?.invalid && editContentForm.get('title')?.touched}">
+            <div class="invalid-feedback" *ngIf="editContentForm.get('title')?.invalid && editContentForm.get('title')?.touched">
+                Title is required
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" class="form-control" formControlName="description"></textarea>
+            <textarea id="description" class="form-control" formControlName="description"
+                [ngClass]="{'is-invalid': editContentForm.get('description')?.invalid && editContentForm.get('description')?.touched}">
+            </textarea>
+            <div class="invalid-feedback" *ngIf="editContentForm.get('description')?.invalid && editContentForm.get('description')?.touched">
+                Description is required
+            </div>
         </div>
 
         <div class="mb-3">
@@ -28,7 +37,12 @@
 
         <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'link'">
             <label for="linkUrl" class="form-label">Link URL</label>
-            <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl">
+            <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl"
+                [ngClass]="{'is-invalid': editContentForm.get('linkUrl')?.invalid && editContentForm.get('linkUrl')?.touched}">
+            <div class="invalid-feedback" *ngIf="editContentForm.get('linkUrl')?.invalid && editContentForm.get('linkUrl')?.touched">
+                <ng-container *ngIf="editContentForm.get('linkUrl')?.errors?.['required']">URL is required</ng-container>
+                <ng-container *ngIf="editContentForm.get('linkUrl')?.errors?.['pattern']">Please enter a valid URL</ng-container>
+            </div>
         </div>
         
         <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'file'">
@@ -38,7 +52,11 @@
         
         <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'upload'">
             <label for="deadline" class="form-label">Deadline</label>
-            <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline">
+            <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline"
+                [ngClass]="{'is-invalid': editContentForm.get('deadline')?.invalid && editContentForm.get('deadline')?.touched}">
+            <div class="invalid-feedback" *ngIf="editContentForm.get('deadline')?.invalid && editContentForm.get('deadline')?.touched">
+                Deadline is required
+            </div>
         </div>
         
         <button type="submit" class="btn btn-primary mt-2 me-2" [disabled]="editContentForm.invalid">Edit Content</button>

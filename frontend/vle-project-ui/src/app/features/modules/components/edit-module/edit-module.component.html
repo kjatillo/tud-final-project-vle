@@ -1,40 +1,57 @@
 <div class="container mt-5 p-0">
-    <div *ngIf="isAdmin$ | async; else unauthorised" class="col-12 col-lg-6">
+    <div *ngIf="(isAdmin$ | async); else unauthorised" class="col-12 col-lg-6">
         <h4 class="mb-3">Edit Module</h4>
         
         <form [formGroup]="editModuleForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
                 <label for="moduleName" class="form-label">Module Name</label>
-                <input type="text" id="moduleName" class="form-control" formControlName="moduleName">
+                <input type="text" id="moduleName" class="form-control" formControlName="moduleName"
+                    [ngClass]="{'is-invalid': editModuleForm.get('moduleName')?.invalid && editModuleForm.get('moduleName')?.touched}">
+                <div class="invalid-feedback" *ngIf="editModuleForm.get('moduleName')?.invalid && editModuleForm.get('moduleName')?.touched">
+                    Module name is required
+                </div>
             </div>
     
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea id="description" class="form-control" formControlName="description"></textarea>
+                <textarea id="description" class="form-control" formControlName="description"
+                    [ngClass]="{'is-invalid': editModuleForm.get('description')?.invalid && editModuleForm.get('description')?.touched}">
+                </textarea>
+                <div class="invalid-feedback" *ngIf="editModuleForm.get('description')?.invalid && editModuleForm.get('description')?.touched">
+                    Description is required
+                </div>
             </div>
 
             <div class="mb-3">
                 <label for="moduleInstructor" class="form-label">Assign Instructor</label>
-                <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor">
+                <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor"
+                    [ngClass]="{'is-invalid': editModuleForm.get('moduleInstructor')?.invalid && editModuleForm.get('moduleInstructor')?.touched}">
                     <option value="" disabled selected>-- Select an instructor --</option>
                     <option *ngFor="let instructor of instructors" [value]="instructor.id">
                         {{ instructor.firstName }} {{ instructor.lastName }} ({{ instructor.email }})
                     </option>
                 </select>
+                <div class="invalid-feedback" *ngIf="editModuleForm.get('moduleInstructor')?.invalid && editModuleForm.get('moduleInstructor')?.touched">
+                    Please select an instructor
+                </div>
             </div>
 
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>
-                <input type="number" class="form-control" id="price" step="0.01" formControlName="price">
+                <input type="number" class="form-control" id="price" step="0.01" formControlName="price"
+                    [ngClass]="{'is-invalid': editModuleForm.get('price')?.invalid && editModuleForm.get('price')?.touched}">
+                <div class="invalid-feedback" *ngIf="editModuleForm.get('price')?.invalid && editModuleForm.get('price')?.touched">
+                    Price is required
+                </div>
             </div>
     
-            <button type="submit" class="btn btn-primary">Edit Module</button>
+            <button type="submit" class="btn btn-primary me-2" [disabled]="editModuleForm.invalid">Edit Module</button>
             <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
         </form>
     </div>
 
     <ng-template #unauthorised>
-        <h2>Unauthorised!</h2>
-        <p>You are not authorised to access this page.</p>
+        <h2 class="text-center">Unauthorised!</h2>
+        <p class="text-center">You are not authorised to access this page.</p>
     </ng-template>
 </div>

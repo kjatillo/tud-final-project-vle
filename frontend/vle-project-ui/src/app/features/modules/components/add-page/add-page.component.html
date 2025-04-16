@@ -2,7 +2,11 @@
     <form [formGroup]="addPageForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
             <label for="title">Title</label>
-            <input id="title" formControlName="title" class="form-control" />
+            <input id="title" formControlName="title" class="form-control" 
+                [ngClass]="{'is-invalid': addPageForm.get('title')?.invalid && addPageForm.get('title')?.touched}">
+            <div class="invalid-feedback" *ngIf="addPageForm.get('title')?.invalid && addPageForm.get('title')?.touched">
+                Title is required
+            </div>
         </div>
         
         <button type="submit" class="btn btn-primary mt-3 me-2" [disabled]="addPageForm.invalid">Add Page</button>
