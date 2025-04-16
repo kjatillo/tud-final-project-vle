@@ -214,7 +214,7 @@ public class AssignmentsController : ControllerBase
             FirstName = _userManager.FindByIdAsync(s.UserId).Result?.FirstName ?? "Unknown",
             LastName = _userManager.FindByIdAsync(s.UserId).Result?.LastName ?? "Unknown",
             UserEmail = _userManager.FindByIdAsync(s.UserId).Result?.Email ?? "Unknown"
-        });
+        }).OrderBy(u => u.LastName);
 
         return Ok(grades);
     }
