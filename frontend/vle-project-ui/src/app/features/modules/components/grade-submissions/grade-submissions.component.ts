@@ -2,6 +2,9 @@ import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/cor
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin, Observable } from 'rxjs';
+import * as XLSX from 'xlsx';
+import { SuccessConfirmationDialogComponent } from '../../../../shared/components/success-confirmation-dialog/success-confirmation-dialog.component';
 import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
@@ -14,6 +17,7 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
 })
 export class GradeSubmissionsComponent implements OnInit {
   @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
+  @ViewChild('successDialog') successDialog!: SuccessConfirmationDialogComponent;
   @Output() backToModuleDetails = new EventEmitter<void>();
   gradeForm!: FormGroup;
   moduleId!: string;
@@ -26,6 +30,7 @@ export class GradeSubmissionsComponent implements OnInit {
   currentFeedback: string = '';
   currentSubmissionId: string = '';
   searchQuery: string = '';
+  isDragOver = false;
   
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
@@ -125,5 +130,96 @@ export class GradeSubmissionsComponent implements OnInit {
 
   onBackToModuleDetail(): void {
     this.backToModuleDetails.emit();
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      this.processFile(event.dataTransfer.files[0]);
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.processFile(file);
+    }
+  }
+
+  private processFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+        let updatedGradeList: Observable<any>[] = [];
+
+        rows.forEach((row) => {
+          const email = (row.Email || row.email)?.toString().trim();
+          const grade = typeof (row.Grade || row.grade) === 'number' ? (row.Grade || row.grade) : 
+                       typeof (row.Grade || row.grade) === 'string' ? parseFloat(row.Grade || row.grade) : 
+                       null;
+          const feedback = (row.Feedback || row.feedback)?.toString().trim();
+
+          const submission = this.submissions.find(s => 
+            s.userEmail.toLowerCase() === email.toLowerCase()
+          );
+
+          if (submission) {
+            let isFeedbackChanged: boolean = false;
+            const normalisedGrade = Math.min(Math.max(grade, 0), 100);
+            submission.grade = normalisedGrade;
+            submission.isGradeChanged = normalisedGrade !== submission.originalGrade;
+
+            if (feedback && feedback.trim() !== submission.feedback) {
+              submission.feedback = feedback.trim();
+              isFeedbackChanged = true;
+            }
+            
+            if (submission.isGradeChanged || isFeedbackChanged) {
+              const gradeUpdate = this.assignmentService.updateGrade(
+                submission.submissionId, 
+                { grade: normalisedGrade, feedback: submission.feedback }
+              );
+              
+              updatedGradeList.push(gradeUpdate);
+            }
+          }
+        });
+
+        if (updatedGradeList.length > 0) {
+          forkJoin(updatedGradeList).subscribe({
+            next: () => {
+              this.loadSubmissions(this.selectedContentId);
+
+              this.successDialog.show(`Successfully updated (${updatedGradeList.length}) submission grade/feedback.`);
+            },
+            error: () => {
+              alert('Some grades failed to update. Please try again or update them manually.');
+            }
+          });
+        } else {
+          this.successDialog.show('No grades were updated.')
+        }
+      } catch (error) {
+        alert('Error processing file. Please ensure it is a valid Excel or CSV file with "Email" and "Grade" columns.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
   }
 }

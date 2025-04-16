@@ -29,6 +29,62 @@ td input[type="number"] {
     width: 100px;
 }
 
+.import-area {
+    position: relative;
+
+    .desktop-import {
+        @media (min-width: 768px) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #dee2e6 !important;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            min-height: 200px;
+            cursor: pointer;
+
+            i {
+                color: #007e82;
+                transition: transform 0.3s ease;
+            }
+
+            &:hover {
+                border-color: #007e82 !important;
+                background-color: #f1f4f9;
+
+                i {
+                    transform: translateY(-5px);
+                }
+            }
+
+            &.bg-light {
+                border-color: #007e82 !important;
+                background-color: #e9ecef;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            display: none !important;
+        }
+    }
+
+    .mobile-import {
+        display: none;
+
+        @media (max-width: 767.98px) {
+            display: block;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+
+            i {
+                color: #fff;
+            }
+        }
+    }
+}
+
 @media (max-width: 767.98px) {
     .btn-primary,
     .btn-secondary {
