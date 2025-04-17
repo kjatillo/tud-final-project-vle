@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../users/models/user.model';
 import { UserService } from '../../../users/services/user.service';
-import { Instructor } from '../../models/instructor.model';
 import { ModuleService } from '../../services/module.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class EditModuleComponent implements OnInit {
   editModuleForm!: FormGroup;
   moduleId!: string;
   isAdmin$: Observable<boolean>;
-  instructors: Instructor[] = [];
+  instructors: User[] = [];
 
   constructor(
     private authService: AuthService,

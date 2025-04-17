@@ -29,7 +29,7 @@ public class ModuleContentsController : ControllerBase
         IModuleRepository moduleRepository, 
         UserManager<ApplicationUser> userManager)
     {
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));

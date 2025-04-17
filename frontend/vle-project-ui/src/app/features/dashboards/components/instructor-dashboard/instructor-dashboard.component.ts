@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { catchError, Observable, of, switchMap } from 'rxjs';
-import { AuthService } from '../../../../core/services/auth.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { Module } from '../../../modules/models/module.model';
 import { EnrolmentService } from '../../../modules/services/enrolment.service';
 import { ModuleService } from '../../../modules/services/module.service';
@@ -10,50 +10,47 @@ import { ModuleService } from '../../../modules/services/module.service';
   templateUrl: './instructor-dashboard.component.html',
   styleUrls: ['./instructor-dashboard.component.scss']
 })
-export class InstructorDashboardComponent implements OnInit {
-  isLoggedIn$: Observable<boolean>;
-  enroledModules$: Observable<Module[]>;
-  instructorModules$: Observable<Module[]>;
+export class InstructorDashboardComponent implements OnInit, OnDestroy {
+  instructorModules: Module[] = [];
+  enroledModules: Module[] = [];
+  isLoadingInstructorModules = false;
+  isLoadingEnroledModules = false;
+  private subscriptions = new Subscription();
 
   constructor(
-    private authService: AuthService,
     private enrolmentService: EnrolmentService,
     private moduleService: ModuleService
-  ) {
-    this.isLoggedIn$ = this.authService.isLoggedIn$;
-    this.enroledModules$ = of([]);
-    this.instructorModules$ = of([]);
-  }
+  ) { }
 
   ngOnInit(): void {
-    this.enroledModules$ = this.isLoggedIn$.pipe(
-      switchMap((loggedIn) => {
-        if (loggedIn) {
-          return this.enrolmentService.getEnroledModules().pipe(
-            catchError((error) => {
-              console.error('Error fetching enrolled modules', error);
-              return of([]);
-            })
-          );
-        } else {
-          return of([]);
-        }
-      })
-    );
+    this.loadModules();
+  }
 
-    this.instructorModules$ = this.isLoggedIn$.pipe(
-      switchMap((loggedIn) => {
-        if (loggedIn) {
-          return this.moduleService.getInstructorModules().pipe(
-            catchError((error) => {
-              console.error('Error fetching instructor modules', error);
-              return of([]);
-            })
-          );
-        } else {
-          return of([]);
-        }
-      })
-    );
+  loadModules(): void {
+    this.isLoadingInstructorModules = true;
+    const instructorSub = this.moduleService.getInstructorModules()
+      .pipe(
+        finalize(() => this.isLoadingInstructorModules = false)
+      )
+      .subscribe({
+        next: (modules) => this.instructorModules = modules,
+        error: (err) => console.error('Error loading instructor modules', err)
+      });
+    this.subscriptions.add(instructorSub);
+
+    this.isLoadingEnroledModules = true;
+    const enrolledSub = this.enrolmentService.getEnroledModules()
+      .pipe(
+        finalize(() => this.isLoadingEnroledModules = false)
+      )
+      .subscribe({
+        next: (modules) => this.enroledModules = modules,
+        error: (err) => console.error('Error loading enrolled modules', err)
+      });
+    this.subscriptions.add(enrolledSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

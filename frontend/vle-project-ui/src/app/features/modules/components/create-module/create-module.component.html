@@ -38,8 +38,8 @@
                                     <select id="moduleInstructor" class="form-control" formControlName="moduleInstructor"
                                         [ngClass]="{'is-invalid': createModuleForm.get('moduleInstructor')?.invalid && createModuleForm.get('moduleInstructor')?.touched}">
                                         <option value="" disabled selected>-- Select an instructor --</option>
-                                        <option *ngFor="let instructor of instructors" [value]="instructor.id">
-                                            {{ instructor.firstName }} {{ instructor.lastName }} ({{ instructor.email }})
+                                        <option *ngFor="let instructor of instructors" [value]="instructor.userId">
+                                            {{ instructor.lastName }}, {{ instructor.firstName }} ({{ instructor.email }})
                                         </option>
                                     </select>
                                     <div class="invalid-feedback" *ngIf="createModuleForm.get('moduleInstructor')?.invalid && createModuleForm.get('moduleInstructor')?.touched">

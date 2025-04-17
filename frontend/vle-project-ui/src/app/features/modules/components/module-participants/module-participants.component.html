@@ -1,30 +1,35 @@
 <div class="container mt-5 p-0">
     <h4 class="mb-3">Module Participants</h4>
 
-    <div *ngIf="participants.length === 0" class="alert alert-info mt-3">
+    <div *ngIf="isLoadingParticipants" class="spinner-container m-5">
+        <mat-spinner [diameter]="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!isLoadingParticipants && participants.length === 0" class="alert alert-info mt-3">
         No participants found.
     </div>
 
-    <div *ngIf="participants.length > 0">
+    <div *ngIf="!isLoadingParticipants && participants.length > 0">
         <div class="mb-4">
-            <input type="text" class="form-control" placeholder="Search participants..." [(ngModel)]="searchQuery" (input)="onSearch()">
+            <input type="text" class="form-control" placeholder="Search participants..." [(ngModel)]="searchQuery"
+                (input)="onSearch()">
         </div>
 
         <div class="table-responsive mt-3">
             <table class="table table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>ID</th>
+                        <th *ngIf="(isAdmin$ | async) || isModuleInstructor">ID</th>
                         <th>Last Name</th>
                         <th>First Name</th>
                         <th>Student Email</th>
                         <th>Gender</th>
                     </tr>
                 </thead>
-                
+
                 <tbody>
                     <tr *ngFor="let participant of displayedParticipants">
-                        <td>{{ participant.id }}</td>
+                        <td *ngIf="(isAdmin$ | async) || isModuleInstructor">{{ participant.userId }}</td>
                         <td>{{ participant.lastName }}</td>
                         <td>{{ participant.firstName }}</td>
                         <td>{{ participant.email }}</td>
@@ -33,13 +38,14 @@
                 </tbody>
             </table>
 
-            <mat-paginator [length]="filteredParticipants.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-                [pageIndex]="pageIndex" (page)="onPageChange($event)" aria-label="Select page"
-                class="mat-elevation-z0">
+            <mat-paginator [length]="filteredParticipants.length" [pageSize]="pageSize"
+                [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
+                aria-label="Select page" class="mat-elevation-z0">
             </mat-paginator>
         </div>
     </div>
-    
-    <button class="btn btn-primary" (click)="downloadParticipants()" *ngIf="participants.length > 0">Export CSV</button>
+
+    <button class="btn btn-primary" (click)="downloadParticipants()"
+        *ngIf="participants.length > 0 && ((isAdmin$ | async) || isModuleInstructor)">Export CSV</button>
     <button class="btn btn-secondary" (click)="onBackToModuleDetail()">Back to Module</button>
 </div>

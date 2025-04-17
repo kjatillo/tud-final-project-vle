@@ -20,6 +20,7 @@ export class ViewGradesComponent implements OnInit {
   currentFeedback: string = '';
   currentSubmissionId: string = '';
   searchQuery: string = '';
+  isLoadingSubmissions: boolean = false;
   
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
@@ -36,6 +37,8 @@ export class ViewGradesComponent implements OnInit {
   }
 
   loadSubmissions(): void {
+    this.isLoadingSubmissions = true;
+
     this.assignmentService.getStudentSubmissions(this.moduleId).subscribe(submissions => {
       this.submissions = submissions.sort((a: ModuleSubmission, b: ModuleSubmission) => {
         return a.contentTitle.localeCompare(b.contentTitle);
@@ -43,6 +46,8 @@ export class ViewGradesComponent implements OnInit {
       this.filteredSubmissions = [...this.submissions];
       this.updateDisplayedSubmissions();
     });
+
+    this.isLoadingSubmissions = false;
   }
 
   onSearch(): void {
