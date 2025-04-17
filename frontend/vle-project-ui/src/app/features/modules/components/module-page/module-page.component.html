@@ -2,33 +2,39 @@
     <div class="row">
         <div class="col-12 col-md-3 mb-3">
             <button *ngIf="isModuleInstructor" class="btn btn-primary mb-3" (click)="addPage()">Add New Page</button>
-            <div *ngIf="pages.length > 0; else noModuleContentsTemplate">
+            <div *ngIf="pages.length > 0">
                 <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
 
-                <ul class="list-group">
-                    <li id="page-list" *ngFor="let page of pages"
-                        class="list-group-item d-flex justify-content-between">
-                        <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
-                        <div class="dropdown me-2">
-                            <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                aria-expanded="false" *ngIf="isModuleInstructor">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a>
-                                </li>
-                                <li><a class="dropdown-item text-danger" type="button"
-                                        (click)="deletePage(page.pageId)">Delete Page</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
+                <ng-container *ngIf="isLoadingPages; else loadPages">
+                    <mat-spinner [diameter]="50"></mat-spinner>
+                </ng-container>
+
+                <ng-template #loadPages>
+                    <ul class="list-group">
+                        <li id="page-list" *ngFor="let page of pages"
+                            class="list-group-item d-flex justify-content-between">
+                            <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
+                            <div class="dropdown me-2">
+                                <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                    aria-expanded="false" *ngIf="isModuleInstructor">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a>
+                                    </li>
+                                    <li><a class="dropdown-item text-danger" type="button"
+                                            (click)="deletePage(page.pageId)">Delete Page</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </ng-template>
             </div>
         </div>
 
-        <ng-template #noModuleContentsTemplate>
+        <div *ngIf="!isLoadingPages && pages.length === 0">
             <p>No module contents to display.</p>
-        </ng-template>
+        </div>
 
         <div class="col-12 col-md-9">
             <div *ngIf="showContents && selectedPageId">
@@ -37,7 +43,15 @@
                 <div *ngIf="!showAddContentForm && !showEditContentForm">
                     <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
 
-                    <ul class="list-group" *ngIf="contents.length > 0; else noPageContentsTemplate">
+                    <ng-container *ngIf="isLoadingSubmission || isLoadingContents">
+                        <mat-spinner [diameter]="50"></mat-spinner>
+                    </ng-container>
+
+                    <div *ngIf="!isLoadingSubmission && !isLoadingContents && contents.length === 0">
+                        <p>No contents available for this page to display.</p>
+                    </div>
+
+                    <ul class="list-group" *ngIf="!isLoadingSubmission && !isLoadingContents && contents.length > 0">
                         <li *ngFor="let content of contents" class="list-group-item">
                             <div class="dropdown me-2 d-flex justify-content-between">
                                 <h5 class="content-title">{{ content.title }}</h5>
@@ -67,7 +81,7 @@
                                     <a [href]="content.fileUrl" target="_blank"
                                         class="btn btn-outline-primary my-2">Download
                                         File</a>
-                                </div>
+                                </div>                        
 
                                 <div *ngIf="content.isUpload">
                                     <p class="content-description"><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
@@ -81,15 +95,11 @@
                                         {{ !isPastDeadline(content.deadline) ?
                                         (content.submissionFileName ? 'Edit Submission' : 'Upload Submission') :
                                         'Submission Closed' }}
-                                    </button>
+                                    </button>   
                                 </div>
                             </ng-template>
                         </li>
-                    </ul>
-
-                    <ng-template #noPageContentsTemplate>
-                        <p>No contents available for this page to display.</p>
-                    </ng-template>
+                    </ul>  
                 </div>
             </div>
 

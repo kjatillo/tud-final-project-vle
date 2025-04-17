@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
 import { PaymentService } from '../../../payment/services/payment.service';
 import { Module } from '../../models/module.model';
 import { EnrolmentService } from '../../services/enrolment.service';
@@ -86,8 +87,8 @@ export class ModuleDetailComponent implements OnInit {
   }
 
   deleteModule(): void {
-    this.deleteDialogTitle = "Confirm Module Deletion";
-    this.deleteDialogMessage = "Deleting a module will also delete associated pages and contents permanently. Are you sure you want to do this?";
+    this.deleteDialogTitle = `Deleting '${this.module.moduleName}'`;
+    this.deleteDialogMessage = DIALOG_MESSAGES.DELETE_MODULE;
     this.deleteDialog.show();
   }
 

@@ -10,6 +10,7 @@ import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-grade-submissions',
@@ -20,6 +21,7 @@ export class GradeSubmissionsComponent implements OnInit {
   @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
   @ViewChild('msgDialog') msgDialog!: MessageDialogComponent;
   @Output() backToModuleDetails = new EventEmitter<void>();
+  isAuthResolved$: Observable<boolean>;
   gradeForm!: FormGroup;
   moduleId!: string;
   selectedContentId!: string;
@@ -31,19 +33,25 @@ export class GradeSubmissionsComponent implements OnInit {
   currentFeedback: string = '';
   currentSubmissionId: string = '';
   searchQuery: string = '';
-  isDragOver = false;
+  isDragOver: boolean = false;
+  isLoadingSubmissions: boolean = false;
   
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
   pageIndex = 0;
 
   constructor(
+    private authService: AuthService,
     private assignmentService: AssignmentService,
     private fb: FormBuilder,
     private route: ActivatedRoute
-  ) { }
+  ) { 
+    this.isAuthResolved$ = this.authService.isAuthResolved;
+  }
 
   ngOnInit(): void {
+    this.isLoadingSubmissions = true;
+
     this.gradeForm = this.fb.group({
       contentId: ['']
     });
@@ -72,6 +80,8 @@ export class GradeSubmissionsComponent implements OnInit {
       }));
       this.filteredSubmissions = [...this.submissions];
       this.updateDisplayedSubmissions();
+
+      this.isLoadingSubmissions = false;
     });
   }
 

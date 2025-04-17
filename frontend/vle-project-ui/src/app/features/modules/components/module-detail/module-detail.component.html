@@ -4,7 +4,7 @@
             <h2>{{ module.moduleName }}</h2>
         </div>
 
-        <!-- Shared dropdown menu template -->
+        <!-- Shared Dropdown Menu -->
         <ng-template #dropdownMenu>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)">
@@ -13,7 +13,7 @@
                 <li *ngIf="isModuleInstructor">
                     <a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()">Grade & Feedback</a>
                 </li>
-                <li *ngIf="((isAdmin$ | async) || isModuleInstructor)">
+                <li>
                     <a class="dropdown-item" type="button" (click)="toggleViewParticipants()">View Participants</a>
                 </li>
                 <ng-container *ngIf="(isAdmin$ | async)">
@@ -63,7 +63,8 @@
 
     <ng-template #modulePage>
         <app-module-page
-            *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm && !showParticipants"></app-module-page>
+            *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm && !showParticipants">
+        </app-module-page>
     </ng-template>
 
     <app-grade-submissions *ngIf="showGradeSubmissions && isModuleInstructor"
@@ -72,7 +73,7 @@
     <app-view-grades *ngIf="showViewGrades && !isModuleInstructor"
         (backToModuleDetails)="onBackToModuleDetail(true)"></app-view-grades>
 
-    <app-module-participants *ngIf="showParticipants && ((isAdmin$ | async) || isModuleInstructor)"
+    <app-module-participants *ngIf="showParticipants"
         (backToModuleDetails)="onBackToModuleDetail(true)"></app-module-participants>
 
     <app-edit-module *ngIf="(isAdmin$ | async) && showEditModuleForm"

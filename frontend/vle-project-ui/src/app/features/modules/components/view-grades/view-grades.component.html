@@ -1,7 +1,11 @@
 <div class="container mt-5 p-0">
     <h4 class="mb-3">My Submissions</h4>
 
-    <div *ngIf="submissions.length === 0" class="alert alert-info mt-3">
+    <div *ngIf="isLoadingSubmissions" class="spinner-container m-5">
+        <mat-spinner [diameter]="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!isLoadingSubmissions && submissions.length === 0" class="alert alert-info mt-3">
         <p>No submissions submitted for grading.</p>
     </div>
 

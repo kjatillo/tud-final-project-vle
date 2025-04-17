@@ -220,16 +220,9 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetInstructors()
     {
         var instructors = await _userRepository.GetInstructorsAsync();
-        var result = instructors.Select(i => 
-            new 
-            { 
-                i.Id,
-                i.FirstName,
-                i.LastName,
-                i.Email
-            });
+        var userDtos = _mapper.Map<IEnumerable<UserDto>>(instructors).OrderBy(u => u.LastName);
 
-        return Ok(result);
+        return Ok(userDtos);
     }
 
     /// <summary>
@@ -240,12 +233,13 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns the list of participants.</response>
     /// <response code="401">If the user is not authorized.</response>
     [HttpGet("{moduleId}/participants")]
-    [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Instructor)}")]
+    [Authorize]
     public async Task<IActionResult> GetModuleParticipants(Guid moduleId)
     {
         var participants = await _userRepository.GetEnroledUsersByModuleIdAsync(moduleId);
+        var userDtos = _mapper.Map<IEnumerable<UserDto>>(participants);
 
-        return Ok(participants);
+        return Ok(userDtos);
     }
 
     /// <summary>

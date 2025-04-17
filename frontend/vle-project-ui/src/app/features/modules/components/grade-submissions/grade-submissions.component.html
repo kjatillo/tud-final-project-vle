@@ -59,7 +59,11 @@
         </div>
     </div>
 
-    <div *ngIf="submissions.length === 0 && selectedContentId" class="alert alert-info mt-3">
+    <div *ngIf="isLoadingSubmissions && selectedContentId" class="spinner-container d-flex justify-content-center">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!isLoadingSubmissions && submissions.length === 0 && selectedContentId" class="alert alert-info mt-3">
         No submissions found.
     </div>
 

@@ -29,11 +29,14 @@ export class ModulePageComponent implements OnInit {
   selectedContent!: ModuleContent;
   selectedPage!: ModulePage;
   isModuleInstructor!: boolean;
-  showAddContentForm = false;
-  showEditContentForm = false;
-  showAddPageForm = false;
-  showEditPageForm = false;
-  showContents = true;
+  showAddContentForm: boolean = false;
+  showEditContentForm: boolean = false;
+  showAddPageForm: boolean = false;
+  showEditPageForm: boolean = false;
+  showContents: boolean = true;
+  isLoadingContents: boolean = false;
+  isLoadingPages: boolean = false;
+  isLoadingSubmission: boolean = false;
   deleteDialogTitle: string = '';
   deleteDialogMessage: string = '';
   pendingDeleteId: string = '';
@@ -88,16 +91,22 @@ export class ModulePageComponent implements OnInit {
   }
 
   loadPages(): void {
+    this.isLoadingPages = true;
+
     this.modulePageService.getPages(this.moduleId)
       .subscribe(pages => {
         this.pages = pages;
         if (this.pages.length > 0) {
           this.selectPage(this.pages[0].pageId);
         }
+
+        this.isLoadingPages = false;
       });
   }
 
   loadContents(pageId: string): void {
+    this.isLoadingContents = true;
+
     this.moduleContentService
       .getContents(this.moduleId, pageId)
       .subscribe(contents => {
@@ -108,6 +117,8 @@ export class ModulePageComponent implements OnInit {
             this.getSubmissionFileName(content.contentId);
           }
         });
+
+        this.isLoadingContents = false;
       });
   }
 
@@ -190,9 +201,12 @@ export class ModulePageComponent implements OnInit {
   }
 
   getSubmissionFileName(contentId: string): void {
+    this.isLoadingSubmission = true;
+
     if (!this.isModuleInstructor) {
+      const content = this.contents.find(c => c.contentId === contentId);
+
       this.assignmentService.getSubmission(contentId).subscribe(response => {
-        const content = this.contents.find(c => c.contentId === contentId);
         if (content) {
           content.submissionFileName = response.fileName;
           content.submissionFileUrl = response.fileUrl;
@@ -200,6 +214,8 @@ export class ModulePageComponent implements OnInit {
         }
       });
     }
+
+    this.isLoadingSubmission = false;
   }
 
   uploadSubmission(contentId: string): void {
