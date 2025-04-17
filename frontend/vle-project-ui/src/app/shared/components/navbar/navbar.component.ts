@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -17,6 +17,7 @@ export class NavbarComponent {
   isAuthResolved$: Observable<boolean>;
   currentUser$: Observable<User | null>;
   mobileMenuOpen: boolean = false;
+  dropdownOpen: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {
     this.currentUser$ = this.authService.currentUser$;
@@ -31,6 +32,28 @@ export class NavbarComponent {
     );
 
     this.isAuthResolved$ = this.authService.isAuthResolved;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.dropdownOpen) return;
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (!target.closest('#userDropdownContainer')) {
+      this.dropdownOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress() {
+    if (this.dropdownOpen) {
+      this.dropdownOpen = false;
+    }
+  }
+
+  toggleDropdown(event: Event): void {
+    event.stopPropagation();
+    this.dropdownOpen = !this.dropdownOpen;
   }
 
   navigateTo(route: string): void {

@@ -4,7 +4,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
-import { SuccessConfirmationDialogComponent } from '../../../../shared/components/success-confirmation-dialog/success-confirmation-dialog.component';
+import { MessageDialogComponent } from '../../../../shared/components/message-dialog/message-dialog.component';
+import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
 import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
@@ -17,7 +18,7 @@ import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.comp
 })
 export class GradeSubmissionsComponent implements OnInit {
   @ViewChild('feedbackDialog') feedbackDialog!: FeedbackDialogComponent;
-  @ViewChild('successDialog') successDialog!: SuccessConfirmationDialogComponent;
+  @ViewChild('msgDialog') msgDialog!: MessageDialogComponent;
   @Output() backToModuleDetails = new EventEmitter<void>();
   gradeForm!: FormGroup;
   moduleId!: string;
@@ -207,17 +208,17 @@ export class GradeSubmissionsComponent implements OnInit {
             next: () => {
               this.loadSubmissions(this.selectedContentId);
 
-              this.successDialog.show(`Successfully updated (${updatedGradeList.length}) submission grade/feedback.`);
+              this.msgDialog.show('success', DIALOG_MESSAGES.GRADE_UPDATE_SUCCESS);
             },
             error: () => {
-              alert('Some grades failed to update. Please try again or update them manually.');
+              this.msgDialog.show('warning', DIALOG_MESSAGES.GRADE_UPDATE_FAILED);
             }
           });
         } else {
-          this.successDialog.show('No grades were updated.')
+          this.msgDialog.show('info', DIALOG_MESSAGES.GRADE_NO_CHANGES);
         }
       } catch (error) {
-        alert('Error processing file. Please ensure it is a valid Excel or CSV file with "Email" and "Grade" columns.');
+        this.msgDialog.show('warning', DIALOG_MESSAGES.GRADE_PROCESSING_ERROR);
       }
     };
     reader.readAsArrayBuffer(file);

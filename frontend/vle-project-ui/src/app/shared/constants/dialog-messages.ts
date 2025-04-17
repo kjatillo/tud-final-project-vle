@@ -1,0 +1,11 @@
+export const DIALOG_MESSAGES = {
+    // Module Page - Delete Confirmation Dialog
+    DELETE_PAGE: 'Deleting a page will also delete any associated content permanently. Are you sure you want to do this?',
+    DELETE_CONTENT: 'Deleting content permanently. Are you sure you want to do this?',
+    
+    // Grade Submissions - Generalised Dialog
+    GRADE_UPDATE_SUCCESS: 'Successfully updated grades and feedback!',
+    GRADE_NO_CHANGES: 'No grades or feedback were updated.',
+    GRADE_UPDATE_FAILED: 'Some grades failed to update. Please try again or update them manually.',
+    GRADE_PROCESSING_ERROR: 'Error processing file. Please ensure it is a valid Excel or CSV file with "Email", "Grade", and "Feedback" columns.'
+  };
