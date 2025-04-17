@@ -3,7 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
-import { SuccessConfirmationDialogComponent } from '../../../../shared/components/success-confirmation-dialog/success-confirmation-dialog.component';
+import { MessageDialogComponent } from '../../../../shared/components/message-dialog/message-dialog.component';
+import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
 import { ModuleContent } from '../../models/module-content.model';
 import { ModulePage } from '../../models/module-page.model';
 import { AssignmentService } from '../../services/assignment.service';
@@ -18,12 +19,11 @@ import { ModuleService } from '../../services/module.service';
 })
 export class ModulePageComponent implements OnInit {
   @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
-  @ViewChild('successDialog') successDialog!: SuccessConfirmationDialogComponent;
+  @ViewChild('msgDialog') msgDialog!: MessageDialogComponent;
   moduleId!: string;
   pages: ModulePage[] = [];
   contents: ModuleContent[] = [];
   currentUser!: string;
-  moduleCreator!: string;
   selectedPageId!: string;
   selectedPageTitle!: string;
   selectedContent!: ModuleContent;
@@ -60,8 +60,6 @@ export class ModulePageComponent implements OnInit {
     if (this.moduleId) {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
-          this.moduleCreator = module.createdBy;
-
           this.authService.currentUser$.pipe(
             map(user => user?.userId === module.moduleInstructor)
           ).subscribe(isInstructor => {
@@ -90,24 +88,27 @@ export class ModulePageComponent implements OnInit {
   }
 
   loadPages(): void {
-    this.modulePageService.getPages(this.moduleId).subscribe(pages => {
-      this.pages = pages;
-      if (this.pages.length > 0) {
-        this.selectPage(this.pages[0].pageId);
-      }
-    });
+    this.modulePageService.getPages(this.moduleId)
+      .subscribe(pages => {
+        this.pages = pages;
+        if (this.pages.length > 0) {
+          this.selectPage(this.pages[0].pageId);
+        }
+      });
   }
 
   loadContents(pageId: string): void {
-    this.moduleContentService.getContents(this.moduleId, pageId).subscribe(contents => {
-      this.contents = contents;
+    this.moduleContentService
+      .getContents(this.moduleId, pageId)
+      .subscribe(contents => {
+        this.contents = contents;
 
-      this.contents.forEach(content => {
-        if (content.isUpload) {
-          this.getSubmissionFileName(content.contentId);
-        }
+        this.contents.forEach(content => {
+          if (content.isUpload) {
+            this.getSubmissionFileName(content.contentId);
+          }
+        });
       });
-    });
   }
 
   addPage(): void {
@@ -131,7 +132,7 @@ export class ModulePageComponent implements OnInit {
     this.deleteType = 'page';
     this.pendingDeleteId = pageId;
     this.deleteDialogTitle = 'Confirm Page Deletion';
-    this.deleteDialogMessage = 'Deleting a page will also delete any associated content permanently. Are you sure you want to do this?';
+    this.deleteDialogMessage = DIALOG_MESSAGES.DELETE_PAGE;
     this.deleteDialog.show();
   }
 
@@ -144,7 +145,8 @@ export class ModulePageComponent implements OnInit {
   }
 
   editContent(contentId: string): void {
-    this.selectedContent = this.contents.find(content => content.contentId === contentId)!;
+    this.selectedContent = this.contents
+      .find(content => content.contentId === contentId)!;
     this.showEditContentForm = true;
     this.showAddContentForm = false;
     this.showAddPageForm = false;
@@ -155,7 +157,7 @@ export class ModulePageComponent implements OnInit {
     this.deleteType = 'content';
     this.pendingDeleteId = contentId;
     this.deleteDialogTitle = 'Confirm Content Deletion';
-    this.deleteDialogMessage = 'Deleting content permanently. Are you sure you want to do this?';
+    this.deleteDialogMessage = DIALOG_MESSAGES.DELETE_CONTENT;
     this.deleteDialog.show();
   }
 
@@ -163,23 +165,27 @@ export class ModulePageComponent implements OnInit {
     if (!confirmed) return;
 
     if (this.deleteType === 'page') {
-      this.modulePageService.deletePage(this.moduleId, this.pendingDeleteId).subscribe({
-        next: () => {
-          this.loadPages();
-          this.selectedPageId = '';
-          this.selectedPageTitle = '';
-          this.contents = [];
-          this.showContents = false;
-        },
-        error: (error) => console.error('Error deleting page', error)
-      });
+      this.modulePageService
+        .deletePage(this.moduleId, this.pendingDeleteId)
+        .subscribe({
+          next: () => {
+            this.loadPages();
+            this.selectedPageId = '';
+            this.selectedPageTitle = '';
+            this.contents = [];
+            this.showContents = false;
+          },
+          error: (error) => console.error('Error deleting page', error)
+        });
     } else {
-      this.moduleContentService.deleteContent(this.moduleId, this.selectedPageId, this.pendingDeleteId).subscribe({
-        next: () => {
-          this.loadContents(this.selectedPageId);
-        },
-        error: (error) => console.error('Error deleting content', error)
-      });
+      this.moduleContentService
+        .deleteContent(this.moduleId, this.selectedPageId, this.pendingDeleteId)
+        .subscribe({
+          next: () => {
+            this.loadContents(this.selectedPageId);
+          },
+          error: (error) => console.error('Error deleting content', error)
+        });
     }
   }
 
@@ -211,7 +217,7 @@ export class ModulePageComponent implements OnInit {
 
         this.assignmentService.addSubmission(formData).subscribe({
           next: () => {
-            this.successDialog.show('Submission uploaded successfully!');
+            this.msgDialog.show('success', 'Submission uploaded successfully!');
             this.getSubmissionFileName(contentId);
           },
           error: (error) => {

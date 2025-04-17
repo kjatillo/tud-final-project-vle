@@ -1,0 +1,19 @@
+<div #messageModal class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i [class]="iconClass"></i>
+                </h5>
+            </div>
+
+            <div class="modal-body">
+                <p>{{ message }}</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary mt-2" (click)="hide()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
