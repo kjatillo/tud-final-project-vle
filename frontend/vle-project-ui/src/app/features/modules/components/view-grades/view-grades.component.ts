@@ -21,7 +21,7 @@ export class ViewGradesComponent implements OnInit {
   currentSubmissionId: string = '';
   searchQuery: string = '';
   isLoadingSubmissions: boolean = false;
-  
+
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
   pageIndex = 0;
@@ -39,15 +39,20 @@ export class ViewGradesComponent implements OnInit {
   loadSubmissions(): void {
     this.isLoadingSubmissions = true;
 
-    this.assignmentService.getStudentSubmissions(this.moduleId).subscribe(submissions => {
-      this.submissions = submissions.sort((a: ModuleSubmission, b: ModuleSubmission) => {
-        return a.contentTitle.localeCompare(b.contentTitle);
-      });
-      this.filteredSubmissions = [...this.submissions];
-      this.updateDisplayedSubmissions();
-    });
+    this.assignmentService.getStudentSubmissions(this.moduleId).subscribe({
+      next: submissions => {
+        this.submissions = submissions.sort((a: ModuleSubmission, b: ModuleSubmission) => {
+          return a.contentTitle.localeCompare(b.contentTitle);
+        });
+        this.filteredSubmissions = [...this.submissions];
+        this.updateDisplayedSubmissions();
 
-    this.isLoadingSubmissions = false;
+        this.isLoadingSubmissions = false;
+      },
+      error: () => {
+        this.isLoadingSubmissions = false;
+      }
+    });
   }
 
   onSearch(): void {

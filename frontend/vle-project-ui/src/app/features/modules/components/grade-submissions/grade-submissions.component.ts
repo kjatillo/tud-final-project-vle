@@ -50,8 +50,6 @@ export class GradeSubmissionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoadingSubmissions = true;
-
     this.gradeForm = this.fb.group({
       contentId: ['']
     });
@@ -71,6 +69,7 @@ export class GradeSubmissionsComponent implements OnInit {
 
   loadSubmissions(contentId: string): void {
     this.submissions = [];
+    this.isLoadingSubmissions = true;
 
     this.assignmentService.getGrades(contentId).subscribe(submissions => {
       this.submissions = submissions.map((submission: { grade: number; }) => ({
@@ -80,9 +79,9 @@ export class GradeSubmissionsComponent implements OnInit {
       }));
       this.filteredSubmissions = [...this.submissions];
       this.updateDisplayedSubmissions();
-
-      this.isLoadingSubmissions = false;
     });
+
+    this.isLoadingSubmissions = false;
   }
 
   onSearch(): void {
