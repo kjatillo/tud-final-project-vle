@@ -16,6 +16,8 @@ export class EditContentComponent implements OnInit {
   moduleId!: string;
   editContentForm!: FormGroup;
   selectedFile: File | null = null;
+  initialContentType = 'file'; // Store the original content type
+  originalFileName: string | null = null;
 
   constructor(
     private moduleContentService: ModuleContentService,
@@ -26,27 +28,26 @@ export class EditContentComponent implements OnInit {
   ngOnInit(): void {
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
 
+    // Determine the initial content type
+    if (this.content.isLink) this.initialContentType = 'link';
+    if (this.content.isUpload) this.initialContentType = 'upload';
+    
+    // Store original filename if exists
+    this.originalFileName = this.content.fileName || null;
+
     this.editContentForm = this.fb.group({
       title: [this.content.title, Validators.required],
       description: [this.content.description, Validators.required],
-      fileType: [this.content.fileType],
-      isLink: [this.content.isLink],
-      linkUrl: [this.content.linkUrl, [Validators.required, Validators.pattern('https?://.+')]],
-      isUpload: [this.content.isUpload],
-      deadline: [this.content.deadline],
-      contentType: ['file', Validators.required]
+      contentType: [this.initialContentType, Validators.required],
+      linkUrl: [this.content.linkUrl],
+      deadline: [this.content.deadline]
     });
 
-    let initialContentType = 'file';
-    if (this.content.isLink) initialContentType = 'link';
-    if (this.content.isUpload) initialContentType = 'upload';
-    this.editContentForm.patchValue({ contentType: initialContentType });
-
-    this.editContentForm.get('contentType')?.valueChanges.subscribe((contentType: string) => {
-      this.updateValidators(contentType);
-    });
-
-    this.updateValidators(this.editContentForm.get('contentType')?.value);
+    // Lock the content type to the original value
+    this.editContentForm.get('contentType')?.disable();
+    
+    // Set up validators based on the content type
+    this.updateValidators(this.initialContentType);
   }
 
   updateValidators(contentType: string): void {
@@ -81,18 +82,21 @@ export class EditContentComponent implements OnInit {
       formData.append('title', this.editContentForm.get('title')?.value);
       formData.append('description', this.editContentForm.get('description')?.value);
 
-      const contentType = this.editContentForm.get('contentType')?.value;
-      formData.append('isLink', contentType === 'link' ? 'true' : 'false');
-      formData.append('isUpload', contentType === 'upload' ? 'true' : 'false');
+      // Use the initial content type since it cannot be changed
+      formData.append('isLink', this.initialContentType === 'link' ? 'true' : 'false');
+      formData.append('isUpload', this.initialContentType === 'upload' ? 'true' : 'false');
 
-      if (contentType === 'link') {
+      if (this.initialContentType === 'link') {
         formData.append('linkUrl', this.editContentForm.get('linkUrl')?.value);
-      } else if (contentType === 'file') {
+      } else if (this.initialContentType === 'file') {
         if (this.selectedFile) {
           formData.append('file', this.selectedFile);
           formData.append('fileName', this.selectedFile.name);
+        } else if (this.originalFileName) {
+          // If no new file selected but a file existed before, keep the original filename
+          formData.append('fileName', this.originalFileName);
         }
-      } else if (contentType === 'upload') {
+      } else if (this.initialContentType === 'upload') {
         formData.append('deadline', this.editContentForm.get('deadline')?.value);
       }
 
