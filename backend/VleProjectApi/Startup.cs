@@ -7,6 +7,7 @@ using System.Text;
 using VleProjectApi.Configurations;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Entities;
+using VleProjectApi.Hubs;
 using VleProjectApi.Profiles;
 using VleProjectApi.Repositories.Implementations;
 using VleProjectApi.Repositories.Interfaces;
@@ -76,6 +77,8 @@ public class Startup
             };
         });
 
+        services.AddSignalR();
+
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAngularApp",
@@ -94,6 +97,7 @@ public class Startup
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
         services.AddScoped<IModuleRepository, ModuleRepository>();
         services.AddScoped<IModuleSubmissionRepository, ModuleSubmissionRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
@@ -129,6 +133,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapHub<NotificationHub>("/notificationHub");
         });
     }
 }

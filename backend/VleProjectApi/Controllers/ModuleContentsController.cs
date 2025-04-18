@@ -74,6 +74,7 @@ public class ModuleContentsController : ControllerBase
     /// <param name="contentId">The ID of the content.</param>
     /// <returns>The content if found, otherwise a NotFound or BadRequest result.</returns>
     [HttpGet("{moduleId}/{pageId}/{contentId}")]
+    [Authorize]
     public async Task<IActionResult> GetContentById(Guid moduleId, Guid pageId, Guid contentId)
     {
         var module = await _moduleRepository.GetModuleByIdAsync(moduleId);

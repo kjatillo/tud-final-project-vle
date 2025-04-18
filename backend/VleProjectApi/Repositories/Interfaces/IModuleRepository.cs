@@ -11,4 +11,5 @@ public interface IModuleRepository
     Task<IEnumerable<Module>> GetModulesByInstructorIdAsync(string instructorId);
     Task DeleteModuleAsync(Guid moduleId);
     Task DeleteEnrolmentsByModuleIdAsync(Guid moduleId);
+    Task<bool> ModuleExistsAsync(Guid moduleId);
 }

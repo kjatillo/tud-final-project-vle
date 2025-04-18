@@ -11,4 +11,5 @@ public interface IEnrolmentRepository
     Task<int> GetModuleEnrolmentsCountAsync(Guid moduleId);
     Task<IEnumerable<(string Month, int Count)>> GetMonthlyEnrolmentTrendsAsync(int year);
     Task<Dictionary<Guid, int>> GetModuleEnrolmentCountsAsync(IEnumerable<Guid> moduleIds);
+    Task<IEnumerable<ApplicationUser>> GetEnroledUsersByModuleIdAsync(Guid moduleId);
 }

@@ -11,7 +11,7 @@ public class ModuleContentRepository : IModuleContentRepository
 
     public ModuleContentRepository(VleDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     /// <summary>
