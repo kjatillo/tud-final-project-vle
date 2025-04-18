@@ -14,6 +14,7 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
     public required DbSet<ModulePage> ModulePages { get; set; }
     public required DbSet<ModuleContent> ModuleContents { get; set; }
     public DbSet<ModuleSubmission> ModuleSubmissions { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -38,5 +39,8 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<ModuleSubmission>()
             .HasKey(ms => ms.SubmissionId);
+
+        builder.Entity<Notification>()
+            .HasKey(n => n.NotificationId);
     }
 }

@@ -11,7 +11,7 @@ public class ModuleSubmissionRepository : IModuleSubmissionRepository
 
     public ModuleSubmissionRepository(VleDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     /// <summary>

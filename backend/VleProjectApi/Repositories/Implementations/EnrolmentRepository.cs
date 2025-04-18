@@ -12,7 +12,7 @@ public class EnrolmentRepository : IEnrolmentRepository
 
     public EnrolmentRepository(VleDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     /// <summary>
@@ -119,5 +119,24 @@ public class EnrolmentRepository : IEnrolmentRepository
 
             return (Month: month.ToString(), Count: monthlyCount);
         });
+    }
+
+    /// <summary>
+    /// Retrieves all users enroled in a specific module.
+    /// </summary>
+    /// <param name="moduleId">The ID of the module to retrieve enrolled users for.</param>
+    /// <returns>A list of users who are enroled in the specified module.</returns>
+    public async Task<IEnumerable<ApplicationUser>> GetEnroledUsersByModuleIdAsync(Guid moduleId)
+    {
+        var userIds = await _context.Enrolments
+            .Where(e => e.ModuleId == moduleId)
+            .Select(e => e.UserId)
+            .ToListAsync();
+
+        var users = await _context.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToListAsync();
+
+        return users;
     }
 }

@@ -45,6 +45,7 @@ public class ModulesController : ControllerBase
     /// </summary>
     /// <returns>A list of all modules.</returns>
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetModules()
     {
         var modules = await _moduleRepository.GetModulesAsync();
@@ -80,6 +81,7 @@ public class ModulesController : ControllerBase
     /// <param name="moduleId">The ID of the module.</param>
     /// <returns>The module if found, otherwise a NotFound result.</returns>
     [HttpGet("{moduleId}")]
+    [Authorize]
     public async Task<IActionResult> GetModuleById(Guid moduleId)
     {
         var module = await _moduleRepository.GetModuleByIdAsync(moduleId);

@@ -11,7 +11,7 @@ public class ModuleRepository : IModuleRepository
 
     public ModuleRepository(VleDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     /// <summary>
@@ -99,5 +99,15 @@ public class ModuleRepository : IModuleRepository
         _context.Enrolments.RemoveRange(enrolments);
 
         await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Checks if a module exists in the database by its unique identifier.
+    /// </summary>
+    /// <param name="moduleId">The unique identifier of the module to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains true if the module exists; otherwise, false.</returns>
+    public async Task<bool> ModuleExistsAsync(Guid moduleId)
+    {
+        return await _context.Modules.AnyAsync(m => m.ModuleId == moduleId);
     }
 }
