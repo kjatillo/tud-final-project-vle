@@ -1,5 +1,5 @@
 <div class="container text-center mt-5">
-  <h1 class="text-success">Payment Successful!</h1>
+  <h1 class="text-success mb-3">Payment Successful!</h1>
   <p>Thank you for your payment. You will be redirected shortly.</p>
   <p *ngIf="moduleId">If not redirected, <a [routerLink]="['/module', moduleId]">click here</a>.</p>
   <p *ngIf="!moduleId">If not redirected, <a [routerLink]="['/explore']">click here</a>.</p>

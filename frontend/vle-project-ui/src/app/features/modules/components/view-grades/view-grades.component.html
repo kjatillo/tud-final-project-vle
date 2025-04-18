@@ -5,8 +5,8 @@
         <mat-spinner [diameter]="50"></mat-spinner>
     </div>
 
-    <div *ngIf="!isLoadingSubmissions && submissions.length === 0" class="alert alert-info mt-3">
-        <p>No submissions submitted for grading.</p>
+    <div *ngIf="!isLoadingSubmissions && submissions.length === 0" class="alert alert-info">
+        No submissions submitted for grading.
     </div>
 
     <div *ngIf="submissions.length > 0">
