@@ -109,16 +109,21 @@ export class ModulePageComponent implements OnInit {
 
     this.moduleContentService
       .getContents(this.moduleId, pageId)
-      .subscribe(contents => {
-        this.contents = contents;
+      .subscribe({
+        next: contents => {
+          this.contents = contents;
 
-        this.contents.forEach(content => {
-          if (content.isUpload) {
-            this.getSubmissionFileName(content.contentId);
-          }
-        });
+          this.contents.forEach(content => {
+            if (content.isUpload) {
+              this.getSubmissionFileName(content.contentId);
+            }
+          });
 
-        this.isLoadingContents = false;
+          this.isLoadingContents = false;
+        },
+        error: () => {
+          this.isLoadingContents = false;
+        }
       });
   }
 
@@ -139,10 +144,10 @@ export class ModulePageComponent implements OnInit {
     this.showContents = false;
   }
 
-  deletePage(pageId: string): void {
+  deletePage(pageId: string, pageTitle: string): void {
     this.deleteType = 'page';
     this.pendingDeleteId = pageId;
-    this.deleteDialogTitle = 'Confirm Page Deletion';
+    this.deleteDialogTitle = `Deleting '${pageTitle}'`;
     this.deleteDialogMessage = DIALOG_MESSAGES.DELETE_PAGE;
     this.deleteDialog.show();
   }
@@ -164,10 +169,10 @@ export class ModulePageComponent implements OnInit {
     this.showContents = false;
   }
 
-  deleteContent(contentId: string): void {
+  deleteContent(contentId: string, contentTitle: string): void {
     this.deleteType = 'content';
     this.pendingDeleteId = contentId;
-    this.deleteDialogTitle = 'Confirm Content Deletion';
+    this.deleteDialogTitle = `Deleting '${contentTitle}'`;
     this.deleteDialogMessage = DIALOG_MESSAGES.DELETE_CONTENT;
     this.deleteDialog.show();
   }

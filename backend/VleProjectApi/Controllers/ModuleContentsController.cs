@@ -19,6 +19,7 @@ public class ModuleContentsController : ControllerBase
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
     private readonly IModuleRepository _moduleRepository;
+    private readonly IModuleSubmissionRepository _moduleSubmissionRepository;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public ModuleContentsController(
@@ -26,13 +27,15 @@ public class ModuleContentsController : ControllerBase
         IMapper mapper,
         IModuleContentRepository moduleContentRepository,
         IModulePageRepository modulePageRepository,
-        IModuleRepository moduleRepository, 
+        IModuleRepository moduleRepository,
+        IModuleSubmissionRepository moduleSubmissionRepository,
         UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
+        _moduleSubmissionRepository = moduleSubmissionRepository ?? throw new ArgumentNullException(nameof(moduleSubmissionRepository));
         _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
@@ -294,6 +297,17 @@ public class ModuleContentsController : ControllerBase
         if (page == null)
         {
             return NotFound();
+        }
+
+        var submissions = await _moduleSubmissionRepository.GetSubmissionsByContentIdAsync(contentId);
+        foreach (var submission in submissions)
+        {
+            if (!string.IsNullOrEmpty(submission.FileUrl))
+            {
+                await _blobStorageService.DeleteFileAsync(submission.FileUrl);
+            }
+
+            await _moduleSubmissionRepository.DeleteSubmissionAsync(submission.SubmissionId);
         }
 
         var content = await _moduleContentRepository.GetContentByIdAsync(contentId);

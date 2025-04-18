@@ -1,3 +1,13 @@
 .card-title {
     color: #333;
 }
+
+.module-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 3.6em;
+}

@@ -1,10 +1,10 @@
 export const DIALOG_MESSAGES = {
     // Module Detail - Delete Module Confirmation Dialog
-    DELETE_MODULE: 'Deleting a module will also delete associated pages and contents permanently. Are you sure you want to do this?',
+    DELETE_MODULE: 'Deleting a module will also delete any associated pages, contents, files, and submissions permanently. Are you sure you want to do this?',
 
     // Module Page - Delete Page Confirmation Dialog
-    DELETE_PAGE: 'Deleting a page will also delete any associated content permanently. Are you sure you want to do this?',
-    DELETE_CONTENT: 'Deleting content permanently. Are you sure you want to do this?',
+    DELETE_PAGE: 'Deleting a page will also delete any associated contents, files, and submissions permanently. Are you sure you want to do this?',
+    DELETE_CONTENT: 'Deleting a content will also deleting any associated files and submissions permanently. Are you sure you want to do this?',
     
     // Grade Submissions - Generalised Dialog
     GRADE_UPDATE_SUCCESS: 'Successfully updated grades and feedback!',

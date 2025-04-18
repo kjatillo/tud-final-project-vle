@@ -21,21 +21,25 @@
 
         <div class="mb-3">
             <label class="form-label">Content Type</label>
+            <div class="form-text mb-2">Content type cannot be changed once created</div>
             <div>
-                <input type="radio" id="file" formControlName="contentType" value="file" checked>
+                <input type="radio" id="file" formControlName="contentType" value="file"
+                       [checked]="initialContentType === 'file'">
                 <label for="file">File</label>
             </div>
             <div>
-                <input type="radio" id="link" formControlName="contentType" value="link">
+                <input type="radio" id="link" formControlName="contentType" value="link"
+                       [checked]="initialContentType === 'link'">
                 <label for="link">Link</label>
             </div>
             <div>
-                <input type="radio" id="upload" formControlName="contentType" value="upload">
+                <input type="radio" id="upload" formControlName="contentType" value="upload"
+                       [checked]="initialContentType === 'upload'">
                 <label for="upload">Assignment</label>
             </div>
         </div>
 
-        <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'link'">
+        <div class="mb-3" *ngIf="initialContentType === 'link'">
             <label for="linkUrl" class="form-label">Link URL</label>
             <input type="url" id="linkUrl" class="form-control" formControlName="linkUrl"
                 [ngClass]="{'is-invalid': editContentForm.get('linkUrl')?.invalid && editContentForm.get('linkUrl')?.touched}">
@@ -45,12 +49,12 @@
             </div>
         </div>
         
-        <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'file'">
+        <div class="mb-3" *ngIf="initialContentType === 'file'">
             <label for="file" class="form-label">File</label>
             <input type="file" id="file" (change)="onFileSelected($event)" class="form-control">
         </div>
         
-        <div class="mb-3" *ngIf="editContentForm.get('contentType')?.value === 'upload'">
+        <div class="mb-3" *ngIf="initialContentType === 'upload'">
             <label for="deadline" class="form-label">Deadline</label>
             <input type="datetime-local" id="deadline" class="form-control" formControlName="deadline"
                 [ngClass]="{'is-invalid': editContentForm.get('deadline')?.invalid && editContentForm.get('deadline')?.touched}">

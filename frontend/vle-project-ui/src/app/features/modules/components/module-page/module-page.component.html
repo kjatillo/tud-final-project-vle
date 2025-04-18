@@ -23,7 +23,7 @@
                                     <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a>
                                     </li>
                                     <li><a class="dropdown-item text-danger" type="button"
-                                            (click)="deletePage(page.pageId)">Delete Page</a></li>
+                                            (click)="deletePage(page.pageId, page.title)">Delete Page</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -64,7 +64,7 @@
                                     <li><a class="dropdown-item" type="button"
                                             (click)="editContent(content.contentId)">Edit Content</a></li>
                                     <li><a class="dropdown-item text-danger" type="button"
-                                            (click)="deleteContent(content.contentId)">Delete Content</a></li>
+                                            (click)="deleteContent(content.contentId, content.title)">Delete Content</a></li>
                                 </ul>
                             </div>
 
