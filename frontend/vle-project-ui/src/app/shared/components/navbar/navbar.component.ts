@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../features/users/models/user.model';
+import { DropdownService } from '../../services/dropdown.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,16 +11,21 @@ import { User } from '../../../features/users/models/user.model';
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn$: Observable<boolean>;
   isAdmin$: Observable<boolean>;
   isInstructor$: Observable<boolean>;
   isAuthResolved$: Observable<boolean>;
   currentUser$: Observable<User | null>;
   mobileMenuOpen: boolean = false;
-  dropdownOpen: boolean = false;
+  isUserMenuOpen: boolean = false;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private dropdownService: DropdownService
+  ) {
     this.currentUser$ = this.authService.currentUser$;
     this.isLoggedIn$ = this.authService.isLoggedIn$;
 
@@ -34,26 +40,45 @@ export class NavbarComponent {
     this.isAuthResolved$ = this.authService.isAuthResolved;
   }
 
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.dropdownService.dropdownOpen$.subscribe(dropdownId => {
+        if (dropdownId !== 'userDropdown' && this.isUserMenuOpen) {
+          this.isUserMenuOpen = false;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.dropdownOpen) return;
+    if (!this.isUserMenuOpen) return;
+
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
     if (!target.closest('#userDropdownContainer')) {
-      this.dropdownOpen = false;
+      this.isUserMenuOpen = false;
     }
   }
 
   @HostListener('document:keydown.escape')
   onEscapePress() {
-    if (this.dropdownOpen) {
-      this.dropdownOpen = false;
+    if (this.isUserMenuOpen) {
+      this.isUserMenuOpen = false;
     }
   }
 
   toggleDropdown(event: Event): void {
     event.stopPropagation();
-    this.dropdownOpen = !this.dropdownOpen;
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+
+    if (this.isUserMenuOpen) {
+      this.dropdownService.notifyDropdownOpened('userDropdown');
+    }
   }
 
   navigateTo(route: string): void {

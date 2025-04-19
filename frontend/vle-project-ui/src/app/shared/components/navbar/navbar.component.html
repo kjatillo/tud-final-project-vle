@@ -19,7 +19,7 @@
                 </li>
             </ul>
 
-            <ul class="navmenu-right d-flex justify-content-end d-none d-lg-flex">
+            <ul class="navmenu-right d-flex justify-content-end d-none d-lg-flex gap-0">
                 <ng-container *ngIf="(isLoggedIn$ | async); else loggedOut">
                     <!-- Notification Bell -->
                     <li *ngIf="(isLoggedIn$ | async)">
@@ -27,14 +27,14 @@
                     </li>
                     
                     <!-- Welcome User Dropdown -->
-                    <li id="userDropdownContainer" class="nav-item dropdown" [class.show]="dropdownOpen">
+                    <li id="userDropdownContainer" class="nav-item dropdown" [class.show]="isUserMenuOpen">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" 
                            role="button" 
-                           [attr.aria-expanded]="dropdownOpen" 
+                           [attr.aria-expanded]="isUserMenuOpen" 
                            (click)="toggleDropdown($event)">
                             Welcome, {{ (currentUser$ | async)?.firstName || 'Unknown' }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" [class.show]="dropdownOpen">
+                        <ul class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
                             <li>
                                 <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">
                                     Logout
@@ -75,7 +75,6 @@
 
                 <hr *ngIf="(isLoggedIn$ | async)">
 
-                <!-- Mobile Notification Bell -->
                 <li *ngIf="(isLoggedIn$ | async)" class="notification-mobile">
                     <app-notification></app-notification>
                 </li>
