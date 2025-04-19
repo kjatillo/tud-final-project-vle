@@ -1,8 +1,9 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { NotificationService } from '../../services/notification.service';
-import { Observable, Subscription } from 'rxjs';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 import { Notification } from '../../models/notification.model';
+import { DropdownService } from '../../services/dropdown.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-notification',
@@ -10,16 +11,17 @@ import { Notification } from '../../models/notification.model';
   styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnInit, OnDestroy {
-  isOpen = false;
   notifications$: Observable<Notification[]>;
   unreadCount$: Observable<number>;
   unreadCount: number = 0;
+  isNotificationOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private notificationService: NotificationService,
     private elementRef: ElementRef,
-    private router: Router
+    private router: Router,
+    private dropdownService: DropdownService
   ) {
     this.notifications$ = this.notificationService.notifications$;
     this.unreadCount$ = this.notificationService.unreadCount$;
@@ -30,6 +32,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
       this.unreadCount = count;
     });
     this.subscriptions.add(unreadSub);
+
+    const dropdownSub = this.dropdownService.dropdownOpen$.subscribe(dropdownId => {
+      if (dropdownId !== 'notificationDropdown' && this.isNotificationOpen) {
+        this.isNotificationOpen = false;
+      }
+    });
+    this.subscriptions.add(dropdownSub);
   }
 
   ngOnDestroy(): void {
@@ -38,24 +47,29 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.isOpen) return;
+    if (!this.isNotificationOpen) return;
+    
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
     if (!this.elementRef.nativeElement.contains(target)) {
-      this.isOpen = false;
+      this.isNotificationOpen = false;
     }
   }
 
   @HostListener('document:keydown.escape')
   onEscapePress() {
-    if (this.isOpen) {
-      this.isOpen = false;
+    if (this.isNotificationOpen) {
+      this.isNotificationOpen = false;
     }
   }
 
   toggleDropdown(event: Event): void {
     event.stopPropagation();
-    this.isOpen = !this.isOpen;
+    this.isNotificationOpen = !this.isNotificationOpen;
+
+    if (this.isNotificationOpen) {
+      this.dropdownService.notifyDropdownOpened('notificationDropdown');
+    }
   }
 
   markAsRead(notification: Notification, event: Event): void {
@@ -67,13 +81,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
     if (notification.moduleId) {
       event.preventDefault();
       event.stopPropagation();
-      
-      this.isOpen = false;
-      
+
+      this.isNotificationOpen = false;
+
       if (!notification.isRead) {
         this.notificationService.markAsRead(notification.id);
       }
-      
+
       this.router.navigate(['/module', notification.moduleId], { queryParams: { view: 'grades' } });
     }
   }
@@ -90,26 +104,26 @@ export class NotificationComponent implements OnInit, OnDestroy {
     const now = new Date();
     const utcDate = new Date(date);
     const diffInSeconds = Math.floor((now.getTime() - utcDate.getTime()) / 1000);
-    
+
     if (diffInSeconds < 60) {
       return 'just now';
     }
-    
+
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) {
       return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
     }
-    
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) {
       return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
     }
-    
+
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 30) {
       return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
     }
-    
+
     const diffInMonths = Math.floor(diffInDays / 30);
     return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
   }

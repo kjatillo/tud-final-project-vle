@@ -1,5 +1,5 @@
 <div id="notificationDropdownContainer" class="nav-item dropdown">
-    <a class="nav-link notification-bell" role="button" [attr.aria-expanded]="isOpen" (click)="toggleDropdown($event)"
+    <a class="nav-link notification-bell" role="button" [attr.aria-expanded]="isNotificationOpen" (click)="toggleDropdown($event)"
         [attr.aria-label]="'Notifications'">
         <i class="bi bi-bell-fill" aria-hidden="true"></i>
         <span *ngIf="unreadCount > 0" class="notification-badge"
@@ -8,7 +8,7 @@
         </span>
     </a>
 
-    <div class="dropdown-menu dropdown-menu-end notification-dropdown" [class.show]="isOpen">
+    <div class="dropdown-menu dropdown-menu-end notification-dropdown" [class.show]="isNotificationOpen">
         <div class="notification-header">
             <h5>Notifications</h5>
             <div class="notification-actions">
