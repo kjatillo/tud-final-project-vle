@@ -138,7 +138,18 @@
         </mat-paginator>
     </div>
 
-    <button class="btn btn-secondary" (click)="onBackToModuleDetail()">Back to Module</button>
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
+        <button class="btn btn-secondary w-sm-100 order-2 order-md-1" (click)="onBackToModuleDetail()">
+            Back to Module
+        </button>
+        
+        <button *ngIf="submissions.length > 0" class="btn btn-primary w-sm-100 order-1 order-md-2"
+            (click)="sendGradeNotification()" [disabled]="isSendingNotification">
+            <i class="bi bi-bell me-1"></i>
+            <span *ngIf="!isSendingNotification">Send Grade Notification</span>
+            <span *ngIf="isSendingNotification">Sending...</span>
+        </button>
+    </div>
 </div>
 
 <app-feedback-dialog

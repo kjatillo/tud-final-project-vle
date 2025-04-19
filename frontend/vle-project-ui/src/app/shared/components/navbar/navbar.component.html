@@ -21,6 +21,12 @@
 
             <ul class="navmenu-right d-flex justify-content-end d-none d-lg-flex">
                 <ng-container *ngIf="(isLoggedIn$ | async); else loggedOut">
+                    <!-- Notification Bell -->
+                    <li *ngIf="(isLoggedIn$ | async)">
+                        <app-notification></app-notification>
+                    </li>
+                    
+                    <!-- Welcome User Dropdown -->
                     <li id="userDropdownContainer" class="nav-item dropdown" [class.show]="dropdownOpen">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" 
                            role="button" 
@@ -69,6 +75,11 @@
 
                 <hr *ngIf="(isLoggedIn$ | async)">
 
+                <!-- Mobile Notification Bell -->
+                <li *ngIf="(isLoggedIn$ | async)" class="notification-mobile">
+                    <app-notification></app-notification>
+                </li>
+                
                 <span class="small" *ngIf="(isLoggedIn$ | async)">Welcome, {{ (currentUser$ | async)?.firstName || 'Unknown' }}</span>
                 <li *ngIf="(isLoggedIn$ | async)">
                     <a (click)="logout()">Logout</a>

@@ -10,6 +10,10 @@ export const DIALOG_MESSAGES = {
     GRADE_UPDATE_SUCCESS: 'Successfully updated grades and feedback!',
     GRADE_NO_CHANGES: 'No grades or feedback were updated.',
     GRADE_UPDATE_FAILED: 'Some grades failed to update. Please try again or update them manually.',
-    GRADE_PROCESSING_ERROR: 'Error processing file. Please ensure it is a valid Excel or CSV file with "Email", "Grade", and "Feedback" columns.'
+    GRADE_PROCESSING_ERROR: 'Error processing file. Please ensure it is a valid Excel or CSV file with "Email", "Grade", and "Feedback" columns.',
+
+    GRADE_NOTIFY_SUCCESS: 'Notification sent successfully to all students enroled in this module.',
+    GRADE_NOTIFY_FAIL: 'Failed to send notification. Please try again later.',
+    GRADE_NOTIFY_NO_MODULE: 'Module information is missing. Cannot send notification.'
   };
   
