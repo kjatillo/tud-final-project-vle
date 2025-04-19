@@ -10,6 +10,11 @@ footer p {
 
 a i {
     color: #fff !important;
+    transition: color 0.3s;
+}
+
+.fas.fa-user-tie {
+    font-size: 1.8em;
 }
 
 a:hover i {

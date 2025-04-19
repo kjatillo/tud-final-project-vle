@@ -45,29 +45,45 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.moduleId = this.route.snapshot.paramMap.get('id')!;
+    const routeSub = this.route.paramMap.subscribe(params => {
+      this.moduleId = params.get('id')!;
 
-    this.checkEnrolment();
+      this.showGradeSubmissions = false;
+      this.showViewGrades = false;
+      this.showEditModuleForm = false;
+      this.showParticipants = false;
 
-    if (this.moduleId) {
-      const moduleSub = this.moduleService.getModuleById(this.moduleId).subscribe({
-        next: (module) => {
-          this.module = module;
-
-          const instructorSub = this.authService.currentUser$.pipe(
-            map(user => user?.userId === module.moduleInstructor)
-          ).subscribe(isInstructor => {
-            this.isModuleInstructor = isInstructor;
-            
-            this.checkModuleAccess();
-          });
-
-          this.subscriptions.add(instructorSub);
-        },
-        error: (error) => console.error('Error fetching module', error),
+      const queryParamSub = this.route.queryParamMap.subscribe(queryParams => {
+        const view = queryParams.get('view');
+        if (view === 'grades') {
+          this.showViewGrades = true;
+        }
       });
-      this.subscriptions.add(moduleSub);
-    }
+      this.subscriptions.add(queryParamSub);
+
+      this.checkEnrolment();
+
+      if (this.moduleId) {
+        const moduleSub = this.moduleService.getModuleById(this.moduleId).subscribe({
+          next: (module) => {
+            this.module = module;
+
+            const instructorSub = this.authService.currentUser$.pipe(
+              map(user => user?.userId === module.moduleInstructor)
+            ).subscribe(isInstructor => {
+              this.isModuleInstructor = isInstructor;
+              this.checkModuleAccess();
+            });
+
+            this.subscriptions.add(instructorSub);
+          },
+          error: (error) => console.error('Error fetching module', error),
+        });
+        this.subscriptions.add(moduleSub);
+      }
+    });
+
+    this.subscriptions.add(routeSub);
   }
   
   private checkModuleAccess(): void {
