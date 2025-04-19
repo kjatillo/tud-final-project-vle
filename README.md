@@ -207,7 +207,7 @@ CREATE TABLE ModuleSubmissions (
 );
 ```
 
-**Notification Table**
+**Notifications Table**
 ```sql
 CREATE TABLE Notifications (
     NotificationId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -215,7 +215,7 @@ CREATE TABLE Notifications (
     ModuleId UNIQUEIDENTIFIER NOT NULL,
     ModuleTitle NVARCHAR(255) NOT NULL DEFAULT '',
     UserId NVARCHAR(450) NOT NULL,
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    CreatedAt DATETIME NOT NULL DEFAULT GETUTCDATE(),
     IsRead BIT NOT NULL DEFAULT 0,
     FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
 );

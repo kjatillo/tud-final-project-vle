@@ -49,8 +49,17 @@ public class NotificationsController : ControllerBase
         }
 
         var notifications = await _notificationRepository.GetUserNotificationsAsync(user.Id);
+        var notificationDtos = notifications.Select(n => new NotificationDto
+        {
+            NotificationId = n.NotificationId,
+            Message = n.Message,
+            ModuleId = n.ModuleId,
+            ModuleTitle = n.ModuleTitle,
+            IsRead = n.IsRead,
+            CreatedAt = DateTime.SpecifyKind(n.CreatedAt, DateTimeKind.Utc)
+        });
 
-        return Ok(notifications);
+        return Ok(notificationDtos);
     }
 
     /// <summary>
@@ -162,10 +171,10 @@ public class NotificationsController : ControllerBase
     }
 
     /// <summary>
-    /// Sends a grade notification to all students enrolled in a specific module.
+    /// Sends a grade notification to all students enroled in a specific module.
     /// </summary>
     /// <param name="request">The request containing the module ID, message, and optional module title.</param>
-    /// <returns>A success message or an error if the module does not exist or has no enrolled students.</returns>
+    /// <returns>A success message or an error if the module does not exist or has no enroled students.</returns>
     [HttpPost("send-grade-notification")]
     [Authorize(Roles = nameof(Role.Instructor))]
     public async Task<IActionResult> SendGradeNotification([FromBody] GradeNotificationRequestDto request)
@@ -181,10 +190,10 @@ public class NotificationsController : ControllerBase
             return BadRequest(new { Status = "Error", Message = $"Module with ID {request.ModuleId} does not exist" });
         }
 
-        var enrollmentCount = await _enrolmentRepository.GetModuleEnrolmentsCountAsync(request.ModuleId);
-        if (enrollmentCount == 0)
+        var enrolmentCount = await _enrolmentRepository.GetModuleEnrolmentsCountAsync(request.ModuleId);
+        if (enrolmentCount == 0)
         {
-            return BadRequest(new { Status = "Error", Message = $"No students enrolled in module with ID {request.ModuleId}" });
+            return BadRequest(new { Status = "Error", Message = $"No students enroled in module with ID {request.ModuleId}" });
         }
 
         var result = await _notificationRepository.CreateModuleNotificationsAsync(

@@ -8,6 +8,10 @@
     margin-bottom: 1rem;
 }
 
+table tbody tr td a:hover {
+    text-decoration: underline;
+}
+
 .mat-mdc-paginator {
     background: transparent;
     border-radius: 4px;

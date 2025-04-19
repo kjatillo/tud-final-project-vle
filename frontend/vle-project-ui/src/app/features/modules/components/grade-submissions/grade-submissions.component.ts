@@ -256,7 +256,7 @@ export class GradeSubmissionsComponent implements OnInit {
     }
 
     this.isSendingNotification = true;
-    const message = `Grades and feedback have been updated for ${this.moduleTitle}.`;
+    const message = 'Grades and feedback updated. Visit the Grades page to view your results.';
 
     this.notificationService.sendGradeNotification(this.moduleId, message, this.moduleTitle)
       .subscribe({
