@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { MessageDialogComponent } from '../../../../shared/components/message-dialog/message-dialog.component';
@@ -17,7 +17,7 @@ import { ModuleService } from '../../services/module.service';
   templateUrl: './module-page.component.html',
   styleUrls: ['./module-page.component.scss']
 })
-export class ModulePageComponent implements OnInit {
+export class ModulePageComponent implements OnInit, OnDestroy {
   @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
   @ViewChild('msgDialog') msgDialog!: MessageDialogComponent;
   moduleId!: string;
@@ -41,6 +41,7 @@ export class ModulePageComponent implements OnInit {
   deleteDialogMessage: string = '';
   pendingDeleteId: string = '';
   deleteType: 'page' | 'content' = 'page';
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private assignmentService: AssignmentService,
@@ -52,28 +53,34 @@ export class ModulePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.moduleId = this.route.snapshot.paramMap.get('id')!;
+    this.subscriptions.add(this.route.paramMap.subscribe(params => {
+      this.moduleId = params.get('id')!;
 
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.currentUser = user.userId;
+      this.subscriptions.add(this.authService.currentUser$.subscribe(user => {
+        if (user) {
+          this.currentUser = user.userId;
+        }
+      }));
+
+      if (this.moduleId) {
+        this.subscriptions.add(this.moduleService.getModuleById(this.moduleId).subscribe({
+          next: (module) => {
+            this.subscriptions.add(this.authService.currentUser$.pipe(
+              map(user => user?.userId === module.moduleInstructor)
+            ).subscribe(isInstructor => {
+              this.isModuleInstructor = isInstructor;
+            }));
+          },
+          error: (error) => console.error('Error fetching module', error),
+        }));
       }
-    });
 
-    if (this.moduleId) {
-      this.moduleService.getModuleById(this.moduleId).subscribe({
-        next: (module) => {
-          this.authService.currentUser$.pipe(
-            map(user => user?.userId === module.moduleInstructor)
-          ).subscribe(isInstructor => {
-            this.isModuleInstructor = isInstructor;
-          });
-        },
-        error: (error) => console.error('Error fetching module', error),
-      });
-    }
+      this.loadPages();
+    }));
+  }
 
-    this.loadPages();
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   selectPage(pageId: string): void {
@@ -93,7 +100,7 @@ export class ModulePageComponent implements OnInit {
   loadPages(): void {
     this.isLoadingPages = true;
 
-    this.modulePageService.getPages(this.moduleId)
+    this.subscriptions.add(this.modulePageService.getPages(this.moduleId)
       .subscribe(pages => {
         this.pages = pages;
         if (this.pages.length > 0) {
@@ -101,13 +108,13 @@ export class ModulePageComponent implements OnInit {
         }
 
         this.isLoadingPages = false;
-      });
+      }));
   }
 
   loadContents(pageId: string): void {
     this.isLoadingContents = true;
 
-    this.moduleContentService
+    this.subscriptions.add(this.moduleContentService
       .getContents(this.moduleId, pageId)
       .subscribe({
         next: contents => {
@@ -124,7 +131,7 @@ export class ModulePageComponent implements OnInit {
         error: () => {
           this.isLoadingContents = false;
         }
-      });
+      }));
   }
 
   addPage(): void {
@@ -181,7 +188,7 @@ export class ModulePageComponent implements OnInit {
     if (!confirmed) return;
 
     if (this.deleteType === 'page') {
-      this.modulePageService
+      this.subscriptions.add(this.modulePageService
         .deletePage(this.moduleId, this.pendingDeleteId)
         .subscribe({
           next: () => {
@@ -192,16 +199,16 @@ export class ModulePageComponent implements OnInit {
             this.showContents = false;
           },
           error: (error) => console.error('Error deleting page', error)
-        });
+        }));
     } else {
-      this.moduleContentService
+      this.subscriptions.add(this.moduleContentService
         .deleteContent(this.moduleId, this.selectedPageId, this.pendingDeleteId)
         .subscribe({
           next: () => {
             this.loadContents(this.selectedPageId);
           },
           error: (error) => console.error('Error deleting content', error)
-        });
+        }));
     }
   }
 
@@ -211,13 +218,13 @@ export class ModulePageComponent implements OnInit {
     if (!this.isModuleInstructor) {
       const content = this.contents.find(c => c.contentId === contentId);
 
-      this.assignmentService.getSubmission(contentId).subscribe(response => {
+      this.subscriptions.add(this.assignmentService.getSubmission(contentId).subscribe(response => {
         if (content) {
           content.submissionFileName = response.fileName;
           content.submissionFileUrl = response.fileUrl;
           content.submissionDate = response.submittedDate;
         }
-      });
+      }));
     }
 
     this.isLoadingSubmission = false;
@@ -236,7 +243,7 @@ export class ModulePageComponent implements OnInit {
         formData.append('pageId', this.selectedPageId);
         formData.append('fileName', file.name);
 
-        this.assignmentService.addSubmission(formData).subscribe({
+        this.subscriptions.add(this.assignmentService.addSubmission(formData).subscribe({
           next: () => {
             this.msgDialog.show('success', 'Submission uploaded successfully!');
             this.getSubmissionFileName(contentId);
@@ -244,7 +251,7 @@ export class ModulePageComponent implements OnInit {
           error: (error) => {
             console.error('Error uploading submission', error);
           }
-        });
+        }));
       }
     };
 

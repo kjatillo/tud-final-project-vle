@@ -74,7 +74,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         this.notificationService.markAsRead(notification.id);
       }
       
-      this.router.navigate(['/module', notification.moduleId]);
+      this.router.navigate(['/module', notification.moduleId], { queryParams: { view: 'grades' } });
     }
   }
 

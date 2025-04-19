@@ -58,28 +58,41 @@
     </div>
 
     <button class="btn btn-primary mt-3"
-        *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage" (click)="payAndEnrol()">Pay &
-        Enrol</button>
+        *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage" (click)="payAndEnrol()">
+        Pay & Enrol
+    </button>
 
     <ng-template #modulePage>
-        <app-module-page
-            *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm && !showParticipants">
+        <app-module-page 
+            *ngIf="!showGradeSubmissions && !showViewGrades && !showEditModuleForm && !showParticipants"
+            [attr.key]="moduleId">
         </app-module-page>
     </ng-template>
 
-    <app-grade-submissions *ngIf="showGradeSubmissions && isModuleInstructor"
-        (backToModuleDetails)="onBackToModuleDetail(true)"></app-grade-submissions>
+    <app-grade-submissions 
+        *ngIf="showGradeSubmissions && isModuleInstructor"
+        (backToModuleDetails)="onBackToModuleDetail(true)">
+    </app-grade-submissions>
 
-    <app-view-grades *ngIf="showViewGrades && !isModuleInstructor"
-        (backToModuleDetails)="onBackToModuleDetail(true)"></app-view-grades>
+    <app-view-grades 
+        *ngIf="showViewGrades && !isModuleInstructor"
+        (backToModuleDetails)="onBackToModuleDetail(true)">
+    </app-view-grades>
 
-    <app-module-participants *ngIf="showParticipants"
-        (backToModuleDetails)="onBackToModuleDetail(true)"></app-module-participants>
+    <app-module-participants 
+        *ngIf="showParticipants"
+        (backToModuleDetails)="onBackToModuleDetail(true)">
+    </app-module-participants>
 
-    <app-edit-module *ngIf="(isAdmin$ | async) && showEditModuleForm"
-        (cancelEdit)="onBackToModuleDetail(true)"></app-edit-module>
+    <app-edit-module 
+        *ngIf="(isAdmin$ | async) && showEditModuleForm"
+        (cancelEdit)="onBackToModuleDetail(true)">
+    </app-edit-module>
 </div>
 
-<app-delete-confirmation-dialog #deleteDialog [title]="deleteDialogTitle" [message]="deleteDialogMessage"
+<app-delete-confirmation-dialog 
+    #deleteDialog 
+    [title]="deleteDialogTitle" 
+    [message]="deleteDialogMessage"
     (confirmed)="onDeleteConfirmed($event)">
 </app-delete-confirmation-dialog>
