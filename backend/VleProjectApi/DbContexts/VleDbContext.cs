@@ -42,5 +42,9 @@ public class VleDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Notification>()
             .HasKey(n => n.NotificationId);
+
+        builder.Entity<Notification>()
+            .Property(n => n.CreatedAt)
+            .HasDefaultValueSql("GETUTCDATE()");
     }
 }

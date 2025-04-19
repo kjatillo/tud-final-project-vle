@@ -18,12 +18,11 @@ public class Notification
 
     [Required]
     public string UserId { get; set; } = string.Empty;
-
-    [ForeignKey("UserId")]
-    public ApplicationUser? User { get; set; }
-
     [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; }
 
     public bool IsRead { get; set; } = false;
+    
+    [ForeignKey("UserId")]
+    public ApplicationUser? User { get; set; }
 }

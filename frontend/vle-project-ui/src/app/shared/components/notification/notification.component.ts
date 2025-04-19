@@ -88,7 +88,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   formatTimeAgo(date: Date): string {
     const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
+    const utcDate = new Date(date);
+    const diffInSeconds = Math.floor((now.getTime() - utcDate.getTime()) / 1000);
     
     if (diffInSeconds < 60) {
       return 'just now';
