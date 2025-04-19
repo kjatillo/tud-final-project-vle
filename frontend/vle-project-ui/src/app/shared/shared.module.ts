@@ -5,13 +5,15 @@ import { DeleteConfirmationDialogComponent } from './components/delete-confirmat
 import { FooterComponent } from './components/footer/footer.component';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   declarations: [
     DeleteConfirmationDialogComponent,
     FooterComponent,
     MessageDialogComponent,
-    NavbarComponent
+    NavbarComponent,
+    NotificationComponent
   ],
   imports: [
     CommonModule,
@@ -21,7 +23,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     DeleteConfirmationDialogComponent,
     FooterComponent,
     MessageDialogComponent,
-    NavbarComponent
+    NavbarComponent,
+    NotificationComponent
   ]
 })
 export class SharedModule { }

@@ -4,13 +4,15 @@ import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
+import { AuthService } from '../../../../core/services/auth.service';
 import { MessageDialogComponent } from '../../../../shared/components/message-dialog/message-dialog.component';
 import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import { ModuleAssignment } from '../../models/module-assignment.model';
 import { ModuleSubmission } from '../../models/module-submission.model';
 import { AssignmentService } from '../../services/assignment.service';
+import { ModuleService } from '../../services/module.service';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
-import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-grade-submissions',
@@ -24,6 +26,7 @@ export class GradeSubmissionsComponent implements OnInit {
   isAuthResolved$: Observable<boolean>;
   gradeForm!: FormGroup;
   moduleId!: string;
+  moduleTitle: string = '';
   selectedContentId!: string;
   isModuleInstructor!: boolean;
   submissions: ModuleSubmission[] = [];
@@ -33,9 +36,10 @@ export class GradeSubmissionsComponent implements OnInit {
   currentFeedback: string = '';
   currentSubmissionId: string = '';
   searchQuery: string = '';
-  isDragOver: boolean = false;
   isLoadingSubmissions: boolean = false;
-  
+  isSendingNotification: boolean = false;
+  isDragOver: boolean = false;
+
   pageSize = 5;
   pageSizeOptions = [5, 10, 25];
   pageIndex = 0;
@@ -43,18 +47,26 @@ export class GradeSubmissionsComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private assignmentService: AssignmentService,
+    private moduleService: ModuleService,
+    private notificationService: NotificationService,
     private fb: FormBuilder,
     private route: ActivatedRoute
-  ) { 
+  ) {
     this.isAuthResolved$ = this.authService.isAuthResolved;
   }
 
   ngOnInit(): void {
+    this.isLoadingSubmissions = true;
+
     this.gradeForm = this.fb.group({
       contentId: ['']
     });
 
     this.moduleId = this.route.snapshot.paramMap.get('id')!;
+
+    this.moduleService.getModuleById(this.moduleId).subscribe(module => {
+      this.moduleTitle = module.moduleName;
+    });
 
     this.assignmentService.getModuleAssignments(this.moduleId).subscribe(assignments => {
       this.assignments = assignments;
@@ -69,19 +81,23 @@ export class GradeSubmissionsComponent implements OnInit {
 
   loadSubmissions(contentId: string): void {
     this.submissions = [];
-    this.isLoadingSubmissions = true;
 
-    this.assignmentService.getGrades(contentId).subscribe(submissions => {
-      this.submissions = submissions.map((submission: { grade: number; }) => ({
-        ...submission,
-        originalGrade: submission.grade,
-        isGradeChanged: false
-      }));
-      this.filteredSubmissions = [...this.submissions];
-      this.updateDisplayedSubmissions();
+    this.assignmentService.getGrades(contentId).subscribe({
+      next: (submissions) => {
+        this.submissions = submissions.map((submission: { grade: number; }) => ({
+          ...submission,
+          originalGrade: submission.grade,
+          isGradeChanged: false
+        }));
+        this.filteredSubmissions = [...this.submissions];
+        this.updateDisplayedSubmissions();
+
+        this.isLoadingSubmissions = false;
+      },
+      error: () => {
+        this.isLoadingSubmissions = false;
+      }
     });
-
-    this.isLoadingSubmissions = false;
   }
 
   onSearch(): void {
@@ -181,12 +197,12 @@ export class GradeSubmissionsComponent implements OnInit {
 
         rows.forEach((row) => {
           const email = (row.Email || row.email)?.toString().trim();
-          const grade = typeof (row.Grade || row.grade) === 'number' ? (row.Grade || row.grade) : 
-                       typeof (row.Grade || row.grade) === 'string' ? parseFloat(row.Grade || row.grade) : 
-                       null;
+          const grade = typeof (row.Grade || row.grade) === 'number' ? (row.Grade || row.grade) :
+            typeof (row.Grade || row.grade) === 'string' ? parseFloat(row.Grade || row.grade) :
+              null;
           const feedback = (row.Feedback || row.feedback)?.toString().trim();
 
-          const submission = this.submissions.find(s => 
+          const submission = this.submissions.find(s =>
             s.userEmail.toLowerCase() === email.toLowerCase()
           );
 
@@ -200,13 +216,13 @@ export class GradeSubmissionsComponent implements OnInit {
               submission.feedback = feedback.trim();
               isFeedbackChanged = true;
             }
-            
+
             if (submission.isGradeChanged || isFeedbackChanged) {
               const gradeUpdate = this.assignmentService.updateGrade(
-                submission.submissionId, 
+                submission.submissionId,
                 { grade: normalisedGrade, feedback: submission.feedback }
               );
-              
+
               updatedGradeList.push(gradeUpdate);
             }
           }
@@ -231,5 +247,32 @@ export class GradeSubmissionsComponent implements OnInit {
       }
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  sendGradeNotification(): void {
+    if (!this.moduleId || !this.moduleTitle) {
+      this.msgDialog.show('warning', DIALOG_MESSAGES.GRADE_NOTIFY_NO_MODULE);
+      return;
+    }
+
+    this.isSendingNotification = true;
+    const message = `Grades and feedback have been updated for ${this.moduleTitle}.`;
+
+    this.notificationService.sendGradeNotification(this.moduleId, message, this.moduleTitle)
+      .subscribe({
+        next: (success) => {
+          this.isSendingNotification = false;
+          if (success) {
+            this.msgDialog.show('success', DIALOG_MESSAGES.GRADE_NOTIFY_SUCCESS);
+          } else {
+            this.msgDialog.show('warning', DIALOG_MESSAGES.GRADE_NOTIFY_FAIL);
+          }
+        },
+        error: (err) => {
+          console.error('Error sending notification:', err);
+          this.isSendingNotification = false;
+          this.msgDialog.show('warning', DIALOG_MESSAGES.GRADE_NOTIFY_FAIL);
+        }
+      });
   }
 }

@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import { PaymentService } from '../../../payment/services/payment.service';
 import { Module } from '../../models/module.model';
 import { EnrolmentService } from '../../services/enrolment.service';
@@ -14,7 +15,7 @@ import { ModuleService } from '../../services/module.service';
   templateUrl: './module-detail.component.html',
   styleUrls: ['./module-detail.component.scss'],
 })
-export class ModuleDetailComponent implements OnInit {
+export class ModuleDetailComponent implements OnInit, OnDestroy {
   @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
   module!: Module;
   moduleId!: string;
@@ -27,11 +28,13 @@ export class ModuleDetailComponent implements OnInit {
   showParticipants: boolean = false;
   deleteDialogTitle: string = '';
   deleteDialogMessage: string = '';
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
     private enrolmentService: EnrolmentService,
     private moduleService: ModuleService,
+    private notificationService: NotificationService,
     private paymentService: PaymentService,
     private route: ActivatedRoute,
     private router: Router
@@ -47,26 +50,53 @@ export class ModuleDetailComponent implements OnInit {
     this.checkEnrolment();
 
     if (this.moduleId) {
-      this.moduleService.getModuleById(this.moduleId).subscribe({
+      const moduleSub = this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {
           this.module = module;
 
-          this.authService.currentUser$.pipe(
+          const instructorSub = this.authService.currentUser$.pipe(
             map(user => user?.userId === module.moduleInstructor)
           ).subscribe(isInstructor => {
             this.isModuleInstructor = isInstructor;
+            
+            this.checkModuleAccess();
           });
+
+          this.subscriptions.add(instructorSub);
         },
         error: (error) => console.error('Error fetching module', error),
       });
+      this.subscriptions.add(moduleSub);
+    }
+  }
+  
+  private checkModuleAccess(): void {
+    if (this.isModuleInstructor || this.isEnroled) {
+      this.notificationService.ensureConnectionAndJoinModule(this.moduleId);
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.moduleId) {
+      this.notificationService.leaveModuleGroup(this.moduleId);
+    }
+
+    this.subscriptions.unsubscribe();
+  }
+
   checkEnrolment(): void {
-    this.enrolmentService.isUserEnroled(this.moduleId).subscribe({
-      next: (isEnroled) => this.isEnroled = isEnroled,
-      error: (error) => console.error('Error checking enrollment', error),
+    const enrolmentSub = this.enrolmentService.isUserEnroled(this.moduleId).subscribe({
+      next: (isEnroled) => {
+        this.isEnroled = isEnroled;
+        
+        if (this.isModuleInstructor !== undefined) {
+          this.checkModuleAccess();
+        }
+      },
+      error: (error) => console.error('Error checking enrolment', error),
     });
+
+    this.subscriptions.add(enrolmentSub);
   }
 
   payAndEnrol(): void {
@@ -96,8 +126,7 @@ export class ModuleDetailComponent implements OnInit {
     if (!confirmed) return;
 
     this.moduleService.deleteModule(this.moduleId).subscribe({
-      next: (response) => {
-        console.log('Module deleted successfully', response);
+      next: () => {
         this.router.navigate(['/explore']);
       },
       error: (error) => {
@@ -130,7 +159,7 @@ export class ModuleDetailComponent implements OnInit {
     this.showParticipants = false;
     this.showGradeSubmissions = false;
     this.showViewGrades = false;
-    
+
     if (refresh) {
       this.moduleService.getModuleById(this.moduleId).subscribe({
         next: (module) => {

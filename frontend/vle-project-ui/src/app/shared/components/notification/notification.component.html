@@ -1,0 +1,50 @@
+<div id="notificationDropdownContainer" class="nav-item dropdown">
+    <a class="nav-link notification-bell" role="button" [attr.aria-expanded]="isOpen" (click)="toggleDropdown($event)"
+        [attr.aria-label]="'Notifications'">
+        <i class="bi bi-bell-fill" aria-hidden="true"></i>
+        <span *ngIf="unreadCount > 0" class="notification-badge"
+            [attr.aria-label]="unreadCount + ' unread notifications'">
+            {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-end notification-dropdown" [class.show]="isOpen">
+        <div class="notification-header">
+            <h5>Notifications</h5>
+            <div class="notification-actions">
+                <button class="btn btn-sm btn-link" (click)="markAllAsRead()" title="Mark all as read">Mark all
+                    read</button>
+                <button class="btn btn-sm btn-link" (click)="clearAll()" title="Clear all notifications">Clear
+                    all</button>
+            </div>
+        </div>
+
+        <div class="notification-body">
+            <ng-container *ngIf="(notifications$ | async)?.length; else noNotifications">
+                <div *ngFor="let notification of notifications$ | async" class="notification-item"
+                    [class.unread]="!notification.isRead" [class.clickable]="!!notification.moduleId"
+                    (click)="navigateToModule(notification, $event)">
+                    <div class="notification-content">
+                        <p>{{ notification.message }}</p>
+                        <small class="notification-time">
+                            <span *ngIf="notification.moduleTitle" class="module-name">{{ notification.moduleTitle }}
+                                &bull; </span>
+                            {{ formatTimeAgo(notification.createdAt) }}
+                        </small>
+                    </div>
+                    <button *ngIf="!notification.isRead" class="btn btn-sm mark-read-btn"
+                        (click)="markAsRead(notification, $event)" title="Mark as read">
+                        <i class="bi bi-check2"></i>
+                    </button>
+                </div>
+            </ng-container>
+
+            <ng-template #noNotifications>
+                <div class="no-notifications">
+                    <i class="bi bi-bell-slash"></i>
+                    <p>No notifications</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>
