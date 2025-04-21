@@ -92,6 +92,7 @@ public class Startup
         });
 
         services.AddScoped<IBlobStorageService, BlobStorageService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
         services.AddScoped<IModuleContentRepository, ModuleContentRepository>();
         services.AddScoped<IModulePageRepository, ModulePageRepository>();
