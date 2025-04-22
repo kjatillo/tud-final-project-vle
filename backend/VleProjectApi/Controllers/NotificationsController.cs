@@ -56,7 +56,8 @@ public class NotificationsController : ControllerBase
             ModuleId = n.ModuleId,
             ModuleTitle = n.ModuleTitle,
             IsRead = n.IsRead,
-            CreatedAt = DateTime.SpecifyKind(n.CreatedAt, DateTimeKind.Utc)
+            CreatedAt = DateTime.SpecifyKind(n.CreatedAt, DateTimeKind.Utc),
+            NotificationType = n.NotificationType
         });
 
         return Ok(notificationDtos);
@@ -117,7 +118,12 @@ public class NotificationsController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _notificationRepository.MarkAsReadByContentAsync(user.Id, request.ModuleId, request.Message);
+        if (!request.ModuleId.HasValue)
+        {
+            return BadRequest(new { Status = "Error", Message = "ModuleId is required" });
+        }
+
+        var result = await _notificationRepository.MarkAsReadByContentAsync(user.Id, request.ModuleId.Value, request.Message);
         if (!result.Success)
         {
             return NotFound(new { Status = "Error", Message = "Notification not found" });

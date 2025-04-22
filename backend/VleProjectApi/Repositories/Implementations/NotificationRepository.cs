@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using VleProjectApi.DbContexts;
 using VleProjectApi.Entities;
+using VleProjectApi.Enums;
 using VleProjectApi.Repositories.Interfaces;
 
 namespace VleProjectApi.Repositories.Implementations;
@@ -9,11 +11,19 @@ public class NotificationRepository : INotificationRepository
 {
     private readonly VleDbContext _context;
     private readonly IEnrolmentRepository _enrolmentRepository;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public NotificationRepository(VleDbContext context, IEnrolmentRepository enrolmentRepository)
+    public NotificationRepository(
+        VleDbContext context,
+        IEnrolmentRepository enrolmentRepository,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
     /// <summary>
@@ -149,7 +159,8 @@ public class NotificationRepository : INotificationRepository
                 ModuleTitle = moduleTitle,
                 UserId = user.Id,
                 CreatedAt = DateTime.UtcNow,
-                IsRead = false
+                IsRead = false,
+                NotificationType = nameof(NotificationType.Grade)
             });
         }
 
@@ -172,7 +183,7 @@ public class NotificationRepository : INotificationRepository
     {
         var notification = await _context.Notifications
             .Where(n => n.UserId == userId &&
-                   n.ModuleId == moduleId &&
+                   n.ModuleId.HasValue && n.ModuleId.Value == moduleId &&
                    n.Message == message &&
                    !n.IsRead)
             .OrderByDescending(n => n.CreatedAt)
@@ -183,7 +194,7 @@ public class NotificationRepository : INotificationRepository
             // Try fuzzy match
             notification = await _context.Notifications
                 .Where(n => n.UserId == userId &&
-                       n.ModuleId == moduleId &&
+                       n.ModuleId.HasValue && n.ModuleId.Value == moduleId &&
                        (n.Message.ToLower().Contains(message.ToLower()) ||
                        (message.Length > 10 && message.ToLower().Contains(n.Message.ToLower()))) &&
                        !n.IsRead)
@@ -198,5 +209,43 @@ public class NotificationRepository : INotificationRepository
         await _context.SaveChangesAsync();
 
         return (true, notification.NotificationId);
+    }
+
+    /// <summary>
+    /// Creates notifications for all users with admin role.
+    /// </summary>
+    /// <param name="message">The message content of the notification.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result is a boolean indicating 
+    /// whether any notifications were created. Returns true if notifications were created, otherwise false.
+    /// </returns>
+    public async Task<bool> CreateAdminNotificationAsync(string message)
+    {
+        var adminRoleName = Role.Admin.ToString();
+
+        var adminRole = await _roleManager.FindByNameAsync(adminRoleName);
+        if (adminRole == null) return false;
+
+        var adminUserIds = await _context.UserRoles
+            .Where(ur => ur.RoleId == adminRole.Id)
+            .Select(ur => ur.UserId)
+            .ToListAsync();
+
+        if (!adminUserIds.Any()) return false;
+
+        foreach (var userId in adminUserIds)
+        {
+            await _context.Notifications.AddAsync(new Notification
+            {
+                Message = message,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false,
+                NotificationType = nameof(NotificationType.Admin)
+            });
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

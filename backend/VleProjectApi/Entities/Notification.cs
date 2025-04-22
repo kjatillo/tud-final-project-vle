@@ -11,18 +11,19 @@ public class Notification
     [Required]
     public string Message { get; set; } = string.Empty;
 
-    [Required]
-    public Guid ModuleId { get; set; }
+    public Guid? ModuleId { get; set; }
 
-    public string ModuleTitle { get; set; } = string.Empty;
+    public string? ModuleTitle { get; set; }
 
-    [Required]
-    public string UserId { get; set; } = string.Empty;
+    public string? UserId { get; set; }
+
     [Required]
     public DateTime CreatedAt { get; set; }
 
     public bool IsRead { get; set; } = false;
-    
+
+    public string NotificationType { get; set; } = nameof(Enums.NotificationType.Grade);
+
     [ForeignKey("UserId")]
     public ApplicationUser? User { get; set; }
 }
