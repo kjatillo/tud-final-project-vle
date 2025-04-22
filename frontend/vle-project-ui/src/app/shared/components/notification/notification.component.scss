@@ -112,6 +112,7 @@
 
     &.unread {
         background-color: rgba(242, 239, 239, 0.5);
+        border-left: 3px solid #007e82;
 
         .notification-content p {
             font-weight: 500;
@@ -119,9 +120,8 @@
     }
 
     &.admin-notification {
-        background-color: rgba(242, 239, 239, 0.5);
-
         &.unread {
+            background-color: rgba(242, 239, 239, 0.5);
             border-left: 3px solid #007e82;
         }
 
