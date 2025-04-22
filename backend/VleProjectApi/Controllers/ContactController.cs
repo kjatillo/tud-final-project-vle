@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using VleProjectApi.Dtos;
+using VleProjectApi.Hubs;
+using VleProjectApi.Repositories.Interfaces;
 using VleProjectApi.Services.Interfaces;
 
 namespace VleProjectApi.Controllers;
@@ -10,17 +13,23 @@ public class ContactController : ControllerBase
 {
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly IHubContext<NotificationHub> _hubContext;
 
     public ContactController(
         IEmailService emailService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        INotificationRepository notificationRepository,
+        IHubContext<NotificationHub> hubContext)
     {
         _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _notificationRepository = notificationRepository ?? throw new ArgumentNullException(nameof(notificationRepository));
+        _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
     }
 
     /// <summary>
-    /// Submits a contact form and sends an email to the site admin.
+    /// Submits a contact form, sends an email to the site admin, and creates notifications for all admin users.
     /// </summary>
     /// <param name="contactDto">The contact form data containing name, email, subject, and message.</param>
     /// <returns>A success message if the contact form is submitted successfully, otherwise an error message.</returns>
@@ -51,6 +60,14 @@ public class ContactController : ControllerBase
                 $"TUD Y4 Project | {contactDto.Subject}",
                 emailBody,
                 contactDto.Email);
+
+            var notificationMessage = $"New contact form submission from {contactDto.Name}: {contactDto.Subject}";
+            var result = await _notificationRepository.CreateAdminNotificationAsync(notificationMessage);
+
+            if (result)
+            {
+                await _hubContext.Clients.Group("AdminGroup").SendAsync("ReceiveAdminNotification", notificationMessage);
+            }
 
             return Ok(new { Status = "Success", Message = "Your message has been sent successfully!" });
         }

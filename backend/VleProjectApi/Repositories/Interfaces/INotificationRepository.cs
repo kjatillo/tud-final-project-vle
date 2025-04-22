@@ -11,5 +11,6 @@ public interface INotificationRepository
     Task<bool> DeleteNotificationAsync(Guid notificationId);
     Task<bool> DeleteAllNotificationsAsync(string userId);
     Task<bool> CreateModuleNotificationsAsync(Guid moduleId, string message, string moduleTitle);
+    Task<bool> CreateAdminNotificationAsync(string message);
     Task<(bool Success, Guid? NotificationId)> MarkAsReadByContentAsync(string userId, Guid moduleId, string message);
 }

@@ -41,6 +41,20 @@ public class NotificationHub : Hub
     }
 
     /// <summary>
+    /// Sends an admin notification to all clients in the admin group.
+    /// </summary>
+    /// <param name="message">The notification message to be sent.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <remarks>
+    /// This method sends a notification to the AdminGroup SignalR group,
+    /// notifying all admin users about events like contact form submissions.
+    /// </remarks>
+    public async Task SendAdminNotification(string message)
+    {
+        await Clients.Group("AdminGroup").SendAsync("ReceiveAdminNotification", message);
+    }
+
+    /// <summary>
     /// Adds the current connection to a SignalR group associated with a specific module.
     /// </summary>
     /// <param name="moduleId">The unique identifier of the module as a string.</param>
@@ -66,6 +80,32 @@ public class NotificationHub : Hub
     public async Task LeaveModuleGroup(string moduleId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"module-{moduleId}");
+    }
+
+    /// <summary>
+    /// Adds the current connection to the admin group if the user is an admin.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <remarks>
+    /// This method allows an admin user to join the AdminGroup SignalR group,
+    /// enabling them to receive admin-specific notifications.
+    /// </remarks>
+    public async Task JoinAdminGroup()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "AdminGroup");
+    }
+
+    /// <summary>
+    /// Removes the current connection from the admin group.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <remarks>
+    /// This method allows an admin user to leave the AdminGroup SignalR group,
+    /// stopping them from receiving admin-specific notifications.
+    /// </remarks>
+    public async Task LeaveAdminGroup()
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "AdminGroup");
     }
 
     /// <summary>
