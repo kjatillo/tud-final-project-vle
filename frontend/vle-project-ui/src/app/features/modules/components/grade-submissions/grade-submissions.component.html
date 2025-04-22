@@ -145,9 +145,15 @@
         
         <button *ngIf="submissions.length > 0" class="btn btn-primary w-sm-100 order-1 order-md-2"
             (click)="sendGradeNotification()" [disabled]="isSendingNotification">
-            <i class="bi bi-bell me-1"></i>
-            <span *ngIf="!isSendingNotification">Send Grade Notification</span>
-            <span *ngIf="isSendingNotification">Sending...</span>
+            <div *ngIf="!isSendingNotification">
+                <span>Send Grade Notification</span>
+                <i class="bi bi-bell ms-1"></i>
+            </div>
+
+            <div *ngIf="isSendingNotification" class="d-flex align-items-center">
+                <span>Sending...</span>
+                <mat-spinner [diameter]="20" class="ms-2"></mat-spinner>
+            </div>
         </button>
     </div>
 </div>

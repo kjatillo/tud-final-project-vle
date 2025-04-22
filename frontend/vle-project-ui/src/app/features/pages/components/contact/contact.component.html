@@ -1,0 +1,87 @@
+<div class="container mt-5">
+    <div *ngIf="!(isAuthResolved$ | async); else contact" class="spinner-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <ng-template #contact>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <div class="section-title text-center">
+                            <h2 class="centered mb-4">I'd Love to Hear from You!</h2>
+                            <p class="text-muted mt-3 mb-5" *ngIf="!formSubmitted">Send me a message and I'll get back to you as soon as I can.</p>
+                        </div>
+                        
+                        <div *ngIf="formSubmitted">
+                            <div class="alert alert-success text-center mt-5">
+                                <h4 class="alert-heading mb-3">Thank you for getting in touch!</h4>
+                                <p>Your message has been sent successfully.</p>
+                            </div>
+    
+                            <div class="d-flex align-items-center justify-content-center my-4">
+                                <button type="button" class="btn btn-primary" (click)="navigateExploreModules()">Explore Modules</button>
+                            </div>
+                        </div>
+    
+                        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!formSubmitted">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" id="name" class="form-control" formControlName="name"
+                                    [ngClass]="{'is-invalid': contactForm.get('name')?.invalid && contactForm.get('name')?.touched}">
+                                <div class="invalid-feedback" *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
+                                    <ng-container *ngIf="contactForm.get('name')?.errors?.['required']">Name is required</ng-container>
+                                </div>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" id="email" class="form-control" formControlName="email"
+                                    [ngClass]="{'is-invalid': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}">
+                                <div class="invalid-feedback" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+                                    <ng-container *ngIf="contactForm.get('email')?.errors?.['required']">Email is required</ng-container>
+                                    <ng-container *ngIf="contactForm.get('email')?.errors?.['email']">Please enter a valid email</ng-container>
+                                </div>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject *</label>
+                                <input type="text" id="subject" class="form-control" formControlName="subject"
+                                    [ngClass]="{'is-invalid': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}">
+                                <div class="invalid-feedback" *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched">
+                                    <ng-container *ngIf="contactForm.get('subject')?.errors?.['required']">Subject is required</ng-container>
+                                </div>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea id="message" class="form-control" formControlName="message" rows="5"
+                                    [ngClass]="{'is-invalid': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"></textarea>
+                                <div class="invalid-feedback" *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+                                    <ng-container *ngIf="contactForm.get('message')?.errors?.['required']">Message is required</ng-container>
+                                    <ng-container *ngIf="contactForm.get('message')?.errors?.['minlength']">Message must be at least 10 characters</ng-container>
+                                </div>
+                            </div>
+    
+                            <div class="d-flex align-items-center justify-content-center mt-4 mb-0">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center" [disabled]="isSubmittingForm">
+                                    <div *ngIf="!isSubmittingForm">
+                                        <span>Send Message</span>
+                                        <i class="bi bi-send ms-1"></i>
+                                    </div>
+
+                                    <div *ngIf="isSubmittingForm" class="d-flex align-items-center">
+                                        <span>Sending...</span>
+                                        <mat-spinner [diameter]="20" class="ms-2"></mat-spinner>
+                                    </div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>
+
+<app-message-dialog #msgDialog></app-message-dialog>

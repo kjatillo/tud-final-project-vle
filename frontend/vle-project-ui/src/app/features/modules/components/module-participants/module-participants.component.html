@@ -47,7 +47,11 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
         <button class="btn btn-secondary w-sm-100 order-2 order-md-1" (click)="onBackToModuleDetail()">Back to Module</button>
-        <button class="btn btn-primary w-sm-100 order-1 order-md-2" (click)="downloadParticipants()"
-        *ngIf="participants.length > 0 && ((isAdmin$ | async) || isModuleInstructor)"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV</button>
+        <button class="btn btn-primary w-sm-100 order-1 order-md-2" 
+            (click)="downloadParticipants()"
+            *ngIf="participants.length > 0 && ((isAdmin$ | async) || isModuleInstructor)">
+                Export CSV
+                <i class="bi bi-file-earmark-spreadsheet ms-1"></i>
+        </button>
     </div>
 </div>

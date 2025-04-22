@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './features/home/home.component';
 import { CreateModuleComponent } from './features/modules/components/create-module/create-module.component';
 import { EditModuleComponent } from './features/modules/components/edit-module/edit-module.component';
 import { ExploreModulesComponent } from './features/modules/components/explore-modules/explore-modules.component';
 import { ModuleDetailComponent } from './features/modules/components/module-detail/module-detail.component';
+import { ContactComponent } from './features/pages/components/contact/contact.component';
+import { HomeComponent } from './features/pages/components/home/home.component';
 import { PaymentCancelComponent } from './features/payment/components/payment-cancel/payment-cancel.component';
 import { PaymentSuccessComponent } from './features/payment/components/payment-success/payment-success.component';
 import { LoginComponent } from './features/users/components/login/login.component';
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'explore', component: ExploreModulesComponent },
   { path: 'payment-cancel', component: PaymentCancelComponent },
   { path: 'payment-success', component: PaymentSuccessComponent },
+  { path: 'contact', component: ContactComponent },
 ];
 
 @NgModule({
