@@ -49,11 +49,11 @@
                 </ng-container>
 
                 <ng-template #loggedOut>
-                    <li class="pe-0">
-                        <button class="btn btn-outline-primary" (click)="navigateTo('/register')">Register</button>
-                    </li>
                     <li>
                         <button class="btn btn-primary" (click)="navigateTo('/login')">Login</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-outline-primary" (click)="navigateTo('/register')">Register</button>
                     </li>
                 </ng-template>
             </ul>
@@ -92,10 +92,10 @@
                 </li>
                 <ng-container *ngIf="!(isLoggedIn$ | async)">
                     <li>
-                        <a href="/register">Register</a>
+                        <a href="/login">Login</a>
                     </li>
                     <li>
-                        <a href="/login">Login</a>
+                        <a href="/register">Register</a>
                     </li>
                 </ng-container>
             </ul>

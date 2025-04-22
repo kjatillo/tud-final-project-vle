@@ -106,14 +106,14 @@ export class AuthService {
       .subscribe({
         next: () => {
           this.clearAuthState();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/']);
           this.isLoggingOut = false;
         },
         error: (error) => {
           console.error('Logout error:', error);
           
           this.clearAuthState();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/']);
           this.isLoggingOut = false;
         }
       });
