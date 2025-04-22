@@ -56,6 +56,7 @@ export class NotificationService {
       this.hubConnection.start()
         .then(() => {
           this.fetchAndJoinEnroledModuleGroups();
+          this.checkAndJoinAdminGroup();
         })
         .catch(err => console.error('Error while starting SignalR connection:', err));
     }
@@ -92,9 +93,10 @@ export class NotificationService {
 
     connection.onreconnected(() => {
       this.joinEnroledModuleGroups();
+      this.checkAndJoinAdminGroup();
     });
 
-    // Notification handler
+    // Grade notification handler
     connection.on('ReceiveGradeNotification', (message: string, moduleId: string, moduleTitle: string) => {
       const notification: Notification = {
         id: this.generateId(),
@@ -103,7 +105,22 @@ export class NotificationService {
         moduleTitle,
         createdAt: new Date(),
         isRead: false,
-        tempId: true
+        tempId: true,
+        notificationType: 'Grade'
+      };
+
+      this.addNotification(notification);
+    });
+    
+    // Admin notification handler
+    connection.on('ReceiveAdminNotification', (message: string) => {
+      const notification: Notification = {
+        id: this.generateId(),
+        message,
+        createdAt: new Date(),
+        isRead: false,
+        tempId: true,
+        notificationType: 'Admin'
       };
 
       this.addNotification(notification);
@@ -218,6 +235,67 @@ export class NotificationService {
     }
   }
 
+  // ================== ADMIN GROUP MANAGEMENT ==================
+  
+  /**
+   * Checks if the user is an admin and joins the admin group
+   */
+  private checkAndJoinAdminGroup(): void {
+    if (!this.isHubConnected()) return;
+    
+    this.authService.userRoles$.subscribe(roles => {
+      if (roles.includes('Admin')) {
+        this.joinAdminGroup();
+      }
+    });
+  }
+  
+  /**
+   * Joins the admin notification group
+   */
+  public joinAdminGroup(): void {
+    if (this.isHubConnected()) {
+      this.hubConnection!.invoke('JoinAdminGroup')
+        .catch(err => console.error('Error while joining admin group:', err));
+    } else {
+      console.error('Cannot join admin group: SignalR not connected');
+    }
+  }
+  
+  /**
+   * Leaves the admin notification group
+   */
+  public leaveAdminGroup(): void {
+    if (this.isHubConnected()) {
+      this.hubConnection!.invoke('LeaveAdminGroup')
+        .catch(err => console.error('Error while leaving admin group:', err));
+    }
+  }
+  
+  /**
+   * Sends an admin notification
+   */
+  public sendAdminNotification(message: string): Observable<boolean> {
+    return new Observable<boolean>(observer => {
+      if (this.isHubConnected()) {
+        this.hubConnection!.invoke('SendAdminNotification', message)
+          .then(() => {
+            observer.next(true);
+            observer.complete();
+          })
+          .catch(err => {
+            console.error('Error sending admin notification via SignalR:', err);
+            observer.next(false);
+            observer.complete();
+          });
+      } else {
+        console.error('Cannot send notification: connection not established');
+        observer.next(false);
+        observer.complete();
+      }
+    });
+  }
+
   // ================== NOTIFICATION MANAGEMENT ==================
 
   /**
@@ -250,7 +328,8 @@ export class NotificationService {
       moduleId: n.moduleId,
       moduleTitle: n.moduleTitle,
       createdAt: new Date(n.createdAt),
-      isRead: n.isRead === true
+      isRead: n.isRead === true,
+      notificationType: n.notificationType || 'Grade' // Default to 'Grade' for backward compatibility
     }));
     
     return mapped.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -346,7 +425,10 @@ export class NotificationService {
   /**
    * Finds and marks notification by content (for temporary notifications)
    */
-  private findAndMarkNotificationByContent(moduleId: string, message: string): void {
+  private findAndMarkNotificationByContent(moduleId: string | undefined, message: string): void {
+    // Skip if moduleId is undefined (like for admin notifications)
+    if (moduleId === undefined) return;
+    
     this.http.post<{status: string, message: string, notificationId?: string}>(
       `${this.notificationsBaseEndpoint}/mark-by-content`, 
       { moduleId, message }
@@ -383,6 +465,23 @@ export class NotificationService {
         localStorage.removeItem('notifications');
       },
       error: (err) => console.error('Error clearing notifications:', err)
+    });
+  }
+
+  /**
+   * Deletes a single notification
+   */
+  public deleteNotification(notificationId: string): void {
+    this.http.delete<any>(`${this.notificationsBaseEndpoint}/${notificationId}`).subscribe({
+      next: () => {
+        const currentNotifications = this.notificationsSubject.value;
+        const updatedNotifications = currentNotifications.filter(n => n.id !== notificationId);
+        
+        this.notificationsSubject.next(updatedNotifications);
+        this.updateUnreadCount();
+        this.saveNotificationsToStorage();
+      },
+      error: (err) => console.error('Error deleting notification:', err)
     });
   }
 

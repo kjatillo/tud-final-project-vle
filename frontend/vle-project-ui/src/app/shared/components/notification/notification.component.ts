@@ -78,17 +78,18 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   navigateToModule(notification: Notification, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!notification.isRead) {
+      this.notificationService.markAsRead(notification.id);
+    }
+
     if (notification.moduleId) {
-      event.preventDefault();
-      event.stopPropagation();
-
       this.isNotificationOpen = false;
-
-      if (!notification.isRead) {
-        this.notificationService.markAsRead(notification.id);
-      }
-
       this.router.navigate(['/module', notification.moduleId], { queryParams: { view: 'grades' } });
+    } else if (notification.notificationType === 'Admin') {
+      this.isNotificationOpen = false;
     }
   }
 
@@ -98,6 +99,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   clearAll(): void {
     this.notificationService.clearNotifications();
+  }
+
+  deleteNotification(notification: Notification, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    this.notificationService.deleteNotification(notification.id);
   }
 
   formatTimeAgo(date: Date): string {
