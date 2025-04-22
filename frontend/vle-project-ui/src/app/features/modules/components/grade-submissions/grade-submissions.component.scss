@@ -31,7 +31,7 @@
     margin-bottom: 1rem;
 }
 
-table tbody tr td a:hover {
+table tbody tr td #submission-file:hover {
     text-decoration: underline;
 }
 
@@ -95,7 +95,7 @@ td input[type="number"] {
             border-radius: 8px;
             border: 1px solid #dee2e6;
 
-            i {
+            button i {
                 color: #fff !important;
             }
         }
