@@ -14,6 +14,9 @@ export const DIALOG_MESSAGES = {
 
     GRADE_NOTIFY_SUCCESS: 'Notification sent successfully to all students enroled in this module.',
     GRADE_NOTIFY_FAIL: 'Failed to send notification. Please try again later.',
-    GRADE_NOTIFY_NO_MODULE: 'Module information is missing. Cannot send notification.'
+    GRADE_NOTIFY_NO_MODULE: 'Module information is missing. Cannot send notification.',
+
+    // Contact
+    CONTACT_MSG_FAILED: 'We were unable to send your message at this time. Please try again later.'
   };
   

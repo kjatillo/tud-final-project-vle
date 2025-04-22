@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { catchError, Observable, of, switchMap } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
-import { Module } from '../modules/models/module.model';
-import { EnrolmentService } from '../modules/services/enrolment.service';
-import { User } from '../users/models/user.model';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Module } from '../../../modules/models/module.model';
+import { EnrolmentService } from '../../../modules/services/enrolment.service';
+import { User } from '../../../users/models/user.model';
 
 @Component({
   selector: 'app-home',

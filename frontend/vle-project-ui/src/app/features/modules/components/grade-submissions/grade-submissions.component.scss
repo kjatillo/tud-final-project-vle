@@ -6,6 +6,15 @@
 
 .btn span {
     color: #fff;
+
+    &:disabled {
+        color: #fff !important;
+        opacity: 0.8;
+    }
+}
+
+::ng-deep .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #fff;
 }
 
 .btn-group {
