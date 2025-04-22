@@ -84,7 +84,7 @@
                     <td>{{ submission.lastName }}, {{ submission.firstName }}</td>
                     <td>{{ submission.userEmail }}</td>
                     <td>
-                        <a [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
+                        <a id="submission-file" [href]="submission.fileUrl" target="_blank">{{ submission.fileName }}</a>
                     </td>
                     <td>
                         <input type="number" [(ngModel)]="submission.grade" min="0" max="100" step="0.01"
@@ -95,7 +95,10 @@
                         <div class="d-none d-md-block">
                             <button class="btn btn-primary btn-sm me-2" type="button"
                                 (click)="updateGrade(submission.submissionId, submission.grade, submission.feedback)"
-                                [disabled]="!submission.isGradeChanged">Update Grade</button>
+                                [disabled]="!submission.isGradeChanged">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Update Grade
+                            </button>
                             <div class="btn-group">
                                 <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -140,14 +143,15 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
         <button class="btn btn-secondary w-sm-100 order-2 order-md-1" (click)="onBackToModuleDetail()">
+            <i class="bi bi-arrow-left me-1"></i>
             Back to Module
         </button>
         
         <button *ngIf="submissions.length > 0" class="btn btn-primary w-sm-100 order-1 order-md-2"
             (click)="sendGradeNotification()" [disabled]="isSendingNotification">
             <div *ngIf="!isSendingNotification">
+                <i class="bi bi-bell me-1"></i>
                 <span>Send Grade Notification</span>
-                <i class="bi bi-bell ms-1"></i>
             </div>
 
             <div *ngIf="isSendingNotification" class="d-flex align-items-center">

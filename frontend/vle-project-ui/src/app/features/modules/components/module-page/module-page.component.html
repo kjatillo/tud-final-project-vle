@@ -1,9 +1,14 @@
 <div class="container mt-5 p-0">
     <div class="row">
         <div class="col-12 col-md-3 mb-3">
-            <button *ngIf="isModuleInstructor" class="btn btn-primary mb-3" (click)="addPage()">Add New Page</button>
+            <!-- Module Content Pages -->
+            <button *ngIf="isModuleInstructor" class="btn btn-primary mb-3" (click)="addPage()">
+                <i class="bi bi-plus-circle me-1"></i>
+                Add New Page
+            </button>
+
             <div *ngIf="pages.length > 0">
-                <h4 class="mb-3" *ngIf="pages.length > 0">Pages</h4>
+                <h5 class="fw-semibold mb-3" *ngIf="pages.length > 0">Pages</h5>
 
                 <ng-container *ngIf="isLoadingPages; else loadPages">
                     <mat-spinner [diameter]="50"></mat-spinner>
@@ -13,17 +18,30 @@
                     <ul class="list-group">
                         <li id="page-list" *ngFor="let page of pages"
                             class="list-group-item d-flex justify-content-between">
-                            <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">{{ page.title }}</a>
+                            <a [routerLink]="['/module', moduleId]" (click)="selectPage(page.pageId)">
+                                {{ page.title }}
+                            </a>
+
                             <div class="dropdown me-2">
-                                <button class="btn p-0 me-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                    aria-expanded="false" *ngIf="isModuleInstructor">
+                                <button class="btn p-0 me-2" type="button" id="dropdownMenuButton"
+                                    data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isModuleInstructor">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
+
+                                <!-- Content Page Actions -->
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" type="button" (click)="editPage(page.pageId)">Edit Page</a>
+                                    <li>
+                                        <a class="dropdown-item" type="button" (click)="editPage(page.pageId)">
+                                            Edit Page
+                                        </a>
                                     </li>
-                                    <li><a class="dropdown-item text-danger" type="button"
-                                            (click)="deletePage(page.pageId, page.title)">Delete Page</a></li>
+
+                                    <li>
+                                        <a class="dropdown-item text-danger" type="button"
+                                            (click)="deletePage(page.pageId, page.title)">
+                                            Delete Page
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -37,11 +55,16 @@
         </div>
 
         <div class="col-12 col-md-9">
+            <!-- Module Content -->
             <div *ngIf="showContents && selectedPageId">
                 <button *ngIf="isModuleInstructor && !showAddContentForm && !showEditContentForm"
-                    class="btn btn-primary mb-3" (click)="addContent()">Add New Content</button>
+                    class="btn btn-primary mb-3" (click)="addContent()">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Add New Content
+                </button>
+
                 <div *ngIf="!showAddContentForm && !showEditContentForm">
-                    <h4 class="mb-3">{{ selectedPageTitle }} - Contents</h4>
+                    <h5 class="fw-semibold mb-3">{{ selectedPageTitle }} - Contents</h5>
 
                     <ng-container *ngIf="isLoadingSubmission || isLoadingContents">
                         <mat-spinner [diameter]="50"></mat-spinner>
@@ -54,52 +77,99 @@
                     <ul class="list-group" *ngIf="!isLoadingSubmission && !isLoadingContents && contents.length > 0">
                         <li *ngFor="let content of contents" class="list-group-item">
                             <div class="dropdown me-2 d-flex justify-content-between">
-                                <h5 class="content-title">{{ content.title }}</h5>
+                                <!-- Content Title -->
+                                <p class="content-title fw-bold">{{ content.title }}</p>
 
+                                <!-- Content Actions -->
                                 <button class="btn p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
                                     aria-expanded="false" *ngIf="isModuleInstructor">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
+
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" type="button"
-                                            (click)="editContent(content.contentId)">Edit Content</a></li>
-                                    <li><a class="dropdown-item text-danger" type="button"
-                                            (click)="deleteContent(content.contentId, content.title)">Delete Content</a></li>
+                                    <li>
+                                        <a class="dropdown-item" type="button" (click)="editContent(content.contentId)">
+                                            Edit Content
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" type="button"
+                                            (click)="deleteContent(content.contentId, content.title)">
+                                            Delete Content
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 
-                            <p class="content-description"><b>Description</b>: {{ content.description }}</p>
+                            <!-- Content Description -->
+                            <p class="content-description text-muted">{{ content.description }}</p>
 
+                            <!-- Link Content -->
                             <ng-container *ngIf="content.isLink; else fileTemplate">
-                                <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary my-2">Go to
-                                    link</a>
+                                <p class="content-description mb-1">
+                                    <i class="bi bi-link-45deg me-1" title="Link"></i>
+                                    <span class="small">{{ content.linkUrl }}</span>
+                                </p>
+
+                                <a [href]="content.linkUrl" target="_blank" class="btn btn-outline-primary my-2">
+                                    <i class="bi bi-link-45deg me-1"></i>
+                                    Open Link
+                                </a>
                             </ng-container>
 
                             <ng-template #fileTemplate>
+                                <!-- Downloadable File Content -->
                                 <div *ngIf="!content.isUpload">
-                                    <p class="content-description"><b>File</b>: {{ content.fileName }}</p>
-                                    <a [href]="content.fileUrl" target="_blank"
-                                        class="btn btn-outline-primary my-2">Download
-                                        File</a>
-                                </div>                        
+                                    <p class="content-description mb-1">
+                                        <i class="bi bi-file-earmark-arrow-down me-1" title="Downloadable File"></i>
+                                        {{ content.fileName }}
+                                    </p>
 
+                                    <a [href]="content.fileUrl" target="_blank" class="btn btn-outline-primary my-2">
+                                        <i class="bi bi-download me-1"></i>
+                                        Download File
+                                    </a>
+                                </div>
+
+                                <!-- Assignment Content -->
                                 <div *ngIf="content.isUpload">
-                                    <p class="content-description"><b>Deadline</b>: {{ content.deadline | date:'d MMMM yyyy h:mm a' }}</p>
-                                    <p class="content-description" *ngIf="!isModuleInstructor"><b>Uploaded File</b>: {{
-                                        content.submissionFileName ?
-                                        content.submissionFileName : 'N/A' }}</p>
+                                    <p class="content-description mb-1">
+                                        <i class="bi bi-clock me-1" title="Due Date"></i>
+                                        Due {{ content.deadline | date:'d MMMM yyyy h:mm a' }}
+                                    </p>
+
+                                    <p class="content-description mb-1"
+                                        *ngIf="!isModuleInstructor && content.submissionFileName">
+                                        <i class="bi bi-file-earmark-arrow-up me-1"
+                                            title="Uploaded Submission File"></i>
+                                        {{ content.submissionFileName }}
+                                    </p>
+                                    <p *ngIf="!isModuleInstructor && !content.submissionFileName"
+                                        class="content-description mb-1">
+                                        <i class="bi bi-info-circle me-1" title="No Submission Uploaded"></i>
+                                        No Submission Yet
+                                    </p>
+
                                     <button *ngIf="!isModuleInstructor" class="btn my-2"
                                         [ngClass]="isPastDeadline(content.deadline) ? 'btn-outline-danger' : 'btn-outline-primary'"
                                         (click)="uploadSubmission(content.contentId)"
                                         [disabled]="isPastDeadline(content.deadline)">
-                                        {{ !isPastDeadline(content.deadline) ?
-                                        (content.submissionFileName ? 'Edit Submission' : 'Upload Submission') :
-                                        'Submission Closed' }}
-                                    </button>   
+                                        <ng-container *ngIf="!isPastDeadline(content.deadline)">
+                                            <i [ngClass]="content.submissionFileName ? 
+                                                'bi bi-pencil-square me-1' : 'bi bi-upload me-1'">
+                                            </i>
+                                            {{ content.submissionFileName ? 'Edit Submission' : 'Upload Submission' }}
+                                        </ng-container>
+
+                                        <ng-container *ngIf="isPastDeadline(content.deadline)">
+                                            <i class="bi bi-lock me-1"></i>
+                                            Submission Closed
+                                        </ng-container>
+                                    </button>
                                 </div>
                             </ng-template>
                         </li>
-                    </ul>  
+                    </ul>
                 </div>
             </div>
 
@@ -129,9 +199,7 @@
     </div>
 </div>
 
-<app-delete-confirmation-dialog #deleteDialog 
-    [title]="deleteDialogTitle" 
-    [message]="deleteDialogMessage"
+<app-delete-confirmation-dialog #deleteDialog [title]="deleteDialogTitle" [message]="deleteDialogMessage"
     (confirmed)="onDeleteConfirmed($event)">
 </app-delete-confirmation-dialog>
 

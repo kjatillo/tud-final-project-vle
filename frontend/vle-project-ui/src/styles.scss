@@ -135,7 +135,18 @@ label {
     font-size: 14px;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary,
+.btn-primary.dropdown-toggle,
+.btn-primary:visited,
+.btn-primary:focus:active,
+.btn-primary:focus-visible,
+.btn-primary:target,
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled):active:focus {
     background-color: #007e82;
     color: #fff;
 }
@@ -186,6 +197,13 @@ a.btn-outline-danger {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+.dropdown-item:active,
+.dropdown-item.active,
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(0, 126, 130, 0.08) !important;
 }
 
 /* Angular Material Styling */

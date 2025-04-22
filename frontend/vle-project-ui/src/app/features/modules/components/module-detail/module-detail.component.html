@@ -27,9 +27,9 @@
         <!-- Desktop view -->
         <div class="d-none d-md-block">
             <div class="dropdown" *ngIf="isEnroled || (isAdmin$ | async) || isModuleInstructor">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
-                    Actions
+                    Module Navigation
                 </button>
                 <ng-container *ngTemplateOutlet="dropdownMenu"></ng-container>
             </div>
