@@ -16,3 +16,8 @@
 a:hover {
     text-decoration: underline;
 }
+
+.invalid-feedback ul,
+.invalid-feedback li {
+  color: #dc3545 !important;
+}
