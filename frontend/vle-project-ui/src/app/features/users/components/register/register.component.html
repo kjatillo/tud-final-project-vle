@@ -78,8 +78,13 @@
                             <input type="password" id="password" class="form-control" formControlName="password"
                                 [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}">
                             <div class="invalid-feedback" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-                                <ng-container *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</ng-container>
-                                <ng-container *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</ng-container>
+                                <ul class="mb-0 ps-3">
+                                    <li *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['uppercase']">Password must contain at least one uppercase letter</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['number']">Password must contain at least one number</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['special']">Password must contain at least one special character</li>
+                                </ul>
                             </div>
                         </div>
 
@@ -88,8 +93,14 @@
                             <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword"
                                 [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}">
                             <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
-                                <ng-container *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Confirm password is required</ng-container>
                                 <ng-container *ngIf="registerForm.get('confirmPassword')?.errors?.['matching']">Passwords do not match</ng-container>
+                                <ul class="mb-0 ps-3">
+                                    <li *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['uppercase']">Password must contain at least one uppercase letter</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['number']">Password must contain at least one number</li>
+                                    <li *ngIf="registerForm.get('password')?.errors?.['special']">Password must contain at least one special character</li>
+                                </ul>
                             </div>
                         </div>
                         
