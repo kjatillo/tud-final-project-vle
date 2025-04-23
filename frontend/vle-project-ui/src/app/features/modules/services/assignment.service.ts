@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { AssignmentStats } from '../models/assignment-stats.model';
 import { ModuleAnalytics } from '../models/module-analytics.model';
 

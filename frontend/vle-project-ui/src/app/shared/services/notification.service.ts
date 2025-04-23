@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject, Observable, map, of, switchMap, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { Notification } from '../models/notification.model';
-import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
