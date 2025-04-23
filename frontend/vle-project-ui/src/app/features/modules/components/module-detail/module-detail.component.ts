@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '../../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { MessageDialogComponent } from '../../../../shared/components/message-dialog/message-dialog.component';
 import { DIALOG_MESSAGES } from '../../../../shared/constants/dialog-messages';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { PaymentService } from '../../../payment/services/payment.service';
@@ -17,6 +18,7 @@ import { ModuleService } from '../../services/module.service';
 })
 export class ModuleDetailComponent implements OnInit, OnDestroy {
   @ViewChild('deleteDialog') deleteDialog!: DeleteConfirmationDialogComponent;
+  @ViewChild('msgDialog') msgDialog!: MessageDialogComponent;
   module!: Module;
   moduleId!: string;
   isEnroled!: boolean;
@@ -26,6 +28,7 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
   showGradeSubmissions: boolean = false;
   showViewGrades: boolean = false;
   showParticipants: boolean = false;
+  isRedirectingToStripe: boolean = false;
   deleteDialogTitle: string = '';
   deleteDialogMessage: string = '';
   private subscriptions: Subscription = new Subscription();
@@ -85,7 +88,7 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(routeSub);
   }
-  
+
   private checkModuleAccess(): void {
     if (this.isModuleInstructor || this.isEnroled) {
       this.notificationService.ensureConnectionAndJoinModule(this.moduleId);
@@ -104,7 +107,7 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
     const enrolmentSub = this.enrolmentService.isUserEnroled(this.moduleId).subscribe({
       next: (isEnroled) => {
         this.isEnroled = isEnroled;
-        
+
         if (this.isModuleInstructor !== undefined) {
           this.checkModuleAccess();
         }
@@ -117,11 +120,16 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
 
   payAndEnrol(): void {
     if (this.module) {
+      this.isRedirectingToStripe = true;
+
       this.paymentService.createCheckoutSession(
         this.module.moduleName,
         this.module.price,
         this.moduleId
-      );
+      ).catch(() => {
+        this.isRedirectingToStripe = false;
+        this.msgDialog.show('warning', DIALOG_MESSAGES.PAYMENT_ERROR);
+      });
     }
   }
 
