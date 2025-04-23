@@ -58,8 +58,18 @@
     </div>
 
     <button class="btn btn-primary mt-3"
-        *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage" (click)="payAndEnrol()">
-        Pay & Enrol
+        *ngIf="!isEnroled && !((isAdmin$ | async) || isModuleInstructor); else modulePage" (click)="payAndEnrol()" 
+        [disabled]="isRedirectingToStripe">
+        <ng-container *ngIf="!isRedirectingToStripe; else loading">
+            Pay & Enrol
+        </ng-container>
+
+        <ng-template #loading>
+            <div class="d-flex align-items-center">
+                <span>Redirecting...</span>
+                <mat-spinner [diameter]="20" class="ms-2"></mat-spinner>
+            </div>
+        </ng-template>
     </button>
 
     <ng-template #modulePage>
@@ -96,3 +106,5 @@
     [message]="deleteDialogMessage"
     (confirmed)="onDeleteConfirmed($event)">
 </app-delete-confirmation-dialog>
+
+<app-message-dialog #msgDialog></app-message-dialog>

@@ -17,6 +17,9 @@ export const DIALOG_MESSAGES = {
     GRADE_NOTIFY_NO_MODULE: 'Module information is missing. Cannot send notification.',
 
     // Contact
-    CONTACT_MSG_FAILED: 'We were unable to send your message at this time. Please try again later.'
+    CONTACT_MSG_FAILED: 'We were unable to send your message at this time. Please try again later.',
+
+    // Stripe
+    PAYMENT_ERROR: 'An error has occured while trying to redirect to the Stripe checkout.'
   };
   
