@@ -5,6 +5,8 @@ This repository contains a full-stack VLE application designed to enhance online
 
 Built using **Angular** for the frontend and **ASP.NET Core** for the backend, this project aims to deliver an efficient and user-friendly learning platform.
 
+**Note**: A [cloned repository](https://github.com/kjatillo/deployment-year4-project) was created used for deployment and CI/CD pipeline automated build, testing, and code analysis. This was necessary as there were restrictions using the official `docs-and-code-kjatillo` repository.
+
 **Deployed Application**: https://wonderful-pond-0ca60ab03.6.azurestaticapps.net
 <br />
 **Deployment Repository**: https://github.com/kjatillo/deployment-year4-project
