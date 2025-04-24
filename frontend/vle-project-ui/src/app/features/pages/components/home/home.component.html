@@ -6,9 +6,8 @@
     <ng-template #content>
         <div *ngIf="isLoggedIn$ | async; else notLoggedIn">
             <!-- Admin Dashboard -->
-             <app-admin-dashboard
-                *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Admin'">
-             </app-admin-dashboard>
+            <app-admin-dashboard *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Admin'">
+            </app-admin-dashboard>
 
             <!-- Instructor Dashboard -->
             <app-instructor-dashboard
@@ -16,28 +15,29 @@
             </app-instructor-dashboard>
 
             <!-- Student Dashboard -->
-            <app-student-dashboard
-                *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Student'">
+            <app-student-dashboard *ngIf="(currentUser$ | async) && (currentUser$ | async)?.roleName === 'Student'">
             </app-student-dashboard>
         </div>
 
         <!-- Landing Page - Unregistered Users -->
         <ng-template #notLoggedIn>
-            <div class="landing-container">
-                <div class="landing-content">
-                    <div class="section-title">
-                        <h1 class="text-center centered mb-4">Virtual Learning Environment</h1>
-                    </div>
+            <div class="section-title">
+                <h1 class="text-center centered mb-4">Virtual Learning Environment</h1>
+            </div>
 
-                    <p class="landing-tagline">
-                        Empowering students and educators with a modern and collaborative platform.
-                    </p>
+            <p class="text-center landing-tagline">
+                Empowering students and educators with a modern and user-friendly platform.
+            </p>
 
+            <div class="row">
+                <div class="col-12 col-md-6 my-4 mb-md-0">
                     <div class="hero-image">
-                        <img src="/vle-hero-banner.jpg" alt="hero banner">
+                        <img src="/vle-hero-banner2.jpg" alt="hero banner" class="img-fluid">
                     </div>
+                </div>
 
-                    <ul class="landing-features">
+                <div class="col-12 col-md-6">
+                    <ul class="landing-features gap-lg-4">
                         <li>
                             <i class="bi bi-book"></i>
                             <strong>Access Module Materials:</strong> Study anytime, anywhere.
@@ -52,7 +52,7 @@
                         </li>
                         <li>
                             <i class="bi bi-alarm"></i>
-                            <strong>Reminders:</strong> Get automatic emails for upcoming assignment deadlines.
+                            <strong>Reminders:</strong> Get automatic emails for upcoming deadlines.
                         </li>
                         <li>
                             <i class="bi bi-credit-card"></i>
@@ -63,14 +63,14 @@
                             <strong>Secure & Private:</strong> Your data is protected.
                         </li>
                     </ul>
-
-                    <div class="landing-cta">
-                        <em>
-                            Join the students and educators already using our service and
-                            <a href="/register" class="fw-semibold">register here!</a>
-                        </em>
-                    </div>
                 </div>
+            </div>
+
+            <div class="landing-cta">
+                <em>
+                    Join the students and educators already using our service and
+                    <a href="/register" class="fw-semibold">register here!</a>
+                </em>
             </div>
         </ng-template>
     </ng-template>
