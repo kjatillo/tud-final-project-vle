@@ -16,6 +16,7 @@ public class ModulesController : ControllerBase
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IMapper _mapper;
+    private readonly IEnrolmentRepository _enrolmentRepository;
     private readonly IModuleRepository _moduleRepository;
     private readonly IModuleContentRepository _moduleContentRepository;
     private readonly IModulePageRepository _modulePageRepository;
@@ -25,6 +26,7 @@ public class ModulesController : ControllerBase
     public ModulesController(
         IBlobStorageService blobStorageService,
         IMapper mapper,
+        IEnrolmentRepository enrolmentRepository,
         IModuleContentRepository moduleContentRepository,
         IModulePageRepository modulePageRepository,
         IModuleRepository moduleRepository,
@@ -32,6 +34,7 @@ public class ModulesController : ControllerBase
         UserManager<ApplicationUser> userManager)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _enrolmentRepository = enrolmentRepository ?? throw new ArgumentNullException(nameof(enrolmentRepository));
         _moduleContentRepository = moduleContentRepository ?? throw new ArgumentNullException(nameof(moduleContentRepository));
         _modulePageRepository = modulePageRepository ?? throw new ArgumentNullException(nameof(modulePageRepository));
         _moduleRepository = moduleRepository ?? throw new ArgumentNullException(nameof(moduleRepository));
@@ -113,6 +116,8 @@ public class ModulesController : ControllerBase
         module.CreatedDate = DateTime.Now;
 
         var createdModule = await _moduleRepository.CreateModuleAsync(module);
+
+        await _enrolmentRepository.EnrolUserInModuleAsync(user.Id, createdModule.ModuleId);
 
         return CreatedAtAction(nameof(GetModuleById), new { moduleId = createdModule.ModuleId }, createdModule);
     }

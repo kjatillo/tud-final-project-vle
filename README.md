@@ -485,7 +485,7 @@ CREATE TABLE Notifications (
 **Student ID**: X00190944 <br />
 **Course/Year**: Computing with Software Development / Year 4 <br />
 **College Email**: X00190944@mytudublin.ie <br />
-**LinkedIn**: [Linkedin Profile](https://www.linkedin.com/in/keneithatillo/)
+**LinkedIn**: [Linkedin Profile](https://www.linkedin.com/in/keneithatillo/) <br />
 **Portfolio**: [Portfolio Webpage](https://kjatillo.github.io/my-portfolio)
 
 ---

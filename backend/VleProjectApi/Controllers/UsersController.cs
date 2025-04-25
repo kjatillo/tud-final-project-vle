@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using VleProjectApi.DbContexts;
 using VleProjectApi.Dtos;
 using VleProjectApi.Entities;
 using VleProjectApi.Enums;
@@ -20,6 +22,7 @@ public class UsersController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly VleDbContext _context;
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
@@ -28,6 +31,7 @@ public class UsersController : ControllerBase
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
+        VleDbContext context,
         IUserRepository userRepository,
         IConfiguration configuration,
         IMapper mapper)
@@ -35,6 +39,7 @@ public class UsersController : ControllerBase
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -237,7 +242,28 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetModuleParticipants(Guid moduleId)
     {
         var participants = await _userRepository.GetEnroledUsersByModuleIdAsync(moduleId);
-        var userDtos = _mapper.Map<IEnumerable<UserDto>>(participants);
+        var userIds = participants.Select(u => u.Id).ToList();
+
+        // Fetch roles for all users in one query
+        var userRoles = await _context.UserRoles
+        .Where(ur => userIds.Contains(ur.UserId))
+        .Join(_context.Roles,
+              ur => ur.RoleId,
+              r => r.Id,
+              (ur, r) => new { ur.UserId, r.Id, r.Name })
+        .ToListAsync();
+
+        var userDtos = _mapper.Map<List<UserDto>>(participants);
+
+        foreach (var userDto in userDtos)
+        {
+            var role = userRoles.FirstOrDefault(ur => ur.UserId == userDto.UserId.ToString());
+            if (role != null)
+            {
+                userDto.RoleId = Guid.Parse(role.Id);
+                userDto.RoleName = role.Name;
+            }
+        }
 
         return Ok(userDtos);
     }
