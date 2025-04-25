@@ -22,7 +22,8 @@
                         <th *ngIf="(isAdmin$ | async) || isModuleInstructor">ID</th>
                         <th>Last Name</th>
                         <th>First Name</th>
-                        <th>Student Email</th>
+                        <th>Email</th>
+                        <th>Role</th>
                         <th>Gender</th>
                     </tr>
                 </thead>
@@ -32,7 +33,17 @@
                         <td *ngIf="(isAdmin$ | async) || isModuleInstructor">{{ participant.userId }}</td>
                         <td>{{ participant.lastName }}</td>
                         <td>{{ participant.firstName }}</td>
-                        <td>{{ participant.email }}</td>
+                        <td>
+                            <ng-container
+                                *ngIf="participant.roleName !== 'Admin' || (isAdmin$ | async) || isModuleInstructor; else hiddenEmail">
+                                {{ participant.email }}
+                            </ng-container>
+
+                            <ng-template #hiddenEmail>
+                                <span class="text-muted">Hidden</span>
+                            </ng-template>
+                        </td>
+                        <td>{{ participant.roleName }}</td>
                         <td>{{ participant.gender }}</td>
                     </tr>
                 </tbody>
@@ -50,12 +61,11 @@
             <i class="bi bi-arrow-left me-1"></i>
             Back to Module
         </button>
-        
-        <button class="btn btn-primary w-sm-100 order-1 order-md-2" 
-            (click)="downloadParticipants()"
+
+        <button class="btn btn-primary w-sm-100 order-1 order-md-2" (click)="downloadParticipants()"
             *ngIf="participants.length > 0 && ((isAdmin$ | async) || isModuleInstructor)">
-                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
-                Export CSV
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+            Export CSV
         </button>
     </div>
 </div>

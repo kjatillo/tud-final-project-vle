@@ -7,8 +7,8 @@
         <!-- Shared Dropdown Menu -->
         <ng-template #dropdownMenu>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li *ngIf="!((isAdmin$ | async) || isModuleInstructor)">
-                    <a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Module Grades</a>
+                <li *ngIf="!isModuleInstructor">
+                    <a class="dropdown-item" type="button" (click)="toggleViewGrades()">View Grades</a>
                 </li>
                 <li *ngIf="isModuleInstructor">
                     <a class="dropdown-item" type="button" (click)="toggleGradeAndFeedback()">Grade & Feedback</a>
@@ -17,6 +17,8 @@
                     <a class="dropdown-item" type="button" (click)="toggleViewParticipants()">View Participants</a>
                 </li>
                 <ng-container *ngIf="(isAdmin$ | async)">
+                    <hr class="my-2 mx-auto" style="width: 85%;">
+
                     <li><a class="dropdown-item" type="button" (click)="editModule()">Edit Module</a></li>
                     <li><a class="dropdown-item text-danger" type="button" (click)="deleteModule()">Delete Module</a>
                     </li>
