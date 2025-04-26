@@ -137,6 +137,7 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
     if (this.module) {
       this.showEditModuleForm = true;
       this.showParticipants = false;
+      this.showViewGrades = false;
     }
   }
 
@@ -169,6 +170,7 @@ export class ModuleDetailComponent implements OnInit, OnDestroy {
     this.showViewGrades = !this.showViewGrades;
     this.showGradeSubmissions = false;
     this.showParticipants = false;
+    this.showEditModuleForm = false;
   }
 
   toggleViewParticipants(): void {
