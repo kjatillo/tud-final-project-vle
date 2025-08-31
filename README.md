@@ -5,8 +5,6 @@ This repository contains a full-stack VLE application designed to enhance online
 
 Built using **Angular** for the frontend and **ASP.NET Core** for the backend, this project aims to deliver an efficient and user-friendly learning platform.
 
-**Note**: A [cloned repository](https://github.com/kjatillo/deployment-year4-project) was created used for deployment and CI/CD pipeline automated build, testing, and code analysis. This was necessary as there were restrictions using the official `docs-and-code-kjatillo` repository.
-
 **Deployed Application**: https://wonderful-pond-0ca60ab03.6.azurestaticapps.net
 <br />
 **Deployment Repository**: https://github.com/kjatillo/deployment-year4-project
@@ -90,8 +88,8 @@ The repository is organized as follows:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/PROJ-24-25/docs-and-code-kjatillo.git
-   cd docs-and-code-kjatillo
+   git clone https://github.com/kjatillo/tud-final-project-vle.git
+   cd tud-final-project-vle
    ```
 2. **Frontend Setup**
    - Navigate to the frontend directory:
@@ -144,7 +142,7 @@ Note: The webhook must be running along with the API and UI.
 ---
 
 ## CI/CD Pipeline
-The CI/CD pipeline is implemented in [Azure DevOps](https://dev.azure.com/X00190944/FinalYearProject/_build) connected to a cloned project repository [Deployment Repository](https://github.com/kjatillo/deployment-year4-project) due to restrictions in the current repository. The pipeline is triggered on changes to the `main` branch and executes the following stages:
+The CI/CD pipeline is implemented in [Azure DevOps](https://dev.azure.com/X00190944/FinalYearProject/_build) and the pipeline is triggered on changes to the `main` branch and executes the following stages:
 
 **Build**
 ```yml
